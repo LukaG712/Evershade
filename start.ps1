@@ -5,9 +5,7 @@ $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Set-Location $ScriptDir
 
-Write-Host "=========================================" -ForegroundColor Cyan
-Write-Host "  Unified Workflow — Starting Services" -ForegroundColor Cyan
-Write-Host "=========================================" -ForegroundColor Cyan
+Write-Host "Starting services..." -ForegroundColor Cyan
 
 # Check Docker
 try {
