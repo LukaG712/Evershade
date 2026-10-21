@@ -7,294 +7,65 @@ on:
     branches: [main, master]
 
 jobs:
-  Greenie-tests:
-    name: Greenie Tests
+  lint:
+    name: Lint & Validate
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Greenie
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Run tests
-        run: |
-          python -m pytest tests/ -v --tb=short
-
-  Slinker-tests:
-    name: Slinker Tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Slinker
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Run tests
-        run: |
-          python -m pytest tests/ -v --tb=short || true
-
-  Trapper-tests:
-    name: Trapper Tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Trapper
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build || true
-
-      - name: Run tests
-        run: npm test || true
-
-  Gobber-tests:
-    name: Gobber Tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Gobber
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[dev]"
-
-      - name: Run tests
-        run: |
-          python -m pytest tests/ -v --tb=short || true
-
-  Sneaker-tests:
-    name: Sneaker Tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Sneaker
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[dev]"
-
-      - name: Run tests
-        run: |
-          python -m pytest tests/ -v --tb=short || true
-
-  Hider-tests:
-    name: Hider Tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Hider
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[dev]"
-
-      - name: Run tests
-        run: |
-          python -m pytest tests/ -v --tb=short || true
-
-  Poltergeist-tests:
-    name: Poltergeist Tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Poltergeist
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[dev]"
-
-      - name: Run tests
-        run: |
-          python -m pytest tests/ -v --tb=short || true
-
-  Shrewd-tests:
-    name: Shrewd Tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Shrewd
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[dev]"
-
-      - name: Run tests
-        run: |
-          python -m pytest tests/ -v --tb=short || true
-
-  Slammer-build:
-    name: Slammer Build
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Slammer
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build || true
-
-  docker-build:
-    name: Docker Build
-    runs-on: ubuntu-latest
-    needs: [Greenie-tests, Slinker-tests, Trapper-tests]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
+      - name: Validate docker-compose syntax
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Greenie
-        uses: docker/build-push-action@v5
-        with:
-          context: ./Greenie
-          push: false
-          load: true
-          tags: Greenie:test
-
-      - name: Build Slinker
-        uses: docker/build-push-action@v5
-        with:
-          context: ./Slinker
-          push: false
-          load: true
-          tags: Slinker:test
-
-      - name: Build Gobber
-        uses: docker/build-push-action@v5
-        with:
-          context: ./Gobber
-          push: false
-          load: true
-          tags: Gobber:test
-
-      - name: Build Sneaker
-        uses: docker/build-push-action@v5
-        with:
-          context: ./Sneaker
-          push: false
-          load: true
-          tags: Sneaker:test
-
-      - name: Build Hider
-        uses: docker/build-push-action@v5
-        with:
-          context: ./Hider
-          push: false
-          load: true
-          tags: Hider:test
-
-      - name: Build Poltergeist
-        uses: docker/build-push-action@v5
-        with:
-          context: ./Poltergeist
-          push: false
-          load: true
-          tags: Poltergeist:test
-
-      - name: Build Shrewd
-        uses: docker/build-push-action@v5
-        with:
-          context: ./Shrewd
-          push: false
-          load: true
-          tags: Shrewd:test
-
-      - name: Build Slammer
-        uses: docker/build-push-action@v5
-        with:
-          context: ./Slammer
-          push: false
-          load: true
-          tags: Slammer:test
-
-      - name: Validate docker-compose
+      - name: Validate docker-compose config
         run: |
           docker compose config --quiet
+
+      - name: Check shell script syntax (Bash)
+        run: |
+          bash -n start.sh
+          bash -n stop.sh
+
+      - name: Check PowerShell script syntax
+        run: |
+          pwsh -NoProfile -Command "[System.Management.Automation.Language.Parser]::ParseFile('start.ps1', [ref]$null, [ref]$errors); if ($errors.Count -gt 0) { exit 1 }"
+          pwsh -NoProfile -Command "[System.Management.Automation.Language.Parser]::ParseFile('stop.ps1', [ref]$null, [ref]$errors); if ($errors.Count -gt 0) { exit 1 }"
+
+      - name: Verify required files exist
+        run: |
+          test -f docker-compose.yml || { echo "docker-compose.yml not found"; exit 1; }
+          test -f .env.example || { echo ".env.example not found"; exit 1; }
+          test -f start.sh || { echo "start.sh not found"; exit 1; }
+          test -f start.ps1 || { echo "start.ps1 not found"; exit 1; }
+          test -f stop.sh || { echo "stop.sh not found"; exit 1; }
+          test -f stop.ps1 || { echo "stop.ps1 not found"; exit 1; }
+
+      - name: Verify service directories are gitignored
+        run: |
+          for dir in Greenie Slinker Trapper Gobber Sneaker Hider Poltergeist Shrewd Slammer; do
+            grep -q "^${dir}/$" .gitignore || { echo "$dir/ not in .gitignore"; exit 1; }
+          done
+
+  subproject-ci:
+    name: Sub-project CI Status
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check sub-project CI status
+        run: |
+          echo "Each sub-project has its own CI pipeline in its own repository."
+          echo ""
+          echo "Sub-projects and their repos:"
+          echo "  Greenie:     https://github.com/LukaG712/Greenie"
+          echo "  Slinker:     https://github.com/LukaG712/Slinker"
+          echo "  Trapper:     https://github.com/LukaG712/Trapper"
+          echo "  Gobber:      https://github.com/LukaG712/Gobber"
+          echo "  Sneaker:     https://github.com/LukaG712/Sneaker"
+          echo "  Hider:       https://github.com/LukaG712/Hider"
+          echo "  Poltergeist: https://github.com/LukaG712/Poltergeist"
+          echo "  Shrewd:      https://github.com/LukaG712/Shrewd"
+          echo "  Slammer:     https://github.com/LukaG712/Slammer"
+          echo ""
+          echo "This root CI validates orchestration files only."
