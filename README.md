@@ -1,8 +1,21 @@
 # Evershade
 
-A self-hosted AI agent platform built as a collection of specialized microservices, orchestrated together via Docker Compose. Each service is an independent repository that can run alone or as part of the full ecosystem.
+> **A self-hosted AI agent platform built as a collection of specialized microservices.**
 
 All service names are inspired by [Luigi's Mansion ghosts](https://luigi-mansion.fandom.com/wiki/List_of_ghosts).
+
+---
+
+## About
+
+**Evershade** is a self-hosted AI agent platform built as a collection of specialized microservices, orchestrated together via Docker Compose. Each service is an independent repository that can run alone or as part of the full ecosystem.
+
+| | |
+|---|---|
+| **Website** | [http://localhost:8080](http://localhost:8080) |
+| **Services** | [Greenie](https://github.com/LukaG712/Greenie) · [Slinker](https://github.com/LukaG712/Slinker) · [Trapper](https://github.com/LukaG712/Trapper) |
+| **Topics** | ai-agents · microservices · self-hosted · docker-compose · web-scraping · code-execution · luigis-mansion |
+| **Built with** | Python · TypeScript · FastAPI · Playwright · Junie CLI |
 
 ---
 
