@@ -1,7 +1,7 @@
-# Evershade
+﻿# Evershade
 
 > *"E. Gadd to Luigi! Am I comin' in clear, do you read me?"* 
-> — **Prof. E. Gadd**, Luigi's Mansion: Dark Moon
+> ~ **Prof. E. Gadd**, Luigi's Mansion: Dark Moon
 
 > **A self-hosted AI agent platform built as a collection of specialized microservices.**
 
@@ -25,11 +25,11 @@ All service names are inspired by [Luigi's Mansion ghosts](https://luigi-mansion
 ## Services
 
 > *"The Dark Moon has shattered, Luigi! We need to find it and restore peace to Evershade Valley, posthaste!"*
-> — **Prof. E. Gadd**, on the state of the valley
+> ~ **Prof. E. Gadd**, on the state of the valley
 
-### Greenie — Central Hub & Dashboard
+### Greenie ~ Central Hub & Dashboard
 
-**Luigi's Mansion origin:** *Greenie* — small green ghosts from Luigi's Mansion: Dark Moon (Evershade Valley).
+**Luigi's Mansion origin:** *Greenie* ~ small green ghosts from Luigi's Mansion: Dark Moon (Evershade Valley).
 
 The brain of the operation. Greenie is a full-featured API server with a built-in web dashboard. It manages AI agents, chat sessions, pipelines, analytics, and provides a unified view of the entire platform.
 
@@ -45,14 +45,14 @@ Greenie is the only service with a web frontend. Everything you interact with vi
 
 **Repo:** [LukaG712/Greenie](https://github.com/LukaG712/Greenie)
 
-> *"You really got to be OCD like the worst guest at an Airbnb — get gold, get cash, get blings!"*
-> — **The Dark Moon Song**, on collecting everything
+> *"You really got to be OCD like the worst guest at an Airbnb ~ get gold, get cash, get blings!"*
+> ~ **The Dark Moon Song**, on collecting everything
 
 ---
 
-### Slinker — Execution Engine
+### Slinker ~ Execution Engine
 
-**Luigi's Mansion origin:** *Slinker* — stealthy ghost enemies from Luigi's Mansion 3 that slink along walls and floors.
+**Luigi's Mansion origin:** *Slinker* ~ stealthy ghost enemies from Luigi's Mansion 3 that slink along walls and floors.
 
 The worker behind the scenes. Slinker takes tasks from Greenie and executes them in isolated Git worktrees using the Junie CLI. It handles code generation, file modifications, refactoring, and any task that requires running AI agents against a codebase.
 
@@ -64,18 +64,18 @@ The worker behind the scenes. Slinker takes tasks from Greenie and executes them
 | **Runner** | Junie CLI integration |
 | **Role** | Task execution, code agent runner |
 
-Slinker has no dashboard — it's a pure API service. You manage tasks through Greenie's dashboard, which sends work to Slinker.
+Slinker has no dashboard ~ it's a pure API service. You manage tasks through Greenie's dashboard, which sends work to Slinker.
 
 **Repo:** [LukaG712/Slinker](https://github.com/LukaG712/Slinker)
 
 > *"These ghosts seem unassailable, don't worry they're still inhalable!"*
-> — **Prof. E. Gadd**, on facing any challenge
+> ~ **Prof. E. Gadd**, on facing any challenge
 
 ---
 
-### Trapper — Web Scraping & Crawling
+### Trapper ~ Web Scraping & Crawling
 
-**Luigi's Mansion origin:** *Trapper* — ghost enemies from Luigi's Mansion 3 that trap and capture.
+**Luigi's Mansion origin:** *Trapper* ~ ghost enemies from Luigi's Mansion 3 that trap and capture.
 
 The eyes on the web. Trapper uses Playwright to scrape, crawl, search, and map websites, turning raw HTML into clean, structured, LLM-ready data. It supports single-page scraping, deep crawling, site mapping, and background job queues via Redis.
 
@@ -90,7 +90,7 @@ The eyes on the web. Trapper uses Playwright to scrape, crawl, search, and map w
 **Repo:** [LukaG712/Trapper](https://github.com/LukaG712/Trapper)
 
 > *"Gotta stop dat King Boo, 'cause he broke up the whole Dark Moon dude!"*
-> — **Prof. E. Gadd**, on the mission ahead
+> ~ **Prof. E. Gadd**, on the mission ahead
 
 ---
 
@@ -151,12 +151,12 @@ POST /api/pipeline
 ## Quick Start
 
 > *"Step into the dark! Five new spooky mansions!"*
-> — **The Dark Moon Song**, on the adventure ahead
+> ~ **The Dark Moon Song**, on the adventure ahead
 
 ### Prerequisites
 
 - **Docker** and **Docker Compose**
-- **[Junie CLI](https://junie.jetbrains.com)** (for code agents) — optional
+- **[Junie CLI](https://junie.jetbrains.com)** (for code agents) ~ optional
 
 ### One-Command Start
 
@@ -213,7 +213,7 @@ Each service exposes auto-generated API docs:
 ## Naming Theme
 
 > *"Everything was swell, until someone split the Dark Moon..."*
-> — **The Dark Moon Song**, on how it all began
+> ~ **The Dark Moon Song**, on how it all began
 
 All services are named after ghosts from the **Luigi's Mansion** series:
 
@@ -231,28 +231,28 @@ More ghost names from the series available for new services:
 
 | Name | Origin | Suggested Role |
 |------|--------|---------------|
-| **Gobber** | Dark Moon — blob-like ghost | Data storage / database service |
-| **Slammer** | Dark Moon — heavy-hitting ghost | Build / CI service |
-| **Creeper** | Dark Moon — creeping ghost | Monitoring / observability service |
-| **Hider** | Dark Moon — hiding ghost | Secret / config management |
-| **Polterpup** | Dark Moon — ghost dog | Notification / messaging service |
-| **Boo** | Classic — iconic ghost | Authentication / gateway service |
-| **Oozers** | LM3 — ooze-like ghosts | File storage / blob service |
-| **Hammer** | LM3 — hammer-wielding ghost | Deployment / infrastructure service |
-| **Goob** | LM3 — basic ghost | Task queue / job scheduler |
-| **Speedy** | Series — fast ghost | CDN / caching service |
-| **Grouchy** | Dark Moon — spider boss | Security / firewall service |
-| **Nana** | Dark Moon — portrait ghost | Document processing service |
-| **Shivers** | Dark Moon — ice ghost | Cooling / rate limiting service |
-| **Biff** | Dark Moon — bouncer ghost | API gateway / load balancer |
-| **Chauncey** | Dark Moon — ghostly figure | LLM provider abstraction |
+| **Gobber** | Dark Moon ~ blob-like ghost | Data storage / database service |
+| **Slammer** | Dark Moon ~ heavy-hitting ghost | Build / CI service |
+| **Creeper** | Dark Moon ~ creeping ghost | Monitoring / observability service |
+| **Hider** | Dark Moon ~ hiding ghost | Secret / config management |
+| **Polterpup** | Dark Moon ~ ghost dog | Notification / messaging service |
+| **Boo** | Classic ~ iconic ghost | Authentication / gateway service |
+| **Oozers** | LM3 ~ ooze-like ghosts | File storage / blob service |
+| **Hammer** | LM3 ~ hammer-wielding ghost | Deployment / infrastructure service |
+| **Goob** | LM3 ~ basic ghost | Task queue / job scheduler |
+| **Speedy** | Series ~ fast ghost | CDN / caching service |
+| **Grouchy** | Dark Moon ~ spider boss | Security / firewall service |
+| **Nana** | Dark Moon ~ portrait ghost | Document processing service |
+| **Shivers** | Dark Moon ~ ice ghost | Cooling / rate limiting service |
+| **Biff** | Dark Moon ~ bouncer ghost | API gateway / load balancer |
+| **Chauncey** | Dark Moon ~ ghostly figure | LLM provider abstraction |
 
 ---
 
 ## Repository Structure
 
 ```
-Evershade/ (this repo — orchestration)
+Evershade/ (this repo ~ orchestration)
 ├── .github/workflows/ci.yml   ← Root CI pipeline
 ├── docker-compose.yml         ← Service orchestration
 ├── start.sh / stop.sh         ← Startup scripts
@@ -305,7 +305,7 @@ Each sub-project may have its own license. Check the individual repositories.
 ---
 
 > *"Now that all the ghosts of Evershade Valley are under my control..."*
-> — **King Boo**, Luigi's Mansion: Dark Moon
+> ~ **King Boo**, Luigi's Mansion: Dark Moon
 
 > *"Oh boy..."* 
-> — **Luigi**, probably
+> ~ **Luigi**, probably
