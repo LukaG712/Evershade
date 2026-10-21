@@ -1,4 +1,4 @@
-# Unified Workflow — Greenie + Slinker + Trapper
+# Evershade ~ Full Ecosystem
 # Run: docker compose up -d
 
 version: '3.8'
@@ -35,6 +35,21 @@ services:
       # Trapper integration
       - Trapper_URL=http://Trapper-api:3000
       - Trapper_API_KEY=${Trapper_API_KEY:-Trapper-dev-key-change-me}
+      # Gobber integration
+      - GOBBER_URL=http://Gobber:8085
+      - GOBBER_API_KEY=${GOBBER_API_KEY:-Gobber-dev-key-change-me}
+      # Creeper integration
+      - CREEPER_URL=http://Creeper:8086
+      - CREEPER_API_KEY=${CREEPER_API_KEY:-Creeper-dev-key-change-me}
+      # Hider integration
+      - HIDER_URL=http://Hider:8087
+      - HIDER_API_KEY=${HIDER_API_KEY:-Hider-dev-key-change-me}
+      # Polterpup integration
+      - POLTERPUP_URL=http://Polterpup:8088
+      - POLTERPUP_API_KEY=${POLTERPUP_API_KEY:-Polterpup-dev-key-change-me}
+      # Chauncey integration
+      - CHAUNCEY_URL=http://Chauncey:8089
+      - CHAUNCEY_API_KEY=${CHAUNCEY_API_KEY:-Chauncey-dev-key-change-me}
       # Ollama (optional)
       - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
       # Redis (for multi-instance cluster support)
@@ -154,6 +169,100 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # ─── Gobber (persistent storage, port 8085) ──────────────────────────
+  Gobber:
+    build: ./Gobber
+    ports:
+      - "8085:8085"
+    environment:
+      - API_KEY=${GOBBER_API_KEY:-Gobber-dev-key-change-me}
+      - DB_PATH=/app/data/gobber.db
+      - REDIS_URL=redis://redis:6379/1
+    volumes:
+      - gobber_data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8085/health')"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # ─── Creeper (observability, port 8086) ──────────────────────────────
+  Creeper:
+    build: ./Creeper
+    ports:
+      - "8086:8086"
+    environment:
+      - API_KEY=${CREEPER_API_KEY:-Creeper-dev-key-change-me}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8086/health')"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # ─── Hider (secrets/config, port 8087) ───────────────────────────────
+  Hider:
+    build: ./Hider
+    ports:
+      - "8087:8087"
+    environment:
+      - API_KEY=${HIDER_API_KEY:-Hider-dev-key-change-me}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-change-me-in-production}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8087/health')"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # ─── Polterpup (notifications, port 8088) ────────────────────────────
+  Polterpup:
+    build: ./Polterpup
+    ports:
+      - "8088:8088"
+    environment:
+      - API_KEY=${POLTERPUP_API_KEY:-Polterpup-dev-key-change-me}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8088/health')"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # ─── Chauncey (LLM abstraction, port 8089) ───────────────────────────
+  Chauncey:
+    build: ./Chauncey
+    ports:
+      - "8089:8089"
+    environment:
+      - API_KEY=${CHAUNCEY_API_KEY:-Chauncey-dev-key-change-me}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8089/health')"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # ─── Ranger (web dashboard, port 5173) ───────────────────────────────
+  Ranger:
+    build: ./Ranger
+    ports:
+      - "5173:80"
+    depends_on:
+      - Greenie
+    restart: unless-stopped
+
 volumes:
   redis_data:
   Slinker_logs:
+  gobber_data:

@@ -16,7 +16,7 @@ All service names are inspired by [Luigi's Mansion ghosts](https://luigi-mansion
 | | |
 |---|---|
 | **Website** | [http://localhost:8080](http://localhost:8080) |
-| **Services** | [Greenie](https://github.com/LukaG712/Greenie) · [Slinker](https://github.com/LukaG712/Slinker) · [Trapper](https://github.com/LukaG712/Trapper) |
+| **Services** | [Greenie](https://github.com/LukaG712/Greenie) · [Slinker](https://github.com/LukaG712/Slinker) · [Trapper](https://github.com/LukaG712/Trapper) · [Gobber](https://github.com/LukaG712/Gobber) · [Creeper](https://github.com/LukaG712/Creeper) · [Hider](https://github.com/LukaG712/Hider) · [Polterpup](https://github.com/LukaG712/Polterpup) · [Chauncey](https://github.com/LukaG712/Chauncey) · [Ranger](https://github.com/LukaG712/Ranger) · [Scout](https://github.com/LukaG712/Scout) |
 | **Topics** | ai-agents · microservices · self-hosted · docker-compose · web-scraping · code-execution · luigis-mansion |
 | **Built with** | Python · TypeScript · FastAPI · Playwright · Junie CLI |
 
@@ -88,6 +88,122 @@ The eyes on the web. Trapper uses Playwright to scrape, crawl, search, and map w
 | **Role** | Web scraping, crawling, content extraction |
 
 **Repo:** [LukaG712/Trapper](https://github.com/LukaG712/Trapper)
+
+> *"Gotta stop dat King Boo, 'cause he broke up the whole Dark Moon dude!"*
+> ~ **Prof. E. Gadd**, on the mission ahead
+
+---
+
+### Gobber ~ Persistent Storage
+
+**Luigi's Mansion origin:** *Gobber* ~ blob-like ghosts from Luigi's Mansion: Dark Moon that absorb and store everything.
+
+The memory of the ecosystem. Gobber provides persistent storage for webhooks, analytics, RBAC, cache, and feature flags ~ solving the in-memory data loss problem when services restart.
+
+| Feature | Details |
+|---------|---------|
+| **Port** | `8085` |
+| **Storage** | SQLite with WAL mode |
+| **Features** | Webhooks, analytics, RBAC, cache, feature flags |
+| **Role** | Centralized data layer |
+
+**Repo:** [LukaG712/Gobber](https://github.com/LukaG712/Gobber)
+
+---
+
+### Creeper ~ Observability
+
+**Luigi's Mansion origin:** *Creeper* ~ creeping ghosts from Luigi's Mansion: Dark Moon that always watch.
+
+The eyes on your system. Creeper collects metrics, traces, and logs from all services, providing unified observability.
+
+| Feature | Details |
+|---------|---------|
+| **Port** | `8086` |
+| **Features** | Metrics, distributed traces, log aggregation |
+| **Role** | System health monitoring |
+
+**Repo:** [LukaG712/Creeper](https://github.com/LukaG712/Creeper)
+
+---
+
+### Hider ~ Secrets & Config
+
+**Luigi's Mansion origin:** *Hider* ~ ghosts from Luigi's Mansion: Dark Moon that hide in plain sight.
+
+The vault for sensitive data. Hider provides encrypted storage for API keys, passwords, and centralized configuration management.
+
+| Feature | Details |
+|---------|---------|
+| **Port** | `8087` |
+| **Features** | Encrypted secrets, versioned config |
+| **Role** | Secret and configuration management |
+
+**Repo:** [LukaG712/Hider](https://github.com/LukaG712/Hider)
+
+---
+
+### Polterpup ~ Notifications
+
+**Luigi's Mansion origin:** *Polterpup* ~ ghost dogs from Luigi's Mansion: Dark Moon that howl and deliver messages.
+
+The messenger of the ecosystem. Polterpup sends notifications to Slack, Discord, email, and Telegram with templated messages and async delivery.
+
+| Feature | Details |
+|---------|---------|
+| **Port** | `8088` |
+| **Channels** | Slack, Discord, email, Telegram, webhooks |
+| **Role** | Unified notification hub |
+
+**Repo:** [LukaG712/Polterpup](https://github.com/LukaG712/Polterpup)
+
+---
+
+### Chauncey ~ LLM Abstraction
+
+**Luigi's Mansion origin:** *Chauncey* ~ a ghostly figure from Luigi's Mansion: Dark Moon.
+
+The brain behind the models. Chauncey provides a unified interface for OpenAI, Anthropic, Google, and Ollama ~ letting you swap models and manage costs.
+
+| Feature | Details |
+|---------|---------|
+| **Port** | `8089` |
+| **Providers** | OpenAI, Anthropic, Google, Ollama |
+| **Role** | LLM provider abstraction |
+
+**Repo:** [LukaG712/Chauncey](https://github.com/LukaG712/Chauncey)
+
+---
+
+### Ranger ~ Web Dashboard
+
+**Luigi's Mansion origin:** *Ranger* ~ a guardian who patrols and oversees the valley.
+
+The command center. Ranger is a React-based standalone web dashboard for managing agents, runs, pipelines, and analytics across all Evershade services.
+
+| Feature | Details |
+|---------|---------|
+| **Port** | `5173` |
+| **Stack** | React, TypeScript, Tailwind CSS |
+| **Role** | Standalone web dashboard |
+
+**Repo:** [LukaG712/Ranger](https://github.com/LukaG712/Ranger)
+
+---
+
+### Scout ~ CLI Tool
+
+**Luigi's Mansion origin:** *Scout* ~ a forward-looking explorer navigating the dark.
+
+The terminal companion. Scout provides an `evershade` command for managing services, agents, tasks, and configuration from the command line.
+
+| Feature | Details |
+|---------|---------|
+| **Install** | `pip install scout-cli` |
+| **Command** | `evershade` |
+| **Role** | Command-line interface |
+
+**Repo:** [LukaG712/Scout](https://github.com/LukaG712/Scout)
 
 > *"Gotta stop dat King Boo, 'cause he broke up the whole Dark Moon dude!"*
 > ~ **Prof. E. Gadd**, on the mission ahead
@@ -259,7 +375,14 @@ Evershade/ (this repo ~ orchestration)
 ├── start.ps1 / stop.ps1       ← Windows scripts
 ├── Greenie/                   → Separate repo (LukaG712/Greenie)
 ├── Slinker/                   → Separate repo (LukaG712/Slinker)
-└── Trapper/                   → Separate repo (LukaG712/Trapper)
+├── Trapper/                   → Separate repo (LukaG712/Trapper)
+├── Gobber/                    → Separate repo (LukaG712/Gobber)
+├── Creeper/                   → Separate repo (LukaG712/Creeper)
+├── Hider/                     → Separate repo (LukaG712/Hider)
+├── Polterpup/                 → Separate repo (LukaG712/Polterpup)
+├── Chauncey/                  → Separate repo (LukaG712/Chauncey)
+├── Ranger/                    → Separate repo (LukaG712/Ranger)
+└── Scout/                     → Separate repo (LukaG712/Scout)
 ```
 
 Each sub-project is an independent Git repository with its own CI pipeline. The root repo tracks orchestration files (Docker Compose, CI, scripts) and excludes the sub-project directories via `.gitignore`.
@@ -282,17 +405,15 @@ Copy `.env.example` to `.env` and configure:
 
 ---
 
-## Planned Services
+## Future Expansion
 
-The ecosystem is designed to grow. Planned additions (names TBD from the ghost list above):
+The ecosystem is designed to grow. Future additions (names TBD from the ghost list above):
 
 | Service | Role | Status |
 |---------|------|--------|
-| **Auth & Gateway** | Centralized OAuth, API keys, rate limiting | Planned |
-| **Persistent Storage** | Dedicated storage for webhooks, analytics, RBAC | Planned |
-| **Observability** | Metrics, traces, logs aggregation | Planned |
-| **Semantic Memory** | Vector-based knowledge graph for agents | Planned |
-| **Web Dashboard** | React/Vue frontend (beyond Greenie's built-in UI) | Planned |
+| **Mnemos** | Semantic memory using vector embeddings | Planned |
+| **Bridge** | External integrations (GitHub, calendar, email) | Planned |
+| **Courier** | S3-compatible file storage service | Planned |
 
 See [ECOSYSTEM_EXPANSION.md](ECOSYSTEM_EXPANSION.md) for the full expansion roadmap.
 

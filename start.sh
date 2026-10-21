@@ -50,7 +50,7 @@ fi
 echo -e "${GREEN}✓${NC} .env file found"
 
 # Check required directories
-for dir in Greenie Slinker Trapper; do
+for dir in Greenie Slinker Trapper Gobber Creeper Hider Polterpup Chauncey Ranger; do
     if [ ! -d "$dir" ]; then
         echo -e "${RED}ERROR: Directory '$dir' not found.${NC}"
         exit 1
@@ -85,9 +85,15 @@ echo ""
 echo -e "${GREEN}✓${NC} Services started!"
 echo ""
 echo "Service URLs:"
-echo "  Greenie:  http://localhost:8080"
-echo "  Slinker:  http://localhost:8000"
-echo "  Trapper: http://localhost:3000"
+echo "  Greenie:    http://localhost:8080"
+echo "  Slinker:    http://localhost:8000"
+echo "  Trapper:    http://localhost:3000"
+echo "  Gobber:     http://localhost:8085"
+echo "  Creeper:    http://localhost:8086"
+echo "  Hider:      http://localhost:8087"
+echo "  Polterpup:  http://localhost:8088"
+echo "  Chauncey:   http://localhost:8089"
+echo "  Ranger:     http://localhost:5173"
 echo ""
 echo "API Documentation:"
 echo "  Swagger:   http://localhost:8080/docs"
