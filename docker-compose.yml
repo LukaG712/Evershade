@@ -1,12 +1,10 @@
 # Evershade ~ Full Ecosystem
 # Run: docker compose up -d
 
-version: '3.8'
-
 services:
   # ─── Redis (shared by Trapper) ───────────────────────────────────────
   redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     ports:
       - "6379:6379"
     volumes:
@@ -18,6 +16,14 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
 
   # ─── Greenie (main dashboard, port 8080) ──────────────────────────────
   Greenie:
@@ -74,13 +80,21 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
-      interval: 30s
+      interval: 15s
       timeout: 5s
-      start_period: 15s
-      retries: 3
+      start_period: 60s
+      retries: 4
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.50'
+          memory: 512M
 
   # ─── Slinker (execution engine, port 8000) ────────────────────────────
   Slinker:
@@ -111,6 +125,14 @@ services:
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.50'
+          memory: 512M
 
   # ─── Trapper API (web scraping, port 3000) ───────────────────────────
   Trapper-api:
@@ -144,6 +166,14 @@ services:
       start_period: 15s
       retries: 5
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.50'
+          memory: 256M
 
   # ─── Trapper Worker (background crawl jobs) ──────────────────────────
   Trapper-worker:
@@ -168,6 +198,14 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.50'
+          memory: 256M
 
   # ─── Gobber (persistent storage, port 8085) ──────────────────────────
   Gobber:
@@ -178,8 +216,12 @@ services:
       - API_KEY=${GOBBER_API_KEY:-Gobber-dev-key-change-me}
       - DB_PATH=/app/data/gobber.db
       - REDIS_URL=redis://redis:6379/1
+      - OBSIDIAN_VAULT_PATH=${OBSIDIAN_VAULT_PATH:-/app/vault}
+      - SHREWD_URL=http://Shrewd:8089
+      - SHREWD_API_KEY=${SHREWD_API_KEY:-Shrewd-dev-key-change-me}
     volumes:
       - gobber_data:/app/data
+      - ${OBSIDIAN_VAULT_PATH:-./obsidian-vault}:/app/vault:ro
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8085/health')"]
       interval: 30s
@@ -187,6 +229,14 @@ services:
       start_period: 10s
       retries: 3
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
 
   # ─── Sneaker (observability, port 8086) ──────────────────────────────
   Sneaker:
@@ -202,6 +252,14 @@ services:
       start_period: 10s
       retries: 3
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
 
   # ─── Hider (secrets/config, port 8087) ───────────────────────────────
   Hider:
@@ -218,6 +276,14 @@ services:
       start_period: 10s
       retries: 3
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
 
   # ─── Poltergeist (notifications, port 8088) ────────────────────────────
   Poltergeist:
@@ -233,6 +299,14 @@ services:
       start_period: 10s
       retries: 3
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
 
   # ─── Shrewd (LLM abstraction, port 8089) ───────────────────────────
   Shrewd:
@@ -252,6 +326,14 @@ services:
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
 
   # ─── Slammer (web dashboard, port 5173) ───────────────────────────────
   Slammer:
@@ -261,6 +343,14 @@ services:
     depends_on:
       - Greenie
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
 
 volumes:
   redis_data:

@@ -94,18 +94,19 @@ The eyes on the web. Trapper uses Playwright to scrape, crawl, search, and map w
 
 ---
 
-### Gobber ~ Persistent Storage
+### Gobber ~ Persistent Storage & Knowledge Graph
 
 **Luigi's Mansion origin:** *Gobber* ~ blob-like ghosts from Luigi's Mansion: Dark Moon that absorb and store everything.
 
-The memory of the ecosystem. Gobber provides persistent storage for webhooks, analytics, RBAC, cache, and feature flags ~ solving the in-memory data loss problem when services restart.
+The memory and brain of the ecosystem. Gobber provides persistent storage for webhooks, analytics, RBAC, cache, and feature flags ~ solving the in-memory data loss problem when services restart. It also integrates **Obsidian vault as a second brain** ~ scanning your notes, generating embeddings, and enabling semantic search.
 
 | Feature | Details |
 |---------|---------|
 | **Port** | `8085` |
 | **Storage** | SQLite with WAL mode |
-| **Features** | Webhooks, analytics, RBAC, cache, feature flags |
-| **Role** | Centralized data layer |
+| **Features** | Webhooks, analytics, RBAC, cache, feature flags, knowledge graph |
+| **Obsidian** | Vault scanning, semantic search, graph traversal |
+| **Role** | Centralized data layer & semantic memory |
 
 **Repo:** [LukaG712/Gobber](https://github.com/LukaG712/Gobber)
 
@@ -395,13 +396,60 @@ Each sub-project is an independent Git repository with its own CI pipeline. The 
 
 Copy `.env.example` to `.env` and configure:
 
+#### API Keys (Required)
+
+Generate unique keys for each service. **Never use the default values in production.**
+
+```bash
+# Generate a secure key
+openssl rand -hex 32
+```
+
+| Variable | Description |
+|----------|-------------|
+| `HUB_API_KEY` | Greenie API key |
+| `Slinker_API_KEY` | Slinker API key |
+| `Trapper_API_KEY` | Trapper API key |
+| `GOBBER_API_KEY` | Gobber API key |
+| `SNEAKER_API_KEY` | Sneaker API key |
+| `HIDER_API_KEY` | Hider API key |
+| `POLTERGEIST_API_KEY` | Poltergeist API key |
+| `SHREWD_API_KEY` | Shrewd API key |
+| `ENCRYPTION_KEY` | Hider encryption key for stored secrets |
+
+#### Optional Configuration
+
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `HUB_API_KEY` | `Greenie-dev-key-change-me` | Greenie API key |
-| `Slinker_API_KEY` | `Slinker-dev-key-change-me` | Slinker API key |
-| `Trapper_API_KEY` | `Trapper-API-key-change-me` | Trapper API key |
-| `OLLAMA_URL` | `http://host.docker.internal:11434` | Ollama API endpoint |
-| `LOG_LEVEL` | `INFO` | Log verbosity |
+| `OPENAI_API_KEY` | *(empty)* | OpenAI API key for Shrewd LLM abstraction |
+| `OLLAMA_URL` | `http://host.docker.internal:11434` | Ollama API endpoint for local LLM inference |
+| `OLLAMA_MODEL` | `gemma4:12b` | Ollama model name for Slinker |
+| `REDIS_PASSWORD` | *(empty)* | Redis password for cluster support |
+| `WORKSPACE_PATH` | `./workspace` | Path to workspace directory (use absolute path in production) |
+| `MAX_CONCURRENT_WORKERS` | `1` | Maximum concurrent Slinker workers |
+| `ISOLATION_MODE` | `worktree` | Slinker task isolation mode (`worktree` or `none`) |
+| `JUNIE_BIN` | `junie` | Junie CLI binary path |
+| `REFINE_PROMPT` | `false` | Whether to refine prompts before sending to Junie |
+| `OBSIDIAN_VAULT_PATH` | `./obsidian-vault` | Path to Obsidian vault for Gobber knowledge graph |
+| `LOG_LEVEL` | `INFO` | Log verbosity (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
+
+#### Workspace Path
+
+The `WORKSPACE_PATH` variable controls where agents access projects. Use an **absolute path** in production to avoid issues if docker-compose is run from a different directory:
+
+```bash
+# Recommended for production
+WORKSPACE_PATH=/home/user/projects
+
+# Development default (relative path)
+WORKSPACE_PATH=./workspace
+```
+
+#### Security Notes
+
+- The startup scripts (`start.sh` / `start.ps1`) will warn you if default API keys are detected.
+- Resource limits are applied to all services to prevent any single service from consuming all host resources.
+- Store your `.env` file securely and never commit it to version control.
 
 ---
 

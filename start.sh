@@ -47,6 +47,40 @@ fi
 
 echo -e "${GREEN}✓${NC} .env file found"
 
+# Validate API keys are not using defaults
+declare -A defaultKeys=(
+    ["HUB_API_KEY"]="Greenie-dev-key-change-me"
+    ["Slinker_API_KEY"]="Slinker-dev-key-change-me"
+    ["Trapper_API_KEY"]="Trapper-dev-key-change-me"
+    ["GOBBER_API_KEY"]="Gobber-dev-key-change-me"
+    ["SNEAKER_API_KEY"]="Sneaker-dev-key-change-me"
+    ["HIDER_API_KEY"]="Hider-dev-key-change-me"
+    ["POLTERGEIST_API_KEY"]="Poltergeist-dev-key-change-me"
+    ["SHREWD_API_KEY"]="Shrewd-dev-key-change-me"
+    ["ENCRYPTION_KEY"]="change-me-in-production"
+)
+
+hasDefaultKeys=false
+for key in "${!defaultKeys[@]}"; do
+    defaultValue="${defaultKeys[$key]}"
+    envValue=$(grep "^${key}=" .env 2>/dev/null | cut -d'=' -f2-)
+    if [ "$envValue" = "$defaultValue" ]; then
+        echo -e "${RED}✗${NC} WARNING: ${key} is using the default value '${defaultValue}'"
+        hasDefaultKeys=true
+    fi
+done
+
+if [ "$hasDefaultKeys" = true ]; then
+    echo ""
+    echo -e "${RED}[!] SECURITY RISK: Default API keys detected. These should be changed for production use.${NC}"
+    echo -e "${YELLOW}[!] Generate secure keys: openssl rand -hex 32${NC}"
+    echo ""
+    echo -e "${YELLOW}[!] Press Ctrl+C to fix .env, or Enter to continue with defaults (NOT recommended)...${NC}"
+    read -r
+fi
+
+echo -e "${GREEN}✓${NC} API key validation complete"
+
 # Check required directories
 for dir in Greenie Slinker Trapper Gobber Sneaker Hider Poltergeist Shrewd Slammer; do
     if [ ! -d "$dir" ]; then
@@ -96,6 +130,10 @@ echo ""
 echo "API Documentation:"
 echo "  Swagger:   http://localhost:8080/docs"
 echo "  ReDoc:     http://localhost:8080/redoc"
+echo ""
+echo "Obsidian Vault:"
+echo "  To enable semantic search, set OBSIDIAN_VAULT_PATH in .env"
+echo "  Example: OBSIDIAN_VAULT_PATH=/path/to/your/obsidian/vault"
 echo ""
 echo "To stop services:  ./stop.sh"
 echo "To view logs:      docker compose logs -f"

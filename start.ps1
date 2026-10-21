@@ -41,6 +41,39 @@ if (-not (Test-Path ".env")) {
 
 Write-Host "[✓] .env file found" -ForegroundColor Green
 
+# Validate API keys are not using defaults
+$defaultKeys = @(
+    @{Name="HUB_API_KEY"; Default="Greenie-dev-key-change-me"},
+    @{Name="Slinker_API_KEY"; Default="Slinker-dev-key-change-me"},
+    @{Name="Trapper_API_KEY"; Default="Trapper-dev-key-change-me"},
+    @{Name="GOBBER_API_KEY"; Default="Gobber-dev-key-change-me"},
+    @{Name="SNEAKER_API_KEY"; Default="Sneaker-dev-key-change-me"},
+    @{Name="HIDER_API_KEY"; Default="Hider-dev-key-change-me"},
+    @{Name="POLTERGEIST_API_KEY"; Default="Poltergeist-dev-key-change-me"},
+    @{Name="SHREWD_API_KEY"; Default="Shrewd-dev-key-change-me"},
+    @{Name="ENCRYPTION_KEY"; Default="change-me-in-production"}
+)
+
+$hasDefaultKeys = $false
+foreach ($key in $defaultKeys) {
+    $envValue = (Get-Content .env | Where-Object { $_ -match "^${key.Name}=" }) -replace "^${key.Name}=", ""
+    if ($envValue -eq $key.Default) {
+        Write-Host "[✗] WARNING: ${key.Name} is using the default value '${key.Default}'" -ForegroundColor Red
+        $hasDefaultKeys = $true
+    }
+}
+
+if ($hasDefaultKeys) {
+    Write-Host "" 
+    Write-Host "[!] SECURITY RISK: Default API keys detected. These should be changed for production use." -ForegroundColor Red
+    Write-Host "[!] Generate secure keys: openssl rand -hex 32" -ForegroundColor Yellow
+    Write-Host "" 
+    Write-Host "[!] Press Ctrl+C to fix .env, or Enter to continue with defaults (NOT recommended)..." -ForegroundColor Yellow
+    Read-Host
+}
+
+Write-Host "[✓] API key validation complete" -ForegroundColor Green
+
 # Check required directories
 foreach ($dir in @("Greenie", "Slinker", "Trapper", "Gobber", "Sneaker", "Hider", "Poltergeist", "Shrewd", "Slammer")) {
     if (-not (Test-Path $dir)) {
@@ -95,6 +128,10 @@ Write-Host ""
 Write-Host "API Documentation:" -ForegroundColor Cyan
 Write-Host "  Swagger:   http://localhost:8080/docs"
 Write-Host "  ReDoc:     http://localhost:8080/redoc"
+Write-Host ""
+Write-Host "Obsidian Vault:" -ForegroundColor Cyan
+Write-Host "  To enable semantic search, set OBSIDIAN_VAULT_PATH in .env" -ForegroundColor Gray
+Write-Host "  Example: OBSIDIAN_VAULT_PATH=C:\path\to\your\obsidian\vault" -ForegroundColor Gray
 Write-Host ""
 Write-Host "To stop services:  .\stop.ps1" -ForegroundColor Gray
 Write-Host "To view logs:      docker compose logs -f" -ForegroundColor Gray
