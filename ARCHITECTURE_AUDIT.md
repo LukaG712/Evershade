@@ -11,7 +11,7 @@ The Unified Workflow ecosystem consists of **three independent services** that c
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        Evershade Valley (Port 8080)                     │
+│                        Greenie (Port 8080)                     │
 │  ┌──────────────┐  ┌──────────────┐  ┌───────────────────────┐ │
 │  │ FastAPI App  │  │  Agent Runner│  │  255 Route Handlers   │ │
 │  │ (api.py)     │  │  (runner.py) │  │  (all in api.py)      │ │
@@ -20,7 +20,7 @@ The Unified Workflow ecosystem consists of **three independent services** that c
 │  ┌──────▼─────────────────▼───────────────────────▼───────────┐ │
 │  │              Provider Layer                                 │ │
 │  │  ┌──────────┐  ┌────────────┐  ┌────────────────────┐     │ │
-│  │  │ Junie    │  │ Polter   │  │   Spectra        │     │ │
+│  │  │ Junie    │  │ Slinker   │  │   Trapper        │     │ │
 │  │  │ (subproc)│  │ (HTTP)     │  │   (HTTP)           │     │ │
 │  │  └──────────┘  └────────────┘  └────────────────────┘     │ │
 │  └─────────────────────────────────────────────────────────────┘ │
@@ -28,7 +28,7 @@ The Unified Workflow ecosystem consists of **three independent services** that c
                │ HTTP                         │ HTTP
                ▼                              ▼
 ┌──────────────────────────┐    ┌──────────────────────────────────┐
-│    Polter (Port 8000)  │    │     Spectra (Port 3000)        │
+│    Slinker (Port 8000)  │    │     Trapper (Port 3000)        │
 │  ┌────────────────────┐  │    │  ┌────────────────────────────┐  │
 │  │ FastAPI Service    │  │    │  │ Fastify (TypeScript/Node)  │  │
 │  │ - Chat completions │  │    │  │ - Scrape / Crawl / Search  │  │
@@ -47,45 +47,45 @@ The Unified Workflow ecosystem consists of **three independent services** that c
 
 | Service | Language | Framework | Port | Primary Responsibility |
 |---------|----------|-----------|------|----------------------|
-| **Evershade Valley** | Python | FastAPI | 8080 | Central API, agent orchestration, dashboard, cross-service integration |
-| **Polter** | Python | FastAPI | 8000 | Junie CLI execution, worktree isolation, task persistence |
-| **Spectra** | TypeScript | Fastify | 3000 | Web scraping, crawling, search, browser automation |
-| **Redis** | — | — | 6379 | Job queues for Spectra (BullMQ) |
+| **Greenie** | Python | FastAPI | 8080 | Central API, agent orchestration, dashboard, cross-service integration |
+| **Slinker** | Python | FastAPI | 8000 | Junie CLI execution, worktree isolation, task persistence |
+| **Trapper** | TypeScript | Fastify | 3000 | Web scraping, crawling, search, browser automation |
+| **Redis** | — | — | 6379 | Job queues for Trapper (BullMQ) |
 
 ### Data Flow
 
-1. **User → Evershade Valley**: API request to run an agent task
-2. **Evershade Valley → Provider**: Resolves the runner type (junie/Polter/Spectra)
-3. **Provider → Service**: HTTP call to Polter or Spectra (or local subprocess for Junie)
-4. **Service → Execution**: Polter runs Junie CLI; Spectra processes via Redis queues
+1. **User → Greenie**: API request to run an agent task
+2. **Greenie → Provider**: Resolves the runner type (junie/Slinker/Trapper)
+3. **Provider → Service**: HTTP call to Slinker or Trapper (or local subprocess for Junie)
+4. **Service → Execution**: Slinker runs Junie CLI; Trapper processes via Redis queues
 5. **Result → User**: Response flows back through the same path
 
 ### Communication Protocols
 
 | From | To | Protocol | Auth |
 |------|-----|----------|------|
-| Evershade Valley | Polter | HTTP/JSON | Bearer token |
-| Evershade Valley | Spectra | HTTP/JSON | Bearer token |
-| Evershade Valley | Junie CLI | Subprocess | None (local) |
-| Spectra API | Redis | BullMQ | None (internal) |
-| Spectra Worker | Redis | BullMQ | None (internal) |
+| Greenie | Slinker | HTTP/JSON | Bearer token |
+| Greenie | Trapper | HTTP/JSON | Bearer token |
+| Greenie | Junie CLI | Subprocess | None (local) |
+| Trapper API | Redis | BullMQ | None (internal) |
+| Trapper Worker | Redis | BullMQ | None (internal) |
 
 ---
 
 ## 2. Dependency Map
 
 ```
-Evershade Valley
+Greenie
   ├── fastapi, uvicorn, pyyaml, httpx, requests (Python)
-  ├── Polter (HTTP, optional — graceful fallback)
-  ├── Spectra (HTTP, optional — graceful fallback)
+  ├── Slinker (HTTP, optional — graceful fallback)
+  ├── Trapper (HTTP, optional — graceful fallback)
   └── Junie CLI (subprocess, optional — for "junie" runner)
 
-Polter
+Slinker
   ├── fastapi, uvicorn, httpx, python-dotenv (Python)
   └── Junie CLI (subprocess, required)
 
-Spectra
+Trapper
   ├── fastify, bullmq, playwright, ioredis, cheerio (Node.js)
   └── Redis (required for queues)
 
@@ -101,9 +101,9 @@ Redis
 
 | # | Problem | Impact | File(s) |
 |---|---------|--------|---------|
-| **C1** | `api.py` is a 290KB monolith with 255 route handlers | Unmaintainable, hard to test, single point of failure | `Evershade Valley/hub/api.py` |
-| **C2** | Deprecated `asyncio.get_event_loop()` in providers | Breaks on Python 3.12+, runtime errors | `Polter_provider.py`, `Spectra_provider.py` |
-| **C3** | Docker-compose `depends_on` lacks health conditions | Evershade Valley starts before dependencies are ready | `docker-compose.yml` |
+| **C1** | `api.py` is a 290KB monolith with 255 route handlers | Unmaintainable, hard to test, single point of failure | `Greenie/hub/api.py` |
+| **C2** | Deprecated `asyncio.get_event_loop()` in providers | Breaks on Python 3.12+, runtime errors | `Slinker_provider.py`, `Trapper_provider.py` |
+| **C3** | Docker-compose `depends_on` lacks health conditions | Greenie starts before dependencies are ready | `docker-compose.yml` |
 
 ### High
 
@@ -111,7 +111,7 @@ Redis
 |---|---------|--------|---------|
 | **H1** | All feature stores are in-memory only | Data lost on restart (webhooks, analytics, RBAC, etc.) | `api.py` |
 | **H2** | No unified startup script | Users must manually start 3+ services | Missing |
-| **H3** | No Evershade Valley `.env` file | Environment config scattered across services | Missing |
+| **H3** | No Greenie `.env` file | Environment config scattered across services | Missing |
 | **H4** | No shared logging format | Hard to debug cross-service issues | All services |
 | **H5** | Provider `run()` is sync but wraps async | Complex event loop juggling, potential deadlocks | Both providers |
 
@@ -120,10 +120,10 @@ Redis
 | # | Problem | Impact | File(s) |
 |---|---------|--------|---------|
 | **M1** | Duplicate health check endpoints | 3 separate `/health` endpoints, no aggregation | All services |
-| **M2** | No version pinning alignment | Evershade Valley httpx 0.27.0 vs Polter 0.27.2 | requirements.txt |
-| **M3** | `app.py` is a simple task manager, not the app entry | Confusing naming — actual app is in `api.py` | `Evershade Valley/hub/app.py` |
+| **M2** | No version pinning alignment | Greenie httpx 0.27.0 vs Slinker 0.27.2 | requirements.txt |
+| **M3** | `app.py` is a simple task manager, not the app entry | Confusing naming — actual app is in `api.py` | `Greenie/hub/app.py` |
 | **M4** | No `.gitignore` at root level | Root-level temp files may be committed | Missing |
-| **M5** | Spectra worker has no health check | Docker can't verify worker is alive | `docker-compose.yml` |
+| **M5** | Trapper worker has no health check | Docker can't verify worker is alive | `docker-compose.yml` |
 
 ### Low
 
@@ -131,7 +131,7 @@ Redis
 |---|---------|--------|---------|
 | **L1** | Multiple `.junie/plans/` directories | Plan sprawl across services | All services |
 | **L2** | No root-level `README` architecture diagram | Onboarding requires reading 3 READMEs | `README.md` |
-| **L3** | `orchestrator.py` is a thin wrapper | Unnecessary indirection | `Polter/orchestrator.py` |
+| **L3** | `orchestrator.py` is a thin wrapper | Unnecessary indirection | `Slinker/orchestrator.py` |
 
 ---
 
@@ -147,12 +147,12 @@ Redis
 - **Cons**: Different languages (Python + TypeScript), different package managers, larger build times
 - **Verdict**: Not worth the complexity for 3 services
 
-### Option C: Evershade Valley as Library + Thin Gateway
+### Option C: Greenie as Library + Thin Gateway
 - **Pros**: Separates business logic from HTTP layer
 - **Cons**: Major refactor, breaks existing deployment
 - **Verdict**: Too risky without clear benefit
 
-### Option D: Modularize Evershade Valley api.py (Recommended)
+### Option D: Modularize Greenie api.py (Recommended)
 - **Pros**: Maintains current architecture, improves maintainability, incremental
 - **Cons**: Requires careful refactoring of 290KB file
 - **Verdict**: **Best balance of risk vs. reward**
@@ -162,7 +162,7 @@ Redis
 ## 5. Recommended Target Architecture
 
 ```
-Evershade Valley/
+Greenie/
 ├── hub/
 │   ├── api/                    # ← NEW: Route modules (split from api.py)
 │   │   ├── __init__.py
@@ -170,7 +170,7 @@ Evershade Valley/
 │   │   ├── sessions.py         # Session management
 │   │   ├── memory.py           # Memory operations
 │   │   ├── coordinator.py      # Multi-agent coordination
-│   │   ├── integration.py      # Polter/Spectra proxy endpoints
+│   │   ├── integration.py      # Slinker/Trapper proxy endpoints
 │   │   ├── webhooks.py         # Webhook event system
 │   │   ├── notifications.py    # Notification channels
 │   │   ├── analytics.py        # Analytics & usage tracking
@@ -200,8 +200,8 @@ Evershade Valley/
 │   │   └── websocket.py        # WebSocket feed
 │   ├── api.py                  # ← THIN: App factory + imports from api/
 │   ├── providers.py            # Provider abstraction
-│   ├── Polter_provider.py    # Polter HTTP provider
-│   ├── Spectra_provider.py   # Spectra HTTP provider
+│   ├── Slinker_provider.py    # Slinker HTTP provider
+│   ├── Trapper_provider.py   # Trapper HTTP provider
 │   ├── runner.py               # Agent execution engine
 │   ├── coordinator.py          # Multi-agent coordination
 │   ├── config.py               # Configuration management
@@ -220,7 +220,7 @@ Evershade Valley/
 ### Phase 2: Stability & Operations (PARTIAL)
 - [x] Add health checks to all docker-compose services
 - [ ] Create unified startup script (`start.sh` / `start.ps1`)
-- [ ] Add Evershade Valley `.env` support
+- [ ] Add Greenie `.env` support
 - [ ] Align dependency versions across services
 - [ ] Add root-level `.gitignore`
 
@@ -243,19 +243,19 @@ Evershade Valley/
 ## 7. Changes Implemented in This Session
 
 ### docker-compose.yml
-- Added `condition: service_healthy` to Evershade Valley's `depends_on` for Polter and Spectra
-- Added health checks to all three services (Evershade Valley, Polter, Spectra)
-- Evershade Valley health check: `python -c "import urllib.request; ..."` on port 8080
-- Polter health check: `python -c "import urllib.request; ..."` on port 8000
-- Spectra health check: `wget --spider -q http://localhost:3000/health`
+- Added `condition: service_healthy` to Greenie's `depends_on` for Slinker and Trapper
+- Added health checks to all three services (Greenie, Slinker, Trapper)
+- Greenie health check: `python -c "import urllib.request; ..."` on port 8080
+- Slinker health check: `python -c "import urllib.request; ..."` on port 8000
+- Trapper health check: `wget --spider -q http://localhost:3000/health`
 
-### Evershade Valley/hub/Polter_provider.py
+### Greenie/hub/Slinker_provider.py
 - Replaced `asyncio.get_event_loop().run_until_complete()` with Python 3.12+ compatible pattern
 - `check_available()` now uses synchronous `httpx.Client` instead of async wrapper
 - `run()` uses `asyncio.new_event_loop()` with proper cleanup
 
-### Evershade Valley/hub/Spectra_provider.py
-- Same asyncio fix as Polter_provider.py
+### Greenie/hub/Trapper_provider.py
+- Same asyncio fix as Slinker_provider.py
 - `check_available()` now uses synchronous `httpx.Client`
 - `run()` uses `asyncio.new_event_loop()` with proper cleanup
 
@@ -271,8 +271,8 @@ Evershade Valley/
 | Test | Status | Details |
 |------|--------|---------|
 | `api.py` syntax check | ✓ PASS | `ast.parse()` succeeds on 7658 lines |
-| `Polter_provider.py` syntax | ✓ PASS | `ast.parse()` succeeds |
-| `Spectra_provider.py` syntax | ✓ PASS | `ast.parse()` succeeds |
+| `Slinker_provider.py` syntax | ✓ PASS | `ast.parse()` succeeds |
+| `Trapper_provider.py` syntax | ✓ PASS | `ast.parse()` succeeds |
 | `docker-compose.yml` validation | ✓ PASS | Valid YAML structure |
 | Docker health checks | ⚠ NOT RUN | Requires Docker environment |
 | Provider asyncio fix | ⚠ NOT RUN | Requires running services |
@@ -291,11 +291,11 @@ Evershade Valley/
 ### Risks
 - **api.py refactoring risk**: Splitting a 290KB file without comprehensive tests is risky. Recommend adding integration tests first.
 - **Python 3.12 compatibility**: The asyncio fix handles both running and non-running event loops, but needs real-world testing.
-- **Docker health check timing**: Spectra's `wget` health check requires `wget` in the Node image — verified present in `node:20-bookworm-slim`.
+- **Docker health check timing**: Trapper's `wget` health check requires `wget` in the Node image — verified present in `node:20-bookworm-slim`.
 
 ### Blockers
 - **Junie CLI availability**: The `junie` runner requires Junie CLI installed. Docker deployment must mount or include the CLI.
-- **Playwright browsers**: Spectra requires Chromium, installed via `npx playwright install chromium` in Dockerfile.
+- **Playwright browsers**: Trapper requires Chromium, installed via `npx playwright install chromium` in Dockerfile.
 
 ---
 
@@ -316,9 +316,9 @@ cp .env.example .env
 docker compose up -d --build
 
 # 3. Verify health
-curl http://localhost:8080/health    # Evershade Valley
-curl http://localhost:8000/health    # Polter
-curl http://localhost:3000/health    # Spectra
+curl http://localhost:8080/health    # Greenie
+curl http://localhost:8000/health    # Slinker
+curl http://localhost:3000/health    # Trapper
 
 # 4. Check unified dashboard
 curl http://localhost:8080/api/dashboard
@@ -326,18 +326,18 @@ curl http://localhost:8080/api/dashboard
 
 ### Local Development
 ```bash
-# Evershade Valley
-cd Evershade Valley
+# Greenie
+cd Greenie
 pip install -r requirements.txt
 HUB_API_KEY=your-key python -m uvicorn hub.api:app --port 8080
 
-# Polter
-cd Polter
+# Slinker
+cd Slinker
 pip install -r requirements.txt
 API_KEY=your-key python -m uvicorn orchestrator:app --port 8000
 
-# Spectra
-cd Spectra
+# Trapper
+cd Trapper
 npm install
 npx playwright install chromium
 npm run build && npm start
@@ -346,9 +346,9 @@ npm run build && npm start
 ### Service Ports
 | Service | Port | Health Endpoint |
 |---------|------|-----------------|
-| Evershade Valley | 8080 | `GET /health` |
-| Polter | 8000 | `GET /health` |
-| Spectra | 3000 | `GET /health` |
+| Greenie | 8080 | `GET /health` |
+| Slinker | 8000 | `GET /health` |
+| Trapper | 3000 | `GET /health` |
 | Redis | 6379 | `redis-cli ping` |
 
 ### Key Configuration

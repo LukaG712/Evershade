@@ -44,7 +44,7 @@ if (-not (Test-Path ".env")) {
 Write-Host "[✓] .env file found" -ForegroundColor Green
 
 # Check required directories
-foreach ($dir in @("Evershade Valley", "Polter", "Spectra")) {
+foreach ($dir in @("Greenie", "Slinker", "Trapper")) {
     if (-not (Test-Path $dir)) {
         Write-Host "[✗] ERROR: Directory '$dir' not found." -ForegroundColor Red
         exit 1
@@ -84,9 +84,9 @@ Write-Host ""
 Write-Host "[✓] Services started!" -ForegroundColor Green
 Write-Host ""
 Write-Host "Service URLs:" -ForegroundColor Cyan
-Write-Host "  Evershade Valley:  http://localhost:8080"
-Write-Host "  Polter:  http://localhost:8000"
-Write-Host "  Spectra: http://localhost:3000"
+Write-Host "  Greenie:  http://localhost:8080"
+Write-Host "  Slinker:  http://localhost:8000"
+Write-Host "  Trapper: http://localhost:3000"
 Write-Host ""
 Write-Host "API Documentation:" -ForegroundColor Cyan
 Write-Host "  Swagger:   http://localhost:8080/docs"

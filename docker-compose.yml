@@ -1,10 +1,10 @@
-# Unified Workflow — Evershade Valley + Polter + Spectra
+# Unified Workflow — Greenie + Slinker + Trapper
 # Run: docker compose up -d
 
 version: '3.8'
 
 services:
-  # ─── Redis (shared by Spectra) ───────────────────────────────────────
+  # ─── Redis (shared by Trapper) ───────────────────────────────────────
   redis:
     image: redis:7-alpine
     ports:
@@ -19,22 +19,22 @@ services:
       retries: 5
     restart: unless-stopped
 
-  # ─── EvershadeValley (main dashboard, port 8080) ──────────────────────────────
-  EvershadeValley:
-    build: ./EvershadeValley
+  # ─── Greenie (main dashboard, port 8080) ──────────────────────────────
+  Greenie:
+    build: ./Greenie
     ports:
       - "8080:8080"
     environment:
-      - HUB_API_KEY=${HUB_API_KEY:-EvershadeValley-dev-key-change-me}
+      - HUB_API_KEY=${HUB_API_KEY:-Greenie-dev-key-change-me}
       - HUB_PORT=8080
       - HUB_TIMEOUT=1800
       - JUNIE_BIN=${JUNIE_BIN:-junie}
-      # Polter integration
-      - Polter_URL=http://Polter:8000
-      - Polter_API_KEY=${Polter_API_KEY:-Polter-dev-key-change-me}
-      # Spectra integration
-      - Spectra_URL=http://Spectra-api:3000
-      - Spectra_API_KEY=${Spectra_API_KEY:-Spectra-dev-key-change-me}
+      # Slinker integration
+      - Slinker_URL=http://Slinker:8000
+      - Slinker_API_KEY=${Slinker_API_KEY:-Slinker-dev-key-change-me}
+      # Trapper integration
+      - Trapper_URL=http://Trapper-api:3000
+      - Trapper_API_KEY=${Trapper_API_KEY:-Trapper-dev-key-change-me}
       # Ollama (optional)
       - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
       # Redis (for multi-instance cluster support)
@@ -45,17 +45,17 @@ services:
       # Logging
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     volumes:
-      - ./EvershadeValley/hub.yaml:/app/hub.yaml
-      - ./EvershadeValley/data:/app/data
-      - ./EvershadeValley/skills:/app/skills
+      - ./Greenie/hub.yaml:/app/hub.yaml
+      - ./Greenie/data:/app/data
+      - ./Greenie/skills:/app/skills
       # Mount workspace so agents can access projects
       - ${WORKSPACE_PATH:-./workspace}:/workspace
     depends_on:
       redis:
         condition: service_healthy
-      Polter:
+      Slinker:
         condition: service_healthy
-      Spectra-api:
+      Trapper-api:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
@@ -67,13 +67,13 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  # ─── Polter (execution engine, port 8000) ────────────────────────────
-  Polter:
-    build: ./Polter
+  # ─── Slinker (execution engine, port 8000) ────────────────────────────
+  Slinker:
+    build: ./Slinker
     ports:
       - "8000:8000"
     environment:
-      - API_KEY=${Polter_API_KEY:-Polter-dev-key-change-me}
+      - API_KEY=${Slinker_API_KEY:-Slinker-dev-key-change-me}
       - PORT=8000
       - JUNIE_TIMEOUT=1800
       - JUNIE_BIN=${JUNIE_BIN:-junie}
@@ -86,7 +86,7 @@ services:
       - REFINE_PROMPT=${REFINE_PROMPT:-false}
     volumes:
       - ${WORKSPACE_PATH:-./workspace}:/workspace
-      - Polter_logs:/app/logs
+      - Slinker_logs:/app/logs
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 15s
@@ -97,15 +97,15 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  # ─── Spectra API (web scraping, port 3000) ───────────────────────────
-  Spectra-api:
-    build: ./Spectra
+  # ─── Trapper API (web scraping, port 3000) ───────────────────────────
+  Trapper-api:
+    build: ./Trapper
     ports:
       - "3000:3000"
     environment:
       - PORT=3000
       - HOST=0.0.0.0
-      - API_KEY=${Spectra_API_KEY:-Spectra-dev-key-change-me}
+      - API_KEY=${Trapper_API_KEY:-Trapper-dev-key-change-me}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - RATE_LIMIT_MAX=60
@@ -130,14 +130,14 @@ services:
       retries: 5
     restart: unless-stopped
 
-  # ─── Spectra Worker (background crawl jobs) ──────────────────────────
-  Spectra-worker:
-    build: ./Spectra
+  # ─── Trapper Worker (background crawl jobs) ──────────────────────────
+  Trapper-worker:
+    build: ./Trapper
     command: node dist/worker.js
     environment:
       - PORT=3000
       - HOST=0.0.0.0
-      - API_KEY=${Spectra_API_KEY:-Spectra-dev-key-change-me}
+      - API_KEY=${Trapper_API_KEY:-Trapper-dev-key-change-me}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - SCRAPE_TIMEOUT=30000
@@ -156,4 +156,4 @@ services:
 
 volumes:
   redis_data:
-  Polter_logs:
+  Slinker_logs:

@@ -50,7 +50,7 @@ fi
 echo -e "${GREEN}✓${NC} .env file found"
 
 # Check required directories
-for dir in Evershade Valley Polter Spectra; do
+for dir in Greenie Slinker Trapper; do
     if [ ! -d "$dir" ]; then
         echo -e "${RED}ERROR: Directory '$dir' not found.${NC}"
         exit 1
@@ -85,9 +85,9 @@ echo ""
 echo -e "${GREEN}✓${NC} Services started!"
 echo ""
 echo "Service URLs:"
-echo "  Evershade Valley:  http://localhost:8080"
-echo "  Polter:  http://localhost:8000"
-echo "  Spectra: http://localhost:3000"
+echo "  Greenie:  http://localhost:8080"
+echo "  Slinker:  http://localhost:8000"
+echo "  Trapper: http://localhost:3000"
 echo ""
 echo "API Documentation:"
 echo "  Swagger:   http://localhost:8080/docs"

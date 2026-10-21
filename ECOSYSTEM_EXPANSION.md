@@ -9,15 +9,15 @@
 
 ### Ecosystem Overview
 
-The Unified Workflow consists of **3 services** with **257 API endpoints** in Evershade Valley alone:
+The Unified Workflow consists of **3 services** with **257 API endpoints** in Greenie alone:
 
 | Service | Language | Framework | Port | Routes | Core Responsibility |
 |---------|----------|-----------|------|--------|---------------------|
-| **Evershade Valley** | Python | FastAPI | 8080 | 257 | Central API, orchestration, 20+ feature areas |
-| **Polter** | Python | FastAPI | 8000 | 12 | Junie CLI execution, worktree isolation, SQLite persistence |
-| **Spectra** | TypeScript | Fastify | 3000 | 14 | Web scraping, crawling, search, browser automation (via Redis/BullMQ) |
+| **Greenie** | Python | FastAPI | 8080 | 257 | Central API, orchestration, 20+ feature areas |
+| **Slinker** | Python | FastAPI | 8000 | 12 | Junie CLI execution, worktree isolation, SQLite persistence |
+| **Trapper** | TypeScript | Fastify | 3000 | 14 | Web scraping, crawling, search, browser automation (via Redis/BullMQ) |
 
-### Existing Feature Areas (Evershade Valley)
+### Existing Feature Areas (Greenie)
 
 1. Agent CRUD & execution (runner, providers, queue manager)
 2. Sessions & conversations (SQLite-based memory)
@@ -28,7 +28,7 @@ The Unified Workflow consists of **3 services** with **257 API endpoints** in Ev
 7. Ollama integration (prompt refinement, summarization, decomposition)
 8. Git service (status, worktrees)
 9. Remote execution (SSH-based)
-10. Cross-service pipelines (chain Spectra → Polter → Evershade Valley)
+10. Cross-service pipelines (chain Trapper → Slinker → Greenie)
 11. Scheduled pipelines (cron-based)
 12. Unified search (across all 3 services)
 13. Parallel batch execution
@@ -63,8 +63,8 @@ The Unified Workflow consists of **3 services** with **257 API endpoints** in Ev
 - **Three-service architecture** is clean and well-separated
 - **Provider abstraction** allows plugging in new execution backends
 - **Cross-service integration** (pipelines, batch, search) is functional
-- **SQLite persistence** in Evershade Valley (memory.py) and Polter (persistent_store.py)
-- **Comprehensive test suite** (16 test files in Evershade Valley)
+- **SQLite persistence** in Greenie (memory.py) and Slinker (persistent_store.py)
+- **Comprehensive test suite** (16 test files in Greenie)
 - **Docker deployment** with health checks
 
 ### Critical Limitations
@@ -112,7 +112,7 @@ The Unified Workflow consists of **3 services** with **257 API endpoints** in Ev
 - **Effort:** High (3-4 weeks)
 - **Impact:** 9/10 — transforms the product from developer tool to usable platform
 - **Risks:** Adds frontend maintenance burden; requires build pipeline
-- **Implementation:** Create separate `dashboard/` directory with React/Vite; serve static files from Evershade Valley
+- **Implementation:** Create separate `dashboard/` directory with React/Vite; serve static files from Greenie
 
 #### 4. CLI Tool
 - **What:** `workflow` CLI for managing agents, runs, pipelines, schedules, and services from terminal
@@ -122,7 +122,7 @@ The Unified Workflow consists of **3 services** with **257 API endpoints** in Ev
 - **Effort:** Medium (1-2 weeks)
 - **Impact:** 8/10 — unlocks automation workflows
 - **Risks:** None significant
-- **Implementation:** Python CLI using `click` or `argparse`; communicates with Evershade Valley API
+- **Implementation:** Python CLI using `click` or `argparse`; communicates with Greenie API
 
 ### QUICK WINS — Small Changes, Meaningful Benefits
 
@@ -140,7 +140,7 @@ The Unified Workflow consists of **3 services** with **257 API endpoints** in Ev
 - **Effort:** Low (1-2 days)
 - **Impact:** 7/10 — enables log aggregation and analysis
 - **Risks:** None
-- **Implementation:** Use `structlog` library in Python services, `pino` in Spectra
+- **Implementation:** Use `structlog` library in Python services, `pino` in Trapper
 
 #### 7. Unified Startup Script
 - **What:** `start.sh` / `start.ps1` that validates config, checks dependencies, starts services
@@ -151,12 +151,12 @@ The Unified Workflow consists of **3 services** with **257 API endpoints** in Ev
 - **Implementation:** Shell scripts that validate `.env`, check Docker availability, and run `docker compose up`
 
 #### 8. Backup/Restore for SQLite Databases
-- **What:** Automated backup of hub.db and Polter.db with restore capability
+- **What:** Automated backup of hub.db and Slinker.db with restore capability
 - **Why:** No data recovery mechanism exists
 - **Effort:** Low (1-2 days)
 - **Impact:** 8/10 — critical for data safety
 - **Risks:** None
-- **Implementation:** Add backup endpoints to Evershade Valley/Polter; scheduled backup via cron or routines
+- **Implementation:** Add backup endpoints to Greenie/Slinker; scheduled backup via cron or routines
 
 ### STRATEGIC ADDITIONS — Larger Features
 
@@ -218,7 +218,7 @@ The Unified Workflow consists of **3 services** with **257 API endpoints** in Ev
 ### LONG-TERM POSSIBILITIES
 
 #### 15. Multi-Instance / Cluster Mode
-- **What:** Run multiple Evershade Valley instances behind a load balancer with shared state
+- **What:** Run multiple Greenie instances behind a load balancer with shared state
 - **Why:** Single-instance architecture doesn't scale
 - **Value:** Enables high-availability deployments
 - **Effort:** High (4+ weeks)
@@ -253,9 +253,9 @@ The Unified Workflow consists of **3 services** with **257 API endpoints** in Ev
 
 ### AVOID OR RECONSIDER
 
-#### 19. Microservice Split of Evershade Valley Features
+#### 19. Microservice Split of Greenie Features
 - **Why:** 257 routes in one service is fine for now; splitting adds operational complexity
-- **Better:** Modularize within Evershade Valley first (route modules)
+- **Better:** Modularize within Greenie first (route modules)
 
 #### 20. Custom Database Engine
 - **Why:** SQLite is sufficient for single-instance; don't reinvent PostgreSQL
@@ -326,14 +326,14 @@ Enhance `/api/health` to report:
 - **Ollama** — Prompt refinement, summarization, decomposition ✓
 - **Obsidian** — Note reading and sync ✓
 - **Git** — Worktree isolation, status tracking ✓
-- **Redis** — Job queues for Spectra ✓
-- **Playwright** — Browser automation in Spectra ✓
+- **Redis** — Job queues for Trapper ✓
+- **Playwright** — Browser automation in Trapper ✓
 
 ### Worth Adding
 
 #### 7. OpenTelemetry
 - **Purpose:** Distributed tracing across all 3 services
-- **Benefit:** Trace a request from Evershade Valley → Polter → Spectra and back
+- **Benefit:** Trace a request from Greenie → Slinker → Trapper and back
 - **Integration:** Python SDK for FastAPI, Node.js SDK for Fastify
 - **Effort:** Low (1-2 days)
 
@@ -352,7 +352,7 @@ Enhance `/api/health` to report:
 #### 10. GitHub/GitLab Webhooks
 - **Purpose:** Trigger pipelines on code events (push, PR, merge)
 - **Benefit:** Connect development workflows to agent automation
-- **Integration:** New webhook endpoint in Evershade Valley
+- **Integration:** New webhook endpoint in Greenie
 - **Effort:** Low (1-2 days)
 
 #### 11. LLM Provider Abstraction
@@ -471,7 +471,7 @@ The first 4 items alone would transform the platform from a collection of APIs i
 ### Compound Value Ideas
 
 #### Cross-Service Memory Sharing
-- **Idea:** Polter's task output → Evershade Valley's memory → Spectra's search context
+- **Idea:** Slinker's task output → Greenie's memory → Trapper's search context
 - **Value:** Agents learn from web research and coding tasks automatically
 - **Implementation:** Message bus events that trigger memory updates across services
 
@@ -508,11 +508,11 @@ The first 4 items alone would transform the platform from a collection of APIs i
 - **api.py refactoring**: Splitting 290KB without tests is risky; integration tests recommended first
 - **Python 3.12 compatibility**: asyncio patterns need real-world testing after fixes
 - **Memory growth**: In-memory stores need bounds; some already bounded (5000 audit, 500 cache)
-- **Docker health check timing**: Spectra's `wget` requires the tool in the container image
+- **Docker health check timing**: Trapper's `wget` requires the tool in the container image
 
 ### Operational Risks
 - **Junie CLI availability**: Docker deployment must mount or include the CLI binary
-- **Playwright browsers**: Spectra requires Chromium, installed in Dockerfile
+- **Playwright browsers**: Trapper requires Chromium, installed in Dockerfile
 - **Single-instance limitation**: No high-availability without significant architectural changes
 
 ### Maintenance Risks

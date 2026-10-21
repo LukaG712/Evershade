@@ -16,9 +16,9 @@ A complete self-hosted AI agent platform combining three services into one integ
 
 | Service | Role | Port |
 |---------|------|------|
-| **Evershade Valley** | 🏠 Central API + Web UI — agents, pipelines, analytics, 320 endpoints | `8080` |
-| **Polter** | ⚙️ Execution engine — Git worktree isolation, persistent task storage | `8000` |
-| **Spectra** | 🌐 Web scraping — scrape, crawl, search, and map websites | `3000` |
+| **Greenie** | 🏠 Central API + Web UI — agents, pipelines, analytics, 320 endpoints | `8080` |
+| **Slinker** | ⚙️ Execution engine — Git worktree isolation, persistent task storage | `8000` |
+| **Trapper** | 🌐 Web scraping — scrape, crawl, search, and map websites | `3000` |
 
 ### Web Interfaces
 
@@ -38,7 +38,7 @@ A complete self-hosted AI agent platform combining three services into one integ
 └──────────────────────────────┬──────────────────────────────┘
                                │
                     ┌──────────▼──────────┐
-                    │    Evershade Valley (8080)  │  ← Main dashboard
+                    │    Greenie (8080)  │  ← Main dashboard
                     │  ┌───────────────┐  │
                     │  │  Web UI + API │  │
                     │  │  SQLite DB    │  │
@@ -48,7 +48,7 @@ A complete self-hosted AI agent platform combining three services into one integ
               ┌────────────┘      └────────────┐
               ▼                                  ▼
 ┌─────────────────────────┐      ┌─────────────────────────┐
-│   Polter (8000)       │      │   Spectra (3000)      │
+│   Slinker (8000)       │      │   Trapper (3000)      │
 │  ┌───────────────────┐  │      │  ┌───────────────────┐  │
 │  │ Git worktree mgmt │  │      │  │ Playwright browser│  │
 │  │ Junie CLI runner  │  │      │  │ Content cleaning  │  │
@@ -98,15 +98,15 @@ All three services expose auto-generated API documentation:
 
 | Service | Swagger UI | ReDoc | OpenAPI JSON |
 |---------|-----------|-------|-------------|
-| **Evershade Valley** | http://localhost:8080/docs | http://localhost:8080/redoc | http://localhost:8080/openapi.json |
-| **Polter** | http://localhost:8000/docs | http://localhost:8000/redoc | http://localhost:8000/openapi.json |
+| **Greenie** | http://localhost:8080/docs | http://localhost:8080/redoc | http://localhost:8080/openapi.json |
+| **Slinker** | http://localhost:8000/docs | http://localhost:8000/redoc | http://localhost:8000/openapi.json |
 
 ### Structured Logging
 
 All services output JSON-formatted logs for easy parsing and aggregation:
 
 ```json
-{"timestamp": "2026-10-21T17:00:00", "level": "INFO", "service": "Evershade Valley", "message": "GET /api/health 200 1.2ms", "request_id": "a1b2c3d4"}
+{"timestamp": "2026-10-21T17:00:00", "level": "INFO", "service": "Greenie", "message": "GET /api/health 200 1.2ms", "request_id": "a1b2c3d4"}
 ```
 
 Set log level via `LOG_LEVEL` environment variable (default: `INFO`):
@@ -139,18 +139,18 @@ curl -X DELETE "http://localhost:8080/api/backup/hub_backup_20261021_170000.db" 
   -H "Authorization: Bearer $HUB_API_KEY"
 ```
 
-Backups are stored in `Evershade Valley/data/backups/` with timestamps. Restoring automatically creates a safety backup of the current database first.
+Backups are stored in `Greenie/data/backups/` with timestamps. Restoring automatically creates a safety backup of the current database first.
 
-Polter also supports backups:
+Slinker also supports backups:
 
 ```bash
-# Create Polter backup
+# Create Slinker backup
 curl -X POST http://localhost:8000/api/v1/backup \
-  -H "Authorization: Bearer $Polter_API_KEY"
+  -H "Authorization: Bearer $Slinker_API_KEY"
 
-# List Polter backups
+# List Slinker backups
 curl http://localhost:8000/api/v1/backups \
-  -H "Authorization: Bearer $Polter_API_KEY"
+  -H "Authorization: Bearer $Slinker_API_KEY"
 ```
 
 ### Health Check
@@ -167,8 +167,8 @@ curl http://localhost:8080/api/health
   "version": "1.0.3",
   "database": {"status": "ok", "file": "/app/data/hub.db", "size_bytes": 524288},
   "downstream": {
-    "Polter": {"status": "ok", "url": "http://Polter:8000"},
-    "Spectra": {"status": "ok", "url": "http://Spectra:3000"}
+    "Slinker": {"status": "ok", "url": "http://Slinker:8000"},
+    "Trapper": {"status": "ok", "url": "http://Trapper:3000"}
   },
   "stores": {"webhooks": 5, "analytics_events": 120, "audit_log": 45, ...}
 }
@@ -178,9 +178,9 @@ curl http://localhost:8080/api/health
 
 A GitHub Actions pipeline (`.github/workflows/ci.yml`) runs on every push and pull request:
 
-- **Evershade Valley Tests** — Python tests with pytest
-- **Polter Tests** — Python tests with pytest
-- **Spectra Build** — Node.js build verification
+- **Greenie Tests** — Python tests with pytest
+- **Slinker Tests** — Python tests with pytest
+- **Trapper Build** — Node.js build verification
 - **Docker Build** — Builds all service images and validates docker-compose
 
 ### What You Get
@@ -188,8 +188,8 @@ A GitHub Actions pipeline (`.github/workflows/ci.yml`) runs on every push and pu
 | Agent Type | Runner | Use Case |
 |------------|--------|----------|
 | **vault** | `junie` | Local Junie CLI agent (Obsidian vault, notes) |
-| **coder** | `Polter` | Code development with Git worktree isolation |
-| **researcher** | `Spectra` | Web scraping, searching, and crawling |
+| **coder** | `Slinker` | Code development with Git worktree isolation |
+| **researcher** | `Trapper` | Web scraping, searching, and crawling |
 
 ## Configuration
 
@@ -199,41 +199,41 @@ Copy `.env.example` to `.env` and configure:
 
 | Variable | Description |
 |----------|-------------|
-| `HUB_API_KEY` | Evershade Valley dashboard authentication |
-| `Polter_API_KEY` | Polter service authentication |
-| `Spectra_API_KEY` | Spectra service authentication |
+| `HUB_API_KEY` | Greenie dashboard authentication |
+| `Slinker_API_KEY` | Slinker service authentication |
+| `Trapper_API_KEY` | Trapper service authentication |
 | `WORKSPACE_PATH` | Shared workspace for all agents |
 | `JUNIE_BIN` | Path to Junie CLI binary |
 | `OLLAMA_URL` | Optional Ollama endpoint for prompt refinement |
 
 ### Agent Configuration
 
-Edit `Evershade Valley/hub.yaml` to configure agents. Three runner types are available:
+Edit `Greenie/hub.yaml` to configure agents. Three runner types are available:
 
 ```yaml
 runners:
   junie:       # Direct Junie CLI execution
-  Polter:    # Via Polter (worktree isolation)
-  Spectra:   # Via Spectra (web scraping)
+  Slinker:    # Via Slinker (worktree isolation)
+  Trapper:   # Via Trapper (web scraping)
 
 agents:
   my-agent:
-    runner: Polter  # Choose your runner
+    runner: Slinker  # Choose your runner
     project_dir: "/workspace/my-project"
     guidelines: "Your instructions here"
 ```
 
 ## Using Agents
 
-### Code Agent (Polter runner)
+### Code Agent (Slinker runner)
 
-Send tasks to a `Polter` runner agent for code changes with Git worktree isolation:
+Send tasks to a `Slinker` runner agent for code changes with Git worktree isolation:
 
 ```
 "Refactor the authentication module to use async/await"
 ```
 
-The Polter provider also supports operation prefixes:
+The Slinker provider also supports operation prefixes:
 
 ```
 "TASK: Implement user authentication"          # Submit a task
@@ -242,9 +242,9 @@ The Polter provider also supports operation prefixes:
 "QUEUE:"                                       # Get queue status
 ```
 
-### Web Research Agent (Spectra runner)
+### Web Research Agent (Trapper runner)
 
-Send tasks to an `Spectra` runner agent with operation prefixes:
+Send tasks to an `Trapper` runner agent with operation prefixes:
 
 ```
 "SCRAPE: https://example.com"
@@ -259,9 +259,9 @@ Send tasks to an `Spectra` runner agent with operation prefixes:
 
 ### Direct API Access
 
-Evershade Valley provides proxy endpoints for direct access to integrated services:
+Greenie provides proxy endpoints for direct access to integrated services:
 
-**Spectra:**
+**Trapper:**
 - `POST /api/crawl/scrape` — Scrape a URL
 - `POST /api/crawl/crawl` — Start a crawl job
 - `GET /api/crawl/{job_id}` — Check crawl status
@@ -281,29 +281,29 @@ Evershade Valley provides proxy endpoints for direct access to integrated servic
 - `GET /api/crawl/health` — Health check
 - `POST /api/crawl/stream` — Stream job progress via SSE (crawl, agent, extract, batch)
 
-**Polter:**
-- `GET /api/Polter/health` — Health check
-- `GET /api/Polter/ready` — Readiness check
-- `GET /api/Polter/models` — List available models
-- `GET /api/Polter/tasks` — List tasks
-- `POST /api/Polter/tasks` — Submit a task
-- `GET /api/Polter/tasks/{task_id}` — Get task detail
-- `GET /api/Polter/tasks/{task_id}/output` — Get task output summary
-- `GET /api/Polter/projects` — List projects
-- `POST /api/Polter/projects` — Register a project
-- `GET /api/Polter/workers` — List active workers
-- `GET /api/Polter/workers/{worker_id}` — Get worker detail
-- `GET /api/Polter/sessions` — List sessions
-- `GET /api/Polter/queue` — Queue status
-- `POST /api/Polter/chat` — Execute via chat completions
-- `POST /api/Polter/chat/stream` — Stream chat via SSE
-- `POST /api/Polter/task/stream` — Stream task execution via SSE
+**Slinker:**
+- `GET /api/Slinker/health` — Health check
+- `GET /api/Slinker/ready` — Readiness check
+- `GET /api/Slinker/models` — List available models
+- `GET /api/Slinker/tasks` — List tasks
+- `POST /api/Slinker/tasks` — Submit a task
+- `GET /api/Slinker/tasks/{task_id}` — Get task detail
+- `GET /api/Slinker/tasks/{task_id}/output` — Get task output summary
+- `GET /api/Slinker/projects` — List projects
+- `POST /api/Slinker/projects` — Register a project
+- `GET /api/Slinker/workers` — List active workers
+- `GET /api/Slinker/workers/{worker_id}` — Get worker detail
+- `GET /api/Slinker/sessions` — List sessions
+- `GET /api/Slinker/queue` — Queue status
+- `POST /api/Slinker/chat` — Execute via chat completions
+- `POST /api/Slinker/chat/stream` — Stream chat via SSE
+- `POST /api/Slinker/task/stream` — Stream task execution via SSE
 
 **Platform:**
 - `GET /api/dashboard` — Unified dashboard (all three services)
 - `GET /api/integration/health` — All services health check
-- `GET /api/integration/Polter/health` — Polter health
-- `GET /api/integration/Spectra/health` — Spectra health
+- `GET /api/integration/Slinker/health` — Slinker health
+- `GET /api/integration/Trapper/health` — Trapper health
 - `POST /api/pipeline` — Cross-service pipeline (chain multiple services)
 - `GET /api/search?q=QUERY` — Unified search across all services
 - `POST /api/batch` — Parallel batch execution across services
@@ -433,11 +433,11 @@ curl -X POST http://localhost:8080/api/pipeline \
   -d '{
     "steps": [
       {
-        "service": "Spectra",
+        "service": "Trapper",
         "task": "SEARCH: latest Rust async best practices 2024"
       },
       {
-        "service": "Polter",
+        "service": "Slinker",
         "task": "Create a summary document of the research findings"
       }
     ]
@@ -445,9 +445,9 @@ curl -X POST http://localhost:8080/api/pipeline \
 ```
 
 Supported services in pipelines:
-- **Spectra** — Web research (SEARCH, SCRAPE, CRAWL, MAP, AGENT, etc.)
-- **Polter** — Coding tasks via Polter
-- **agent** — Local Evershade Valley agents (specify `"agent": "vault"`)
+- **Trapper** — Web research (SEARCH, SCRAPE, CRAWL, MAP, AGENT, etc.)
+- **Slinker** — Coding tasks via Slinker
+- **agent** — Local Greenie agents (specify `"agent": "vault"`)
 
 ## Unified Dashboard
 
@@ -458,7 +458,7 @@ curl http://localhost:8080/api/dashboard \
   -H "Authorization: Bearer $HUB_API_KEY"
 ```
 
-Returns Evershade Valley agents and recent runs, Polter workers and queue status, and Spectra health — all in one response.
+Returns Greenie agents and recent runs, Slinker workers and queue status, and Trapper health — all in one response.
 
 ## Scheduled Pipelines
 
@@ -472,8 +472,8 @@ curl -X POST http://localhost:8080/api/schedules \
     "name": "Daily research digest",
     "schedule": "0 9 * * *",
     "steps": [
-      {"service": "Spectra", "task": "SEARCH: latest AI news today"},
-      {"service": "Polter", "task": "Summarize the research findings in a report"}
+      {"service": "Trapper", "task": "SEARCH: latest AI news today"},
+      {"service": "Slinker", "task": "Summarize the research findings in a report"}
     ]
   }'
 ```
@@ -495,7 +495,7 @@ curl "http://localhost:8080/api/search?q=authentication" \
   -H "Authorization: Bearer $HUB_API_KEY"
 ```
 
-Returns matching web content from Spectra, tasks and projects from Polter, and agents and runs from Evershade Valley — all grouped by service.
+Returns matching web content from Trapper, tasks and projects from Slinker, and agents and runs from Greenie — all grouped by service.
 
 ## Parallel Batch Execution
 
@@ -507,9 +507,9 @@ curl -X POST http://localhost:8080/api/batch \
   -H "Content-Type: application/json" \
   -d '{
     "tasks": [
-      {"service": "Spectra", "task": "SEARCH: latest Python news"},
-      {"service": "Spectra", "task": "SEARCH: latest Rust news"},
-      {"service": "Polter", "task": "Compare Python vs Rust performance trends"}
+      {"service": "Trapper", "task": "SEARCH: latest Python news"},
+      {"service": "Trapper", "task": "SEARCH: latest Rust news"},
+      {"service": "Slinker", "task": "Compare Python vs Rust performance trends"}
     ]
   }'
 ```
@@ -520,7 +520,7 @@ All tasks run in parallel; results are returned together when all complete.
 
 Real-time progress streaming for long-running jobs:
 
-**Spectra job streaming** — Start a crawl, agent, extract, or batch job and receive live progress:
+**Trapper job streaming** — Start a crawl, agent, extract, or batch job and receive live progress:
 
 ```bash
 curl -X POST http://localhost:8080/api/crawl/stream \
@@ -534,10 +534,10 @@ curl -X POST http://localhost:8080/api/crawl/stream \
 
 Events: `started`, `progress`, `complete`, `error`, `timeout`.
 
-**Polter task streaming** — Submit a task and stream its execution:
+**Slinker task streaming** — Submit a task and stream its execution:
 
 ```bash
-curl -X POST http://localhost:8080/api/Polter/task/stream \
+curl -X POST http://localhost:8080/api/Slinker/task/stream \
   -H "Authorization: Bearer $HUB_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -562,7 +562,7 @@ docker compose down
 docker compose up -d --build
 
 # Restart a single service
-docker compose restart Evershade Valley
+docker compose restart Greenie
 ```
 
 ## Webhooks
@@ -621,7 +621,7 @@ curl -X POST http://localhost:8080/api/notifications/broadcast \
   -H "Content-Type: application/json" \
   -d '{
     "title": "System Alert",
-    "message": "Evershade Valley pipeline failed",
+    "message": "Greenie pipeline failed",
     "level": "error"
   }'
 ```
@@ -651,7 +651,7 @@ curl "http://localhost:8080/api/analytics/daily?days=30" \
   -H "Authorization: Bearer $HUB_API_KEY"
 ```
 
-Returns API call counts, task durations (avg, p95, max), runs by agent, error rates by type, and daily aggregated stats. Task durations are tracked per service (Spectra, Polter, agent).
+Returns API call counts, task durations (avg, p95, max), runs by agent, error rates by type, and daily aggregated stats. Task durations are tracked per service (Trapper, Slinker, agent).
 
 Analytics endpoints:
 - `GET /api/analytics/overview` — Full analytics overview
@@ -740,7 +740,7 @@ curl http://localhost:8080/api/services/health-history \
   -H "Authorization: Bearer $HUB_API_KEY"
 ```
 
-Returns detailed status for Evershade Valley, Polter, and Spectra with response times, health history, and overall platform health indicator (`healthy` or `degraded`).
+Returns detailed status for Greenie, Slinker, and Trapper with response times, health history, and overall platform health indicator (`healthy` or `degraded`).
 
 Service endpoints:
 - `GET /api/services/status` — Current status of all services
@@ -830,7 +830,7 @@ curl -X POST http://localhost:8080/api/templates \
     "description": "Crawl a URL and summarize the content",
     "type": "pipeline",
     "steps": [
-      {"service": "Spectra", "task": "SCRAPE:{{url}}"},
+      {"service": "Trapper", "task": "SCRAPE:{{url}}"},
       {"service": "agent", "agent": "vault", "task": "Summarize: {{step0}}"}
     ],
     "variables": ["url"],
@@ -921,7 +921,7 @@ curl http://localhost:8080/api/files/file-abc123/download \
   -o report.pdf
 ```
 
-Files are stored in `Evershade Valley/hub/uploads/` with a 50MB size limit. Associate files with runs via the `run_id` field. All file operations are audit-logged.
+Files are stored in `Greenie/hub/uploads/` with a 50MB size limit. Associate files with runs via the `run_id` field. All file operations are audit-logged.
 
 File endpoints:
 - `POST /api/files/upload` — Upload (multipart/form-data)
@@ -1002,7 +1002,7 @@ curl http://localhost:8080/api/jobs/dead-letter \
   -H "Authorization: Bearer $HUB_API_KEY"
 ```
 
-Job types: `run_agent` (run an agent), `pipeline` (execute pipeline steps), `Spectra` (web scraping), `Polter` (coding tasks), `webhook` (HTTP POST). Failed jobs automatically retry with exponential backoff (5s, 10s, 20s...). After max retries, jobs move to the dead letter queue for manual replay.
+Job types: `run_agent` (run an agent), `pipeline` (execute pipeline steps), `Trapper` (web scraping), `Slinker` (coding tasks), `webhook` (HTTP POST). Failed jobs automatically retry with exponential backoff (5s, 10s, 20s...). After max retries, jobs move to the dead letter queue for manual replay.
 
 Job endpoints:
 - `POST /api/jobs` — Submit a job
@@ -1122,20 +1122,20 @@ Protect against cascading failures to external services with configurable thresh
 
 ```bash
 # Record a failure for a service
-curl -X POST http://localhost:8080/api/circuit-breakers/Spectra/record \
+curl -X POST http://localhost:8080/api/circuit-breakers/Trapper/record \
   -H "Authorization: Bearer $HUB_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"success": false}'
 
 # Check if a service call is allowed
-curl -X POST http://localhost:8080/api/circuit-breakers/Spectra/check \
+curl -X POST http://localhost:8080/api/circuit-breakers/Trapper/check \
   -H "Authorization: Bearer $HUB_API_KEY"
 
 # Configure thresholds
 curl -X POST http://localhost:8080/api/circuit-breakers/config \
   -H "Authorization: Bearer $HUB_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"service": "Spectra", "failure_threshold": 5, "recovery_timeout": 60}'
+  -d '{"service": "Trapper", "failure_threshold": 5, "recovery_timeout": 60}'
 ```
 
 Endpoints: `/api/circuit-breakers` (GET), `/api/circuit-breakers/{service}/record`, `/api/circuit-breakers/{service}/check`, `/api/circuit-breakers/{service}/reset`, `/api/circuit-breakers/config`. Three states: `closed` (normal), `open` (blocking calls after N failures), `half-open` (testing recovery after timeout). Default: 5 failures to open, 60s recovery timeout, 3 successes to close.
@@ -1178,8 +1178,8 @@ curl -X POST http://localhost:8080/api/dags \
   -d '{
     "name": "Research Pipeline",
     "tasks": {
-      "scrape": {"service": "Spectra", "task": "SCRAPE:https://example.com"},
-      "analyze": {"service": "Polter", "task": "Analyze content", "depends_on": ["scrape"]},
+      "scrape": {"service": "Trapper", "task": "SCRAPE:https://example.com"},
+      "analyze": {"service": "Slinker", "task": "Analyze content", "depends_on": ["scrape"]},
       "summarize": {"service": "agent", "agent": "vault", "task": "Summarize", "depends_on": ["analyze"]}
     }
   }'
@@ -1203,7 +1203,7 @@ curl -X POST http://localhost:8080/api/tenants \
   -d '{
     "name": "Acme Corp",
     "limits": {"max_agents": 10, "max_runs_per_day": 1000},
-    "allowed_services": ["Spectra", "Polter", "agent"]
+    "allowed_services": ["Trapper", "Slinker", "agent"]
   }'
 
 # Assign an agent to a tenant
@@ -1223,10 +1223,10 @@ Endpoints: `/api/tenants` (GET/POST), `/api/tenants/{id}` (GET/PUT/DELETE), `/ap
 
 The management dashboard at **http://localhost:8080/dashboard/** provides a visual interface for all platform features:
 
-- **Overview** — Service health, agent count, recent runs, and Polter status at a glance
+- **Overview** — Service health, agent count, recent runs, and Slinker status at a glance
 - **Agents** — List, create, run, and delete agents with search filtering
 - **Runs** — View all runs with agent/status filters, stop running tasks
-- **Pipelines** — Execute cross-service pipelines chaining Spectra → Polter → Evershade Valley
+- **Pipelines** — Execute cross-service pipelines chaining Trapper → Slinker → Greenie
 - **Schedules** — Manage cron-scheduled pipelines with enable/disable controls
 - **Analytics** — API call stats, task performance metrics, and daily usage trends
 - **Settings** — API key configuration, service health checks, and database backup/restore
@@ -1235,37 +1235,37 @@ The dashboard supports dark mode automatically, works offline with cached data, 
 
 ## CLI Tool
 
-The `workflow` CLI provides terminal access to all platform features. Run it directly from the Evershade Valley directory:
+The `workflow` CLI provides terminal access to all platform features. Run it directly from the Greenie directory:
 
 ```bash
 # List agents
-python Evershade Valley/workflow_cli.py agents list
+python Greenie/workflow_cli.py agents list
 
 # Run a task
-python Evershade Valley/workflow_cli.py run my-agent "summarize the latest report"
+python Greenie/workflow_cli.py run my-agent "summarize the latest report"
 
 # Check platform health
-python Evershade Valley/workflow_cli.py health
+python Greenie/workflow_cli.py health
 
 # Search across all services
-python Evershade Valley/workflow_cli.py search "error handling"
+python Greenie/workflow_cli.py search "error handling"
 
 # View unified dashboard
-python Evershade Valley/workflow_cli.py dashboard
+python Greenie/workflow_cli.py dashboard
 
 # Manage schedules
-python Evershade Valley/workflow_cli.py schedules list
-python Evershade Valley/workflow_cli.py schedules create daily-backup "0 2 * * *" Polter:TASK:backup
+python Greenie/workflow_cli.py schedules list
+python Greenie/workflow_cli.py schedules create daily-backup "0 2 * * *" Slinker:TASK:backup
 
 # Run a cross-service pipeline
-python Evershade Valley/workflow_cli.py pipeline Spectra:SEARCH:latest news Polter:TASK:summarize
+python Greenie/workflow_cli.py pipeline Trapper:SEARCH:latest news Slinker:TASK:summarize
 
 # Database backup
-python Evershade Valley/workflow_cli.py backup create
-python Evershade Valley/workflow_cli.py backup list
+python Greenie/workflow_cli.py backup create
+python Greenie/workflow_cli.py backup list
 
 # View analytics
-python Evershade Valley/workflow_cli.py analytics
+python Greenie/workflow_cli.py analytics
 ```
 
 Configuration via environment variables:
@@ -1290,8 +1290,8 @@ curl -X POST http://localhost:8080/api/webhooks/github/config \
         "events": ["push", "pull_request"],
         "actions": ["opened", "synchronized"],
         "steps": [
-          {"service": "Polter", "task": "Review changes: {{commit_message}}"},
-          {"service": "Spectra", "task": "SEARCH:{{repo}} latest issues"}
+          {"service": "Slinker", "task": "Review changes: {{commit_message}}"},
+          {"service": "Trapper", "task": "SEARCH:{{repo}} latest issues"}
         ]
       }
     ]
@@ -1308,7 +1308,7 @@ curl -X POST http://localhost:8080/api/webhooks/gitlab/config \
         "events": ["Merge Request Hook"],
         "actions": ["open"],
         "steps": [
-          {"service": "Polter", "task": "Review MR: {{commit_message}}"}
+          {"service": "Slinker", "task": "Review MR: {{commit_message}}"}
         ]
       }
     ]
@@ -1383,7 +1383,7 @@ The platform includes built-in distributed tracing and metrics for debugging cro
 
 ### OpenTelemetry Tracing
 
-Automatic trace context propagation across all three services. A single request flowing from Evershade Valley → Polter → Spectra is traced as one distributed trace.
+Automatic trace context propagation across all three services. A single request flowing from Greenie → Slinker → Trapper is traced as one distributed trace.
 
 **Enable tracing** by setting an OTLP endpoint in `.env`:
 
@@ -1399,7 +1399,7 @@ Without an endpoint, traces print to stdout as JSON for local debugging. Configu
 
 ### Prometheus Metrics
 
-Evershade Valley exposes a `/metrics` endpoint for Prometheus/Grafana scraping:
+Greenie exposes a `/metrics` endpoint for Prometheus/Grafana scraping:
 
 ```bash
 # View raw metrics
@@ -1410,10 +1410,10 @@ curl http://localhost:8080/metrics
 - `http_requests_total` — Request count by method, endpoint, and status code
 - `http_request_duration_seconds` — Latency histogram with percentiles
 - `http_active_requests` — In-flight request gauge
-- `Evershade Valley_runs_total` — Agent run count by agent and outcome
-- `Evershade Valley_pipeline_steps_total` — Pipeline step execution count
-- `Evershade Valley_queue_depth` — Background job queue depth
-- `Evershade Valley_store_sizes` — In-memory feature store sizes
+- `Greenie_runs_total` — Agent run count by agent and outcome
+- `Greenie_pipeline_steps_total` — Pipeline step execution count
+- `Greenie_queue_depth` — Background job queue depth
+- `Greenie_store_sizes` — In-memory feature store sizes
 
 ### Health Check
 
@@ -1428,15 +1428,15 @@ The `/api/health` endpoint reports observability status alongside database, down
   },
   "database": { "status": "ok", "size_bytes": 1048576 },
   "downstream": {
-    "Polter": { "status": "ok" },
-    "Spectra": { "status": "ok" }
+    "Slinker": { "status": "ok" },
+    "Trapper": { "status": "ok" }
   }
 }
 ```
 
 ## Plugin System
 
-Add new providers without modifying core code by placing them in the `Evershade Valley/plugins/` directory:
+Add new providers without modifying core code by placing them in the `Greenie/plugins/` directory:
 
 ```
 plugins/
@@ -1567,7 +1567,7 @@ knowledge_graph:
 
 ## Multi-Instance Cluster Mode
 
-Run multiple Evershade Valley instances behind a load balancer with shared state via Redis. Enable horizontal scaling and high availability:
+Run multiple Greenie instances behind a load balancer with shared state via Redis. Enable horizontal scaling and high availability:
 
 ```bash
 # Check cluster status
@@ -1689,9 +1689,9 @@ curl http://localhost:8080/api/marketplace/stats \
 
 The platform is designed to be extensible:
 
-1. **New Evershade Valley providers** — Create a module in `Evershade Valley/hub/` that implements `AgentProvider` and auto-registers it.
-2. **New services** — Add the service to `docker-compose.yml` and create a provider in Evershade Valley.
-3. **New skills** — Add skill folders to `Evershade Valley/skills/` with a `SKILL.md` file.
+1. **New Greenie providers** — Create a module in `Greenie/hub/` that implements `AgentProvider` and auto-registers it.
+2. **New services** — Add the service to `docker-compose.yml` and create a provider in Greenie.
+3. **New skills** — Add skill folders to `Greenie/skills/` with a `SKILL.md` file.
 
 ## Project Structure
 
@@ -1699,7 +1699,7 @@ The platform is designed to be extensible:
 Workflow/
 ├── docker-compose.yml       # Unified service orchestration
 ├── .env.example             # Environment variable template
-├── Evershade Valley/                # Main dashboard (Python/FastAPI)
+├── Greenie/                # Main dashboard (Python/FastAPI)
 │   ├── hub/
 │   │   ├── api.py           # Thin factory (re-exports from hub.api package)
 │   │   ├── api/             # 48 route modules (320 endpoints)
@@ -1707,8 +1707,8 @@ Workflow/
 │   │   │   ├── __init__.py  # Route registration
 │   │   │   └── ...          # agents.py, runs.py, webhooks.py, etc.
 │   │   ├── providers.py     # Provider abstraction layer
-│   │   ├── Polter_provider.py  # Polter integration
-│   │   ├── spectra_provider.py # Spectra integration
+│   │   ├── Slinker_provider.py  # Slinker integration
+│   │   ├── Trapper_provider.py # Trapper integration
 │   │   ├── runner.py        # Task execution engine
 │   │   ├── tracing.py       # OpenTelemetry distributed tracing
 │   │   ├── metrics.py       # Prometheus metrics collection
@@ -1725,14 +1725,14 @@ Workflow/
 │   ├── plugins/             # Plugin directory (auto-loaded)
 │   ├── hub.yaml             # Agent configuration
 │   └── Dockerfile
-├── Polter/                # Execution engine (Python/FastAPI)
+├── Slinker/                # Execution engine (Python/FastAPI)
 │   ├── junie_adapter/
-│   │   ├── adapter.py       # Clean API for Evershade Valley
+│   │   ├── adapter.py       # Clean API for Greenie
 │   │   ├── service.py       # HTTP service
 │   │   ├── worktree_manager.py  # Git worktree isolation
 │   │   └── ...
 │   └── Dockerfile
-└── Spectra/               # Web scraping (TypeScript/Fastify)
+└── Trapper/               # Web scraping (TypeScript/Fastify)
     ├── src/
     │   ├── api/             # REST API routes
     │   ├── services/        # Scrape, crawl, search, etc.
@@ -1744,6 +1744,6 @@ Workflow/
 ## License
 
 Each component has its own license:
-- Evershade Valley: Apache 2.0
-- Polter: MIT
-- Spectra: MIT
+- Greenie: Apache 2.0
+- Slinker: MIT
+- Trapper: MIT
