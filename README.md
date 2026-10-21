@@ -1,5 +1,8 @@
 # Evershade
 
+> *"E. Gadd to Luigi! Am I comin' in clear, do you read me?"* 
+> — **Prof. E. Gadd**, Luigi's Mansion: Dark Moon
+
 > **A self-hosted AI agent platform built as a collection of specialized microservices.**
 
 All service names are inspired by [Luigi's Mansion ghosts](https://luigi-mansion.fandom.com/wiki/List_of_ghosts).
@@ -21,6 +24,9 @@ All service names are inspired by [Luigi's Mansion ghosts](https://luigi-mansion
 
 ## Services
 
+> *"The Dark Moon has shattered, Luigi! We need to find it and restore peace to Evershade Valley, posthaste!"*
+> — **Prof. E. Gadd**, on the state of the valley
+
 ### Greenie — Central Hub & Dashboard
 
 **Luigi's Mansion origin:** *Greenie* — small green ghosts from Luigi's Mansion: Dark Moon (Evershade Valley).
@@ -38,6 +44,9 @@ The brain of the operation. Greenie is a full-featured API server with a built-i
 Greenie is the only service with a web frontend. Everything you interact with visually runs through Greenie.
 
 **Repo:** [LukaG712/Greenie](https://github.com/LukaG712/Greenie)
+
+> *"You really got to be OCD like the worst guest at an Airbnb — get gold, get cash, get blings!"*
+> — **The Dark Moon Song**, on collecting everything
 
 ---
 
@@ -59,6 +68,9 @@ Slinker has no dashboard — it's a pure API service. You manage tasks through G
 
 **Repo:** [LukaG712/Slinker](https://github.com/LukaG712/Slinker)
 
+> *"These ghosts seem unassailable, don't worry they're still inhalable!"*
+> — **Prof. E. Gadd**, on facing any challenge
+
 ---
 
 ### Trapper — Web Scraping & Crawling
@@ -76,6 +88,9 @@ The eyes on the web. Trapper uses Playwright to scrape, crawl, search, and map w
 | **Role** | Web scraping, crawling, content extraction |
 
 **Repo:** [LukaG712/Trapper](https://github.com/LukaG712/Trapper)
+
+> *"Gotta stop dat King Boo, 'cause he broke up the whole Dark Moon dude!"*
+> — **Prof. E. Gadd**, on the mission ahead
 
 ---
 
@@ -135,6 +150,9 @@ POST /api/pipeline
 
 ## Quick Start
 
+> *"Step into the dark! Five new spooky mansions!"*
+> — **The Dark Moon Song**, on the adventure ahead
+
 ### Prerequisites
 
 - **Docker** and **Docker Compose**
@@ -193,6 +211,9 @@ Each service exposes auto-generated API docs:
 ---
 
 ## Naming Theme
+
+> *"Everything was swell, until someone split the Dark Moon..."*
+> — **The Dark Moon Song**, on how it all began
 
 All services are named after ghosts from the **Luigi's Mansion** series:
 
@@ -280,3 +301,11 @@ See [ECOSYSTEM_EXPANSION.md](ECOSYSTEM_EXPANSION.md) for the full expansion road
 ## License
 
 Each sub-project may have its own license. Check the individual repositories.
+
+---
+
+> *"Now that all the ghosts of Evershade Valley are under my control..."*
+> — **King Boo**, Luigi's Mansion: Dark Moon
+
+> *"Oh boy..."* 
+> — **Luigi**, probably
