@@ -16,7 +16,7 @@ All service names are inspired by [Luigi's Mansion ghosts](https://luigi-mansion
 | | |
 |---|---|
 | **Website** | [http://localhost:8080](http://localhost:8080) |
-| **Services** | [Greenie](https://github.com/LukaG712/Greenie) · [Slinker](https://github.com/LukaG712/Slinker) · [Trapper](https://github.com/LukaG712/Trapper) · [Gobber](https://github.com/LukaG712/Gobber) · [Sneaker](https://github.com/LukaG712/Sneaker) · [Hider](https://github.com/LukaG712/Hider) · [Poltergeist](https://github.com/LukaG712/Poltergeist) · [Clairvoya](https://github.com/LukaG712/Clairvoya) · [Slammer](https://github.com/LukaG712/Slammer) · [Speedy](https://github.com/LukaG712/Speedy) |
+| **Services** | [Greenie](https://github.com/LukaG712/Greenie) · [Slinker](https://github.com/LukaG712/Slinker) · [Trapper](https://github.com/LukaG712/Trapper) · [Gobber](https://github.com/LukaG712/Gobber) · [Sneaker](https://github.com/LukaG712/Sneaker) · [Hider](https://github.com/LukaG712/Hider) · [Poltergeist](https://github.com/LukaG712/Poltergeist) · [Shrewd](https://github.com/LukaG712/Shrewd) · [Slammer](https://github.com/LukaG712/Slammer) · [Speedy](https://github.com/LukaG712/Speedy) |
 | **Topics** | ai-agents · microservices · self-hosted · docker-compose · web-scraping · code-execution · luigis-mansion |
 | **Built with** | Python · TypeScript · FastAPI · Playwright · Junie CLI |
 
@@ -159,11 +159,11 @@ The messenger of the ecosystem. Poltergeist sends notifications to Slack, Discor
 
 ---
 
-### Clairvoya ~ LLM Abstraction
+### Shrewd ~ LLM Abstraction
 
-**Luigi's Mansion origin:** *Clairvoya* ~ the psychic portrait ghost from Luigi's Mansion who sees into the future, perfect for predicting LLM responses.
+**Luigi's Mansion origin:** *Shrewd* ~ one of the Three Sisters (Possessors) from Luigi's Mansion: Dark Moon, known for being cunning and intelligent, perfect for an LLM service.
 
-The brain behind the models. Clairvoya provides a unified interface for OpenAI, Anthropic, Google, and Ollama ~ letting you swap models and manage costs.
+The brain behind the models. Shrewd provides a unified interface for OpenAI, Anthropic, Google, and Ollama ~ letting you swap models and manage costs.
 
 | Feature | Details |
 |---------|---------|
@@ -171,7 +171,7 @@ The brain behind the models. Clairvoya provides a unified interface for OpenAI, 
 | **Providers** | OpenAI, Anthropic, Google, Ollama |
 | **Role** | LLM provider abstraction |
 
-**Repo:** [LukaG712/Clairvoya](https://github.com/LukaG712/Clairvoya)
+**Repo:** [LukaG712/Shrewd](https://github.com/LukaG712/Shrewd)
 
 ---
 
@@ -361,7 +361,7 @@ More ghost names from the series available for new services:
 | **Nana** | Dark Moon ~ portrait ghost | Document processing service |
 | **Shivers** | Dark Moon ~ ice ghost | Cooling / rate limiting service |
 | **Biff** | Dark Moon ~ bouncer ghost | API gateway / load balancer |
-| **Clairvoya** | LM1 ~ psychic portrait ghost | LLM provider abstraction |
+| **Shrewd** | Dark Moon ~ Possessor (Three Sisters) | LLM provider abstraction |
 
 ---
 
@@ -380,7 +380,7 @@ Evershade/ (this repo ~ orchestration)
 ├── Sneaker/                   → Separate repo (LukaG712/Sneaker)
 ├── Hider/                     → Separate repo (LukaG712/Hider)
 ├── Poltergeist/               → Separate repo (LukaG712/Poltergeist)
-├── Clairvoya/                 → Separate repo (LukaG712/Clairvoya)
+├── Shrewd/                  → Separate repo (LukaG712/Shrewd)
 ├── Slammer/                   → Separate repo (LukaG712/Slammer)
 └── Speedy/                    → Separate repo (LukaG712/Speedy)
 ```

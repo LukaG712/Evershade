@@ -47,9 +47,9 @@ services:
       # Poltergeist integration
       - POLTERGEIST_URL=http://Poltergeist:8088
       - POLTERGEIST_API_KEY=${POLTERGEIST_API_KEY:-Poltergeist-dev-key-change-me}
-      # Clairvoya integration
-      - CLAIRVOYA_URL=http://Clairvoya:8089
-      - CLAIRVOYA_API_KEY=${CLAIRVOYA_API_KEY:-Clairvoya-dev-key-change-me}
+      # Shrewd integration
+      - SHREWD_URL=http://Shrewd:8089
+      - SHREWD_API_KEY=${SHREWD_API_KEY:-Shrewd-dev-key-change-me}
       # Ollama (optional)
       - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
       # Redis (for multi-instance cluster support)
@@ -234,13 +234,13 @@ services:
       retries: 3
     restart: unless-stopped
 
-  # ─── Clairvoya (LLM abstraction, port 8089) ───────────────────────────
-  Clairvoya:
-    build: ./Clairvoya
+  # ─── Shrewd (LLM abstraction, port 8089) ───────────────────────────
+  Shrewd:
+    build: ./Shrewd
     ports:
       - "8089:8089"
     environment:
-      - API_KEY=${CLAIRVOYA_API_KEY:-Clairvoya-dev-key-change-me}
+      - API_KEY=${SHREWD_API_KEY:-Shrewd-dev-key-change-me}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
     healthcheck:

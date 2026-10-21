@@ -175,12 +175,12 @@ jobs:
         run: |
           python -m pytest tests/ -v --tb=short || true
 
-  Clairvoya-tests:
-    name: Clairvoya Tests
+  Shrewd-tests:
+    name: Shrewd Tests
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: Clairvoya
+        working-directory: Shrewd
 
     steps:
       - uses: actions/checkout@v4
@@ -279,13 +279,13 @@ jobs:
           load: true
           tags: Poltergeist:test
 
-      - name: Build Clairvoya
+      - name: Build Shrewd
         uses: docker/build-push-action@v5
         with:
-          context: ./Clairvoya
+          context: ./Shrewd
           push: false
           load: true
-          tags: Clairvoya:test
+          tags: Shrewd:test
 
       - name: Build Slammer
         uses: docker/build-push-action@v5

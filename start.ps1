@@ -44,7 +44,7 @@ if (-not (Test-Path ".env")) {
 Write-Host "[✓] .env file found" -ForegroundColor Green
 
 # Check required directories
-foreach ($dir in @("Greenie", "Slinker", "Trapper", "Gobber", "Sneaker", "Hider", "Poltergeist", "Clairvoya", "Slammer")) {
+foreach ($dir in @("Greenie", "Slinker", "Trapper", "Gobber", "Sneaker", "Hider", "Poltergeist", "Shrewd", "Slammer")) {
     if (-not (Test-Path $dir)) {
         Write-Host "[✗] ERROR: Directory '$dir' not found." -ForegroundColor Red
         exit 1
@@ -91,7 +91,7 @@ Write-Host "  Gobber:     http://localhost:8085"
 Write-Host "  Sneaker:    http://localhost:8086"
 Write-Host "  Hider:      http://localhost:8087"
 Write-Host "  Poltergeist: http://localhost:8088"
-Write-Host "  Clairvoya:  http://localhost:8089"
+Write-Host "  Shrewd:    http://localhost:8089"
 Write-Host "  Slammer:    http://localhost:5173"
 Write-Host ""
 Write-Host "API Documentation:" -ForegroundColor Cyan
