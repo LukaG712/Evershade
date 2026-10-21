@@ -338,6 +338,13 @@ All services are named after ghosts from the **Luigi's Mansion** series:
 | **Greenie** | Small green ghosts | Luigi's Mansion: Dark Moon |
 | **Slinker** | Wall-crawling stealth ghosts | Luigi's Mansion 3 |
 | **Trapper** | Trap-setting ghosts | Luigi's Mansion 3 |
+| **Gobber** | Blob-like absorbing ghost | Luigi's Mansion: Dark Moon |
+| **Sneaker** | Quiet sneaking ghost | Luigi's Mansion: Dark Moon |
+| **Hider** | Hiding ghost | Luigi's Mansion: Dark Moon |
+| **Poltergeist** | Ancient disturbance ghost | Luigi's Mansion: Dark Moon |
+| **Shrewd** | Possessor (Three Sisters) | Luigi's Mansion: Dark Moon |
+| **Slammer** | Heavy-hitting ground slammer | Luigi's Mansion: Dark Moon |
+| **Speedy** | Fast zooming ghost | Luigi's Mansion: Dark Moon |
 
 The root repository is named **Evershade** after *Evershade Valley*, the setting of Luigi's Mansion: Dark Moon.
 
@@ -347,21 +354,14 @@ More ghost names from the series available for new services:
 
 | Name | Origin | Suggested Role |
 |------|--------|---------------|
-| **Gobber** | Dark Moon ~ blob-like ghost | Data storage / database service |
-| **Slammer** | Dark Moon ~ heavy-hitting ghost | Build / CI service |
-| **Sneaker** | Dark Moon ~ sneaking ghost | Monitoring / observability service |
-| **Hider** | Dark Moon ~ hiding ghost | Secret / config management |
-| **Poltergeist** | Dark Moon ~ ancient ghost | Notification / messaging service |
 | **Boo** | Classic ~ iconic ghost | Authentication / gateway service |
 | **Oozers** | LM3 ~ ooze-like ghosts | File storage / blob service |
 | **Hammer** | LM3 ~ hammer-wielding ghost | Deployment / infrastructure service |
 | **Goob** | LM3 ~ basic ghost | Task queue / job scheduler |
-| **Speedy** | Series ~ fast ghost | CDN / caching service |
 | **Grouchy** | Dark Moon ~ spider boss | Security / firewall service |
 | **Nana** | Dark Moon ~ portrait ghost | Document processing service |
 | **Shivers** | Dark Moon ~ ice ghost | Cooling / rate limiting service |
 | **Biff** | Dark Moon ~ bouncer ghost | API gateway / load balancer |
-| **Shrewd** | Dark Moon ~ Possessor (Three Sisters) | LLM provider abstraction |
 
 ---
 
@@ -380,7 +380,7 @@ Evershade/ (this repo ~ orchestration)
 ├── Sneaker/                   → Separate repo (LukaG712/Sneaker)
 ├── Hider/                     → Separate repo (LukaG712/Hider)
 ├── Poltergeist/               → Separate repo (LukaG712/Poltergeist)
-├── Shrewd/                  → Separate repo (LukaG712/Shrewd)
+├── Shrewd/                    → Separate repo (LukaG712/Shrewd)
 ├── Slammer/                   → Separate repo (LukaG712/Slammer)
 └── Speedy/                    → Separate repo (LukaG712/Speedy)
 ```
