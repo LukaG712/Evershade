@@ -1,0 +1,29 @@
+# Sub-projects (separate git repos)
+EvershadeValley/
+Polter/
+Spectra/
+
+# Node modules
+node_modules/
+
+# Build artifacts
+dist/
+__pycache__/
+*.pyc
+*.egg-info/
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+
+# Docker volumes
+workspace/

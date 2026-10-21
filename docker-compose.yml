@@ -1,0 +1,159 @@
+# Unified Workflow — Evershade Valley + Polter + Spectra
+# Run: docker compose up -d
+
+version: '3.8'
+
+services:
+  # ─── Redis (shared by Spectra) ───────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ─── EvershadeValley (main dashboard, port 8080) ──────────────────────────────
+  EvershadeValley:
+    build: ./EvershadeValley
+    ports:
+      - "8080:8080"
+    environment:
+      - HUB_API_KEY=${HUB_API_KEY:-EvershadeValley-dev-key-change-me}
+      - HUB_PORT=8080
+      - HUB_TIMEOUT=1800
+      - JUNIE_BIN=${JUNIE_BIN:-junie}
+      # Polter integration
+      - Polter_URL=http://Polter:8000
+      - Polter_API_KEY=${Polter_API_KEY:-Polter-dev-key-change-me}
+      # Spectra integration
+      - Spectra_URL=http://Spectra-api:3000
+      - Spectra_API_KEY=${Spectra_API_KEY:-Spectra-dev-key-change-me}
+      # Ollama (optional)
+      - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
+      # Redis (for multi-instance cluster support)
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - REDIS_DB=0
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ./EvershadeValley/hub.yaml:/app/hub.yaml
+      - ./EvershadeValley/data:/app/data
+      - ./EvershadeValley/skills:/app/skills
+      # Mount workspace so agents can access projects
+      - ${WORKSPACE_PATH:-./workspace}:/workspace
+    depends_on:
+      redis:
+        condition: service_healthy
+      Polter:
+        condition: service_healthy
+      Spectra-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # ─── Polter (execution engine, port 8000) ────────────────────────────
+  Polter:
+    build: ./Polter
+    ports:
+      - "8000:8000"
+    environment:
+      - API_KEY=${Polter_API_KEY:-Polter-dev-key-change-me}
+      - PORT=8000
+      - JUNIE_TIMEOUT=1800
+      - JUNIE_BIN=${JUNIE_BIN:-junie}
+      - WORKSPACE_PATH=/workspace
+      - MAX_CONCURRENT_WORKERS=${MAX_CONCURRENT_WORKERS:-1}
+      - ISOLATION_MODE=${ISOLATION_MODE:-worktree}
+      # Ollama (optional)
+      - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-gemma4:12b}
+      - REFINE_PROMPT=${REFINE_PROMPT:-false}
+    volumes:
+      - ${WORKSPACE_PATH:-./workspace}:/workspace
+      - Polter_logs:/app/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # ─── Spectra API (web scraping, port 3000) ───────────────────────────
+  Spectra-api:
+    build: ./Spectra
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - HOST=0.0.0.0
+      - API_KEY=${Spectra_API_KEY:-Spectra-dev-key-change-me}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RATE_LIMIT_MAX=60
+      - RATE_LIMIT_WINDOW_MS=60000
+      - SCRAPE_TIMEOUT=30000
+      - SCRAPE_ONLY_MAIN_CONTENT=true
+      - SCRAPE_BLOCK_ADS=true
+      - CRAWL_MAX_DEPTH=10
+      - CRAWL_MAX_PAGES=100
+      - CRAWL_MAX_CONCURRENCY=5
+      - CRAWL_DELAY=1000
+      - BROWSER_HEADLESS=true
+      - LOG_LEVEL=info
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
+      interval: 15s
+      timeout: 5s
+      start_period: 15s
+      retries: 5
+    restart: unless-stopped
+
+  # ─── Spectra Worker (background crawl jobs) ──────────────────────────
+  Spectra-worker:
+    build: ./Spectra
+    command: node dist/worker.js
+    environment:
+      - PORT=3000
+      - HOST=0.0.0.0
+      - API_KEY=${Spectra_API_KEY:-Spectra-dev-key-change-me}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - SCRAPE_TIMEOUT=30000
+      - SCRAPE_ONLY_MAIN_CONTENT=true
+      - SCRAPE_BLOCK_ADS=true
+      - CRAWL_MAX_DEPTH=10
+      - CRAWL_MAX_PAGES=100
+      - CRAWL_MAX_CONCURRENCY=5
+      - CRAWL_DELAY=1000
+      - BROWSER_HEADLESS=true
+      - LOG_LEVEL=info
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  Polter_logs:
