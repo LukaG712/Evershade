@@ -16,7 +16,7 @@ All service names are inspired by [Luigi's Mansion ghosts](https://luigi-mansion
 | | |
 |---|---|
 | **Website** | [http://localhost:8080](http://localhost:8080) |
-| **Services** | [Greenie](https://github.com/LukaG712/Greenie) · [Slinker](https://github.com/LukaG712/Slinker) · [Trapper](https://github.com/LukaG712/Trapper) · [Gobber](https://github.com/LukaG712/Gobber) · [Creeper](https://github.com/LukaG712/Creeper) · [Hider](https://github.com/LukaG712/Hider) · [Polterpup](https://github.com/LukaG712/Polterpup) · [Chauncey](https://github.com/LukaG712/Chauncey) · [Ranger](https://github.com/LukaG712/Ranger) · [Scout](https://github.com/LukaG712/Scout) |
+| **Services** | [Greenie](https://github.com/LukaG712/Greenie) · [Slinker](https://github.com/LukaG712/Slinker) · [Trapper](https://github.com/LukaG712/Trapper) · [Gobber](https://github.com/LukaG712/Gobber) · [Sneaker](https://github.com/LukaG712/Sneaker) · [Hider](https://github.com/LukaG712/Hider) · [Poltergeist](https://github.com/LukaG712/Poltergeist) · [Clairvoya](https://github.com/LukaG712/Clairvoya) · [Slammer](https://github.com/LukaG712/Slammer) · [Speedy](https://github.com/LukaG712/Speedy) |
 | **Topics** | ai-agents · microservices · self-hosted · docker-compose · web-scraping · code-execution · luigis-mansion |
 | **Built with** | Python · TypeScript · FastAPI · Playwright · Junie CLI |
 
@@ -111,11 +111,11 @@ The memory of the ecosystem. Gobber provides persistent storage for webhooks, an
 
 ---
 
-### Creeper ~ Observability
+### Sneaker ~ Observability
 
-**Luigi's Mansion origin:** *Creeper* ~ creeping ghosts from Luigi's Mansion: Dark Moon that always watch.
+**Luigi's Mansion origin:** *Sneaker* ~ quiet ghosts from Luigi's Mansion: Dark Moon that sneak up silently, perfect for quietly monitoring everything.
 
-The eyes on your system. Creeper collects metrics, traces, and logs from all services, providing unified observability.
+The eyes on your system. Sneaker collects metrics, traces, and logs from all services, providing unified observability.
 
 | Feature | Details |
 |---------|---------|
@@ -123,7 +123,7 @@ The eyes on your system. Creeper collects metrics, traces, and logs from all ser
 | **Features** | Metrics, distributed traces, log aggregation |
 | **Role** | System health monitoring |
 
-**Repo:** [LukaG712/Creeper](https://github.com/LukaG712/Creeper)
+**Repo:** [LukaG712/Sneaker](https://github.com/LukaG712/Sneaker)
 
 ---
 
@@ -143,11 +143,11 @@ The vault for sensitive data. Hider provides encrypted storage for API keys, pas
 
 ---
 
-### Polterpup ~ Notifications
+### Poltergeist ~ Notifications
 
-**Luigi's Mansion origin:** *Polterpup* ~ ghost dogs from Luigi's Mansion: Dark Moon that howl and deliver messages.
+**Luigi's Mansion origin:** *Poltergeist* ~ the ancient ghosts from Luigi's Mansion: Dark Moon that cause disturbances and ruckuses, perfect for sending notifications.
 
-The messenger of the ecosystem. Polterpup sends notifications to Slack, Discord, email, and Telegram with templated messages and async delivery.
+The messenger of the ecosystem. Poltergeist sends notifications to Slack, Discord, email, and Telegram with templated messages and async delivery.
 
 | Feature | Details |
 |---------|---------|
@@ -155,15 +155,15 @@ The messenger of the ecosystem. Polterpup sends notifications to Slack, Discord,
 | **Channels** | Slack, Discord, email, Telegram, webhooks |
 | **Role** | Unified notification hub |
 
-**Repo:** [LukaG712/Polterpup](https://github.com/LukaG712/Polterpup)
+**Repo:** [LukaG712/Poltergeist](https://github.com/LukaG712/Poltergeist)
 
 ---
 
-### Chauncey ~ LLM Abstraction
+### Clairvoya ~ LLM Abstraction
 
-**Luigi's Mansion origin:** *Chauncey* ~ a ghostly figure from Luigi's Mansion: Dark Moon.
+**Luigi's Mansion origin:** *Clairvoya* ~ the psychic portrait ghost from Luigi's Mansion who sees into the future, perfect for predicting LLM responses.
 
-The brain behind the models. Chauncey provides a unified interface for OpenAI, Anthropic, Google, and Ollama ~ letting you swap models and manage costs.
+The brain behind the models. Clairvoya provides a unified interface for OpenAI, Anthropic, Google, and Ollama ~ letting you swap models and manage costs.
 
 | Feature | Details |
 |---------|---------|
@@ -171,15 +171,15 @@ The brain behind the models. Chauncey provides a unified interface for OpenAI, A
 | **Providers** | OpenAI, Anthropic, Google, Ollama |
 | **Role** | LLM provider abstraction |
 
-**Repo:** [LukaG712/Chauncey](https://github.com/LukaG712/Chauncey)
+**Repo:** [LukaG712/Clairvoya](https://github.com/LukaG712/Clairvoya)
 
 ---
 
-### Ranger ~ Web Dashboard
+### Slammer ~ Web Dashboard
 
-**Luigi's Mansion origin:** *Ranger* ~ a guardian who patrols and oversees the valley.
+**Luigi's Mansion origin:** *Slammer* ~ blue ghosts from Luigi's Mansion: Dark Moon that slam the ground with force, perfect for a dashboard that slams you with the big picture.
 
-The command center. Ranger is a React-based standalone web dashboard for managing agents, runs, pipelines, and analytics across all Evershade services.
+The command center. Slammer is a React-based standalone web dashboard for managing agents, runs, pipelines, and analytics across all Evershade services.
 
 | Feature | Details |
 |---------|---------|
@@ -187,23 +187,23 @@ The command center. Ranger is a React-based standalone web dashboard for managin
 | **Stack** | React, TypeScript, Tailwind CSS |
 | **Role** | Standalone web dashboard |
 
-**Repo:** [LukaG712/Ranger](https://github.com/LukaG712/Ranger)
+**Repo:** [LukaG712/Slammer](https://github.com/LukaG712/Slammer)
 
 ---
 
-### Scout ~ CLI Tool
+### Speedy ~ CLI Tool
 
-**Luigi's Mansion origin:** *Scout* ~ a forward-looking explorer navigating the dark.
+**Luigi's Mansion origin:** *Speedy Spirit* ~ fast ghosts from Luigi's Mansion that zoom around at high speed, perfect for a CLI that executes commands quickly.
 
-The terminal companion. Scout provides an `evershade` command for managing services, agents, tasks, and configuration from the command line.
+The terminal companion. Speedy provides an `evershade` command for managing services, agents, tasks, and configuration from the command line.
 
 | Feature | Details |
 |---------|---------|
-| **Install** | `pip install scout-cli` |
+| **Install** | `pip install speedy-cli` |
 | **Command** | `evershade` |
 | **Role** | Command-line interface |
 
-**Repo:** [LukaG712/Scout](https://github.com/LukaG712/Scout)
+**Repo:** [LukaG712/Speedy](https://github.com/LukaG712/Speedy)
 
 > *"Gotta stop dat King Boo, 'cause he broke up the whole Dark Moon dude!"*
 > ~ **Prof. E. Gadd**, on the mission ahead
@@ -349,9 +349,9 @@ More ghost names from the series available for new services:
 |------|--------|---------------|
 | **Gobber** | Dark Moon ~ blob-like ghost | Data storage / database service |
 | **Slammer** | Dark Moon ~ heavy-hitting ghost | Build / CI service |
-| **Creeper** | Dark Moon ~ creeping ghost | Monitoring / observability service |
+| **Sneaker** | Dark Moon ~ sneaking ghost | Monitoring / observability service |
 | **Hider** | Dark Moon ~ hiding ghost | Secret / config management |
-| **Polterpup** | Dark Moon ~ ghost dog | Notification / messaging service |
+| **Poltergeist** | Dark Moon ~ ancient ghost | Notification / messaging service |
 | **Boo** | Classic ~ iconic ghost | Authentication / gateway service |
 | **Oozers** | LM3 ~ ooze-like ghosts | File storage / blob service |
 | **Hammer** | LM3 ~ hammer-wielding ghost | Deployment / infrastructure service |
@@ -361,7 +361,7 @@ More ghost names from the series available for new services:
 | **Nana** | Dark Moon ~ portrait ghost | Document processing service |
 | **Shivers** | Dark Moon ~ ice ghost | Cooling / rate limiting service |
 | **Biff** | Dark Moon ~ bouncer ghost | API gateway / load balancer |
-| **Chauncey** | Dark Moon ~ ghostly figure | LLM provider abstraction |
+| **Clairvoya** | LM1 ~ psychic portrait ghost | LLM provider abstraction |
 
 ---
 
@@ -377,12 +377,12 @@ Evershade/ (this repo ~ orchestration)
 ├── Slinker/                   → Separate repo (LukaG712/Slinker)
 ├── Trapper/                   → Separate repo (LukaG712/Trapper)
 ├── Gobber/                    → Separate repo (LukaG712/Gobber)
-├── Creeper/                   → Separate repo (LukaG712/Creeper)
+├── Sneaker/                   → Separate repo (LukaG712/Sneaker)
 ├── Hider/                     → Separate repo (LukaG712/Hider)
-├── Polterpup/                 → Separate repo (LukaG712/Polterpup)
-├── Chauncey/                  → Separate repo (LukaG712/Chauncey)
-├── Ranger/                    → Separate repo (LukaG712/Ranger)
-└── Scout/                     → Separate repo (LukaG712/Scout)
+├── Poltergeist/               → Separate repo (LukaG712/Poltergeist)
+├── Clairvoya/                 → Separate repo (LukaG712/Clairvoya)
+├── Slammer/                   → Separate repo (LukaG712/Slammer)
+└── Speedy/                    → Separate repo (LukaG712/Speedy)
 ```
 
 Each sub-project is an independent Git repository with its own CI pipeline. The root repo tracks orchestration files (Docker Compose, CI, scripts) and excludes the sub-project directories via `.gitignore`.

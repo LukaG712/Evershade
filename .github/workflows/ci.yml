@@ -103,12 +103,12 @@ jobs:
         run: |
           python -m pytest tests/ -v --tb=short || true
 
-  Creeper-tests:
-    name: Creeper Tests
+  Sneaker-tests:
+    name: Sneaker Tests
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: Creeper
+        working-directory: Sneaker
 
     steps:
       - uses: actions/checkout@v4
@@ -151,12 +151,12 @@ jobs:
         run: |
           python -m pytest tests/ -v --tb=short || true
 
-  Polterpup-tests:
-    name: Polterpup Tests
+  Poltergeist-tests:
+    name: Poltergeist Tests
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: Polterpup
+        working-directory: Poltergeist
 
     steps:
       - uses: actions/checkout@v4
@@ -175,12 +175,12 @@ jobs:
         run: |
           python -m pytest tests/ -v --tb=short || true
 
-  Chauncey-tests:
-    name: Chauncey Tests
+  Clairvoya-tests:
+    name: Clairvoya Tests
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: Chauncey
+        working-directory: Clairvoya
 
     steps:
       - uses: actions/checkout@v4
@@ -199,12 +199,12 @@ jobs:
         run: |
           python -m pytest tests/ -v --tb=short || true
 
-  Ranger-build:
-    name: Ranger Build
+  Slammer-build:
+    name: Slammer Build
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: Ranger
+        working-directory: Slammer
 
     steps:
       - uses: actions/checkout@v4
@@ -255,13 +255,13 @@ jobs:
           load: true
           tags: Gobber:test
 
-      - name: Build Creeper
+      - name: Build Sneaker
         uses: docker/build-push-action@v5
         with:
-          context: ./Creeper
+          context: ./Sneaker
           push: false
           load: true
-          tags: Creeper:test
+          tags: Sneaker:test
 
       - name: Build Hider
         uses: docker/build-push-action@v5
@@ -271,29 +271,29 @@ jobs:
           load: true
           tags: Hider:test
 
-      - name: Build Polterpup
+      - name: Build Poltergeist
         uses: docker/build-push-action@v5
         with:
-          context: ./Polterpup
+          context: ./Poltergeist
           push: false
           load: true
-          tags: Polterpup:test
+          tags: Poltergeist:test
 
-      - name: Build Chauncey
+      - name: Build Clairvoya
         uses: docker/build-push-action@v5
         with:
-          context: ./Chauncey
+          context: ./Clairvoya
           push: false
           load: true
-          tags: Chauncey:test
+          tags: Clairvoya:test
 
-      - name: Build Ranger
+      - name: Build Slammer
         uses: docker/build-push-action@v5
         with:
-          context: ./Ranger
+          context: ./Slammer
           push: false
           load: true
-          tags: Ranger:test
+          tags: Slammer:test
 
       - name: Validate docker-compose
         run: |

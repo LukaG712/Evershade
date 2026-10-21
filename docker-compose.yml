@@ -38,18 +38,18 @@ services:
       # Gobber integration
       - GOBBER_URL=http://Gobber:8085
       - GOBBER_API_KEY=${GOBBER_API_KEY:-Gobber-dev-key-change-me}
-      # Creeper integration
-      - CREEPER_URL=http://Creeper:8086
-      - CREEPER_API_KEY=${CREEPER_API_KEY:-Creeper-dev-key-change-me}
+      # Sneaker integration
+      - SNEAKER_URL=http://Sneaker:8086
+      - SNEAKER_API_KEY=${SNEAKER_API_KEY:-Sneaker-dev-key-change-me}
       # Hider integration
       - HIDER_URL=http://Hider:8087
       - HIDER_API_KEY=${HIDER_API_KEY:-Hider-dev-key-change-me}
-      # Polterpup integration
-      - POLTERPUP_URL=http://Polterpup:8088
-      - POLTERPUP_API_KEY=${POLTERPUP_API_KEY:-Polterpup-dev-key-change-me}
-      # Chauncey integration
-      - CHAUNCEY_URL=http://Chauncey:8089
-      - CHAUNCEY_API_KEY=${CHAUNCEY_API_KEY:-Chauncey-dev-key-change-me}
+      # Poltergeist integration
+      - POLTERGEIST_URL=http://Poltergeist:8088
+      - POLTERGEIST_API_KEY=${POLTERGEIST_API_KEY:-Poltergeist-dev-key-change-me}
+      # Clairvoya integration
+      - CLAIRVOYA_URL=http://Clairvoya:8089
+      - CLAIRVOYA_API_KEY=${CLAIRVOYA_API_KEY:-Clairvoya-dev-key-change-me}
       # Ollama (optional)
       - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
       # Redis (for multi-instance cluster support)
@@ -188,13 +188,13 @@ services:
       retries: 3
     restart: unless-stopped
 
-  # ─── Creeper (observability, port 8086) ──────────────────────────────
-  Creeper:
-    build: ./Creeper
+  # ─── Sneaker (observability, port 8086) ──────────────────────────────
+  Sneaker:
+    build: ./Sneaker
     ports:
       - "8086:8086"
     environment:
-      - API_KEY=${CREEPER_API_KEY:-Creeper-dev-key-change-me}
+      - API_KEY=${SNEAKER_API_KEY:-Sneaker-dev-key-change-me}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8086/health')"]
       interval: 30s
@@ -219,13 +219,13 @@ services:
       retries: 3
     restart: unless-stopped
 
-  # ─── Polterpup (notifications, port 8088) ────────────────────────────
-  Polterpup:
-    build: ./Polterpup
+  # ─── Poltergeist (notifications, port 8088) ────────────────────────────
+  Poltergeist:
+    build: ./Poltergeist
     ports:
       - "8088:8088"
     environment:
-      - API_KEY=${POLTERPUP_API_KEY:-Polterpup-dev-key-change-me}
+      - API_KEY=${POLTERGEIST_API_KEY:-Poltergeist-dev-key-change-me}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8088/health')"]
       interval: 30s
@@ -234,13 +234,13 @@ services:
       retries: 3
     restart: unless-stopped
 
-  # ─── Chauncey (LLM abstraction, port 8089) ───────────────────────────
-  Chauncey:
-    build: ./Chauncey
+  # ─── Clairvoya (LLM abstraction, port 8089) ───────────────────────────
+  Clairvoya:
+    build: ./Clairvoya
     ports:
       - "8089:8089"
     environment:
-      - API_KEY=${CHAUNCEY_API_KEY:-Chauncey-dev-key-change-me}
+      - API_KEY=${CLAIRVOYA_API_KEY:-Clairvoya-dev-key-change-me}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
     healthcheck:
@@ -253,9 +253,9 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  # ─── Ranger (web dashboard, port 5173) ───────────────────────────────
-  Ranger:
-    build: ./Ranger
+  # ─── Slammer (web dashboard, port 5173) ───────────────────────────────
+  Slammer:
+    build: ./Slammer
     ports:
       - "5173:80"
     depends_on:
