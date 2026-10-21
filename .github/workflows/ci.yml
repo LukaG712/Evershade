@@ -28,8 +28,18 @@ jobs:
 
       - name: Check PowerShell script syntax
         run: |
-          pwsh -NoProfile -Command "[System.Management.Automation.Language.Parser]::ParseFile('start.ps1', [ref]$null, [ref]$errors); if ($errors.Count -gt 0) { exit 1 }"
-          pwsh -NoProfile -Command "[System.Management.Automation.Language.Parser]::ParseFile('stop.ps1', [ref]$null, [ref]$errors); if ($errors.Count -gt 0) { exit 1 }"
+          pwsh -NoProfile -Command '
+            $errors = @()
+            $nulls = $null
+            [System.Management.Automation.Language.Parser]::ParseFile("start.ps1", [ref]$nulls, [ref]$errors)
+            if ($errors.Count -gt 0) { exit 1 }
+          '
+          pwsh -NoProfile -Command '
+            $errors = @()
+            $nulls = $null
+            [System.Management.Automation.Language.Parser]::ParseFile("stop.ps1", [ref]$nulls, [ref]$errors)
+            if ($errors.Count -gt 0) { exit 1 }
+          '
 
       - name: Verify required files exist
         run: |
