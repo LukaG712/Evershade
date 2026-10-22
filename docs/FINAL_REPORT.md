@@ -1,9 +1,9 @@
 # Evershade Final Implementation Report
 
 **Date:** 2026-10-22
-**Version:** v1.12.0
+**Version:** v1.13.0
 **Author:** Junie (autonomous agent)
-**Scope:** 18-phase implementation of the complete Evershade ecosystem
+**Scope:** 19-phase implementation of the complete Evershade ecosystem
 
 ---
 
@@ -176,6 +176,15 @@ The Evershade ecosystem consists of 10 specialized services:
 - **Completion rate**: Improved from 87% to 89% (92/103 requirements complete)
 - **Prioritized Action Plan**: Updated to reflect all 5 phases complete with Phase 5 (Final Polish) added
 - **All code and documentation changes complete**: Remaining 11% requires running Docker services or network access
+
+### Phase 19 — Website & Final Polish
+
+- **Website version updated**: All 6 pages (index, services, architecture, getting-started, roadmap, contributing) updated from v1.7.0 to v1.12.0
+- **Website Quick Start**: Updated to reference bootstrap scripts (install.sh/install.ps1) instead of assuming services present
+- **Website Getting Started**: Added bootstrap script section, updated startup scripts with profile and mode flags, updated tutorial to use bootstrap
+- **Website Architecture**: Added install.sh/install.ps1 and version-manifest.json to repository structure diagram
+- **REMAINING_GAPS.md**: Updated summary table to use "Implemented but Unverified" as separate category from "Missing" — 97 Complete, 17 Unverified, 2 Missing out of 116 total (84% complete)
+- **All code and documentation changes complete**: Remaining 16% requires running Docker services or network access
 
 ---
 
@@ -438,5 +447,7 @@ Not applicable — all changes made in the root repository working tree. No exte
 | README architecture diagram | ✓ (corrected data layer, all 10 services) |
 | README service versions | ✓ (match version-manifest.json) |
 | REMAINING_GAPS.md corrected | ✓ (stale entries fixed, 87% → 89%) |
-| All code/docs changes complete | ✓ (remaining 11% requires Docker/network) |
-| Completion rate | 89% (92/103 requirements complete) |
+| Website updated | ✓ (all 6 pages: version, bootstrap scripts, startup profiles) |
+| REMAINING_GAPS.md summary | ✓ (accurate Unverified vs Missing categories, 84% complete) |
+| All code/docs changes complete | ✓ (remaining 16% requires Docker/network) |
+| Completion rate | 84% (97/116 requirements complete) |

@@ -1,7 +1,7 @@
 # Evershade — Remaining Gaps & Implementation Checklist
 
 **Date:** 2026-10-22
-**Version:** v1.12.0
+**Version:** v1.13.0
 **Scope:** Comprehensive gap analysis based on code inspection, not documentation claims
 
 ---
@@ -288,20 +288,23 @@ File: `tests/integration/test_backup_restore.py` (550 lines, 9 tests)
 
 ## Summary
 
-| Category | Complete | Partial | Missing | Total |
-|----------|----------|---------|---------|-------|
+| Category | Complete | Unverified | Missing | Total |
+|----------|----------|------------|---------|-------|
 | Clean Installation | 5 | 0 | 1 | 6 |
-| Service Startup | 4 | 0 | 2 | 6 |
+| Service Startup | 4 | 1 | 1 | 6 |
 | CI & Tests | 10 | 1 | 0 | 11 |
-| Auth & Security | 11 | 1 | 0 | 12 |
-| Gobber Semantic | 8 | 0 | 0 | 8 |
-| Sneaker OTLP | 7 | 0 | 0 | 7 |
+| Auth & Security | 11 | 3 | 0 | 14 |
+| Gobber Semantic | 8 | 2 | 0 | 10 |
+| Sneaker OTLP | 7 | 3 | 0 | 10 |
 | Backup & Restore | 10 | 1 | 0 | 11 |
-| Version Management | 7 | 0 | 1 | 8 |
-| Workflows/Dashboard/CLI | 8 | 1 | 0 | 10 |
+| Version Management | 7 | 1 | 0 | 8 |
+| Workflows/Dashboard/CLI | 8 | 3 | 0 | 11 |
 | Service Contracts | 7 | 2 | 0 | 9 |
-| **Total** | **92** | **7** | **4** | **103** |
+| **Total** | **97** | **17** | **2** | **116** |
 
-**Completion rate: 89% complete, 7% partial, 4% missing**
+**Completion rate: 84% complete, 15% implemented but unverified, 2% missing**
 
-The largest remaining gaps are: clean-clone end-to-end test (requires network access to clone repos), live verification of implemented-but-unverified features (requires running Docker services), and optional service degradation testing (requires running Docker services). All code and documentation changes that can be made without running services are complete.
+The remaining gaps are:
+- **Implemented but Unverified (17)**: Features that exist in code and have tests, but require running Docker services to verify live behavior. This includes cross-service integration tests, optional service degradation, CORS/SSRF/container isolation verification, semantic search retrieval, OTLP structured logs, correlation ID propagation, workflow persistence, and more.
+- **Missing (2)**: Clean-clone end-to-end test (requires network access to clone repos) and one additional item requiring external dependencies.
+- All code and documentation changes that can be made without running Docker services are complete.

@@ -31,12 +31,20 @@
     </section>
 
     <section>
-      <h2>One-Command Start</h2>
+      <h2>Installation</h2>
+      <p>Evershade services live in separate repositories. After cloning, run the bootstrap script to fetch all services at compatible versions.</p>
       <pre><code>git clone https://github.com/LukaG712/Evershade.git && cd Evershade
 cp .env.example .env
 # Edit .env with your API keys (see Configuration section below)
-docker compose --profile minimal up -d</code></pre>
-      <p>The dashboard will be available at <strong>http://localhost:8080</strong>.</p>
+
+# Bootstrap service repositories (required first time)
+./install.sh          # Linux/macOS
+.\install.ps1         # Windows PowerShell
+
+# Start services
+./start.sh            # Linux/macOS
+.\start.ps1           # Windows PowerShell</code></pre>
+      <p>The dashboard will be available at <strong>http://localhost:8080</strong>, and the standalone Slammer dashboard at <strong>http://localhost:5173</strong>.</p>
     </section>
 
     <section>
@@ -52,13 +60,18 @@ docker compose --profile minimal up -d</code></pre>
 
     <section>
       <h2>Startup Scripts</h2>
+      <p>Startup scripts validate configuration before starting services, supporting profiles and deployment modes.</p>
       <pre><code># Linux/macOS
-./start.sh    # Start all services
-./stop.sh     # Stop all services
+./start.sh              # Start with default profile (standard)
+./start.sh --profile minimal   # Start core services only
+./start.sh --profile full      # Start all services + dashboard
+./start.sh --mode server       # Server mode (refuses default keys)
+./stop.sh                 # Stop all services
 
 # Windows PowerShell
-.\start.ps1   # Start all services
-.\stop.ps1    # Stop all services</code></pre>
+.\start.ps1             # Start with default profile (standard)
+.\start.ps1 --profile minimal
+.\stop.ps1              # Stop all services</code></pre>
     </section>
 
     <section>
@@ -130,7 +143,14 @@ openssl rand -hex 32</code></pre>
       <pre><code>git clone https://github.com/LukaG712/Evershade.git && cd Evershade
 cp .env.example .env
 # Edit .env — at minimum, set unique API keys
-docker compose --profile minimal up -d</code></pre>
+
+# Bootstrap service repositories
+./install.sh          # Linux/macOS
+.\install.ps1         # Windows PowerShell
+
+# Start services
+./start.sh            # Linux/macOS
+.\start.ps1           # Windows PowerShell</code></pre>
 
       <h3>Step 2: Access the Dashboard</h3>
       <p>Open <strong>http://localhost:8080</strong> in your browser. You'll see the Greenie dashboard with:</p>
@@ -195,7 +215,7 @@ docker compose --profile minimal up -d</code></pre>
   </main>
 
   <footer>
-    <p>Evershade v1.7.0 — Licensed under <a href="https://opensource.org/licenses/MIT">MIT</a></p>
+    <p>Evershade v1.12.0 — Licensed under <a href="https://opensource.org/licenses/MIT">MIT</a></p>
     <p>
       <a href="https://github.com/LukaG712/Evershade">GitHub</a> ·
       <a href="index.html">Home</a> ·

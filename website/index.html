@@ -84,8 +84,15 @@
       <pre><code>git clone https://github.com/LukaG712/Evershade.git && cd Evershade
 cp .env.example .env
 # Edit .env with your API keys
-docker compose --profile minimal up -d</code></pre>
-      <p>Dashboard available at <code>http://localhost:8080</code></p>
+
+# Bootstrap service repositories (required first time)
+./install.sh          # Linux/macOS
+.\install.ps1         # Windows PowerShell
+
+# Start services
+./start.sh            # Linux/macOS
+.\start.ps1           # Windows PowerShell</code></pre>
+      <p>Dashboard available at <code>http://localhost:8080</code>, standalone dashboard at <code>http://localhost:5173</code></p>
     </section>
 
     <section class="theme">
@@ -96,7 +103,7 @@ docker compose --profile minimal up -d</code></pre>
   </main>
 
   <footer>
-    <p>Evershade v1.7.0 — Licensed under <a href="https://opensource.org/licenses/MIT">MIT</a></p>
+    <p>Evershade v1.12.0 — Licensed under <a href="https://opensource.org/licenses/MIT">MIT</a></p>
     <p>
       <a href="https://github.com/LukaG712/Evershade">GitHub</a> ·
       <a href="services.html">Services</a> ·

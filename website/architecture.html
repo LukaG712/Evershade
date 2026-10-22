@@ -148,8 +148,10 @@
       <h2>Repository Structure</h2>
       <pre><code>Evershade/ (root ~ orchestration)
 ├── docker-compose.yml         ← Service orchestration
+├── install.sh / install.ps1   ← Bootstrap scripts (clone services)
 ├── start.sh / stop.sh         ← Startup scripts
 ├── start.ps1 / stop.ps1       ← Windows scripts
+├── version-manifest.json      ← Pinned service versions
 ├── Greenie/                   → Separate repo (LukaG712/Greenie)
 ├── Slinker/                   → Separate repo (LukaG712/Slinker)
 ├── Trapper/                   → Separate repo (LukaG712/Trapper)
@@ -160,12 +162,12 @@
 ├── Shrewd/                    → Separate repo (LukaG712/Shrewd)
 ├── Slammer/                   → Separate repo (LukaG712/Slammer)
 └── Speedy/                    → Separate repo (LukaG712/Speedy)</code></pre>
-      <p>Each sub-project is an independent Git repository with its own CI pipeline. The root repo tracks orchestration files and excludes the sub-project directories via <code>.gitignore</code>.</p>
+      <p>Each sub-project is an independent Git repository with its own CI pipeline. The root repo tracks orchestration files and excludes the sub-project directories via <code>.gitignore</code>. Use <code>install.sh</code> or <code>install.ps1</code> to bootstrap all services at compatible versions.</p>
     </section>
   </main>
 
   <footer>
-    <p>Evershade v1.7.0 — Licensed under <a href="https://opensource.org/licenses/MIT">MIT</a></p>
+    <p>Evershade v1.12.0 — Licensed under <a href="https://opensource.org/licenses/MIT">MIT</a></p>
     <p>
       <a href="https://github.com/LukaG712/Evershade">GitHub</a> ·
       <a href="index.html">Home</a> ·
