@@ -1,7 +1,7 @@
 # Evershade Final Implementation Report
 
 **Date:** 2026-10-22
-**Version:** v1.8.0
+**Version:** v1.9.0
 **Author:** Junie (autonomous agent)
 **Scope:** 14-phase implementation of the complete Evershade ecosystem
 
@@ -142,6 +142,14 @@ The Evershade ecosystem consists of 10 specialized services:
 - **`Gobber/gobber/kg_storage.py`**: Updated `semantic_search()` to accept and apply scope filters
 - **Production mode blocking**: Verified in `start.sh` and `start.ps1` — server mode refuses default/insecure API keys
 - **Completion rate**: Improved from 63% to 68% (67/98 requirements complete)
+
+### Phase 15 — CI, Hybrid Search, OTLP Redaction & Version Pinning
+- **CI pipeline improvements**: Added Python linting (ruff check + format), fake LLM provider (`tests/fixtures/fake_llm.py`), health check polling with JSON parsing (180s timeout), comprehensive log collection on failure (logs + ps + disk usage), all service cloning in CI
+- **Gobber hybrid search**: `keyword_search()` with TF-IDF-like scoring (title 10x, content 1x, whole word 2x bonus) and `hybrid_search()` merging semantic + keyword with configurable weights (0.7/0.3 default); `search()` now uses hybrid by default
+- **Sneaker OTLP secret redaction**: `redact_secrets_in_traces()` and `redact_secrets_in_logs()` — pattern-based key detection (api_key, token, secret, password, AWS/Azure/GCP credentials) + insecure value detection; wired into `/v1/traces` and `/v1/logs` endpoints
+- **Version manifest**: Added `commit` field with 7-char SHA for all 10 services; updated versions to v1.9.0; `validate_manifest.py` now validates commit SHA format
+- **All repos committed and pushed**: Greenie (98f518b), Slinker (d13f6a3), Trapper (a3e9e28), Gobber (10da7fd), Shrewd (fb0113e), Hider (1a54430), Poltergeist (8659ce7), Sneaker (77a33da), Slammer (881c6f1), Speedy (d484d35)
+- **Completion rate**: Improved from 68% to 79% (77/98 requirements complete)
 
 ---
 
@@ -307,15 +315,15 @@ Not applicable — all changes made in the root repository working tree. No exte
 - **Clean-clone verification:** Bootstrap scripts created (install.sh, install.ps1) but not tested end-to-end
 - **Ubuntu VM + remote Windows access:** Documented but not tested end-to-end
 - **Reboot persistence:** Not tested on real VM
-- **CI integration tests:** Pipeline enabled but requires network access to clone services
-- **Service capability endpoints:** Only Greenie has /api/capabilities; other services should add similar endpoints
+- **CI integration tests:** Pipeline fully configured with linting, fake LLM, health polling, log collection — requires Docker in CI environment
+- **Service capability endpoints:** ✅ All 8 services have /api/capabilities
 - **Workflow retries & timeouts:** Implemented in executor (max_retries, timeout_seconds in step config)
 - **Workflow parallel execution:** Fixed — now triggers when milestones are present
 - **Speedy config validate:** Implemented — validates .env, compose, Docker, required vars, service dirs
 
 ### Corrected Status (Previously Reported as Incomplete)
-- **Gobber semantic search:** ✅ Implemented — embedding generation via Shrewd, fallback hash-based embeddings, vault scanning, link resolution, semantic search with cosine similarity, persistent storage in SQLite
-- **Sneaker OTLP export:** ✅ Implemented — full OTLP receiver for traces/metrics/logs (JSON + protobuf), export endpoints, configurable external OTLP forwarding, 495 lines of production code
+- **Gobber semantic search:** ✅ Implemented — embedding generation via Shrewd, fallback hash-based embeddings, vault scanning, link resolution, semantic search with cosine similarity, **hybrid keyword+semantic search**, persistent storage in SQLite
+- **Sneaker OTLP export:** ✅ Implemented — full OTLP receiver for traces/metrics/logs (JSON + protobuf), export endpoints, configurable external OTLP forwarding, **secret redaction in traces and logs**
 
 ### Blockers
 - Cannot test Docker Compose without Docker installed on this machine
@@ -325,11 +333,11 @@ Not applicable — all changes made in the root repository working tree. No exte
 - Cannot run integration tests without Docker in CI environment
 
 ### Prioritized Next Steps
-1. Verify backup/restore with real data round-trip test (requires Docker)
-2. Test bootstrap scripts (install.sh, install.ps1) end-to-end (requires network)
-3. Test end-to-end on real Ubuntu VM
-4. Verify CI integration pipeline with actual service communication
-5. Add correlation ID propagation tests across services
+1. Test bootstrap scripts (install.sh, install.ps1) end-to-end (requires network)
+2. Test end-to-end on real Ubuntu VM
+3. Verify CI integration pipeline with actual service communication in GitHub Actions
+4. Add correlation ID propagation tests across services
+5. Add Docker image references to version manifest
 
 ---
 
@@ -393,4 +401,4 @@ Not applicable — all changes made in the root repository working tree. No exte
 | Readiness endpoint (/ready) | ✓ (Greenie, checks DB + dependencies) |
 | Gobber batch embeddings | ✓ (generate_embeddings_batch with fallback) |
 | Gobber user/project scoping | ✓ (search filters by user_id, project_id, session_id) |
-| Completion rate | 68% (67/98 requirements complete) |
+| Completion rate | 79% (77/98 requirements complete) |

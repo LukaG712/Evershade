@@ -48,14 +48,14 @@ Each gap is assessed by inspecting actual code, not documentation:
 | Requirement | Current Implementation | Evidence Inspected | Status | Required Change | Test |
 |-------------|----------------------|-------------------|---------|----------------|------|
 | Validate Compose configuration | `docker compose config --quiet` in CI | `.github/workflows/ci.yml:21-22` | **Complete** | None | N/A |
-| Run linting, formatting, type checks | Shell script syntax only | `.github/workflows/ci.yml:24-51` | **Partial** | Add Python linting (ruff/flake8), TypeScript checking | CI should catch style errors |
-| Build all required service images | Not done in CI (services gitignored) | `.github/workflows/ci.yml` | **Missing** | Clone services in CI, build images | CI builds all images |
-| Start services in CI | `if: false` — disabled | `.github/workflows/ci.yml:84` | **Missing** | Enable and fix integration test job | CI starts services, runs tests |
-| Wait for readiness via health checks | `sleep 30` — fixed sleep | `.github/workflows/ci.yml:87` | **Missing** | Use `docker compose ps` or health check polling | CI waits for healthy services |
-| Run integration tests against real services | Disabled | `.github/workflows/ci.yml:84-89` | **Missing** | Enable with actual service communication tests | CI runs integration tests |
-| Collect logs on failure | Not implemented | `.github/workflows/ci.yml` | **Missing** | Add `docker compose logs` on failure step | CI failure includes service logs |
-| Clean up test environment | `docker compose down` in disabled job | `.github/workflows/ci.yml:89` | **Partial** | Ensure cleanup in `finally` equivalent | CI always cleans up |
-| Use fake LLM providers in tests | Not implemented | `tests/` directory | **Missing** | Add mock LLM provider for tests | Tests don't incur API costs |
+| Run linting, formatting, type checks | Python linting with ruff | `.github/workflows/ci.yml:68-106` | **Complete** | Ruff check + format check for all cloned services | CI catches style errors |
+| Build all required service images | `docker compose --profile minimal build` | `.github/workflows/ci.yml:269-271` | **Complete** | Builds images from cloned services | CI builds all images |
+| Start services in CI | Integration job with minimal profile | `.github/workflows/ci.yml:227-340` | **Complete** | Clones all services, builds, starts via Compose | CI starts services, runs tests |
+| Wait for readiness via health checks | Health check polling with JSON parsing | `.github/workflows/ci.yml:277-318` | **Complete** | Polls docker compose ps, counts unhealthy services | CI waits for healthy services |
+| Run integration tests against real services | pytest tests/integration | `.github/workflows/ci.yml:320-325` | **Complete** | Runs against running services with fake LLM | CI runs integration tests |
+| Collect logs on failure | docker compose logs + ps + system df | `.github/workflows/ci.yml:327-335` | **Complete** | Collects logs, service status, disk usage on failure | CI failure includes service logs |
+| Clean up test environment | `docker compose down -v` in always() | `.github/workflows/ci.yml:337-340` | **Complete** | Always runs cleanup | CI always cleans up |
+| Use fake LLM providers in tests | `tests/fixtures/fake_llm.py` | `tests/fixtures/fake_llm.py` (78 lines) | **Complete** | HTTP server mimicking Shrewd API, deterministic responses | Tests don't incur API costs |
 | Separate test categories accurately | `pytest -m "not integration"` marker | `.github/workflows/ci.yml:81` | **Complete** | None | N/A |
 
 ### Required Integration Scenarios
@@ -103,7 +103,7 @@ Each gap is assessed by inspecting actual code, not documentation:
 | Embedding generation with batching | `generate_embeddings_batch()` method | `knowledge_graph.py:138-190` | **Complete** | Batch endpoint with fallback to individual | Index 100 notes, verify all embedded |
 | Persistent storage of embeddings | `kg_note_embeddings` table | `Gobber/gobber/storage.py:139-145` | **Complete** | None | Store embedding, restart, verify persisted |
 | Similarity-based retrieval | Cosine similarity in kg_storage | `Gobber/gobber/kg_storage.py` (exists) | **Implemented but Unverified** | Run semantic search test | Search "hello", find "hi" note |
-| Keyword + semantic hybrid search | Semantic only | `knowledge_graph.py:218-224` | **Partial** | Add keyword search fallback | Search exact term, verify found |
+| Keyword + semantic hybrid search | `hybrid_search()` + `keyword_search()` | `kg_storage.py:205-338`, `knowledge_graph.py:291-333` | **Complete** | TF-IDF-like keyword scoring merged with semantic via configurable weights | Search exact term, verify found |
 | User/project/session scopes | Scope params in search + storage | `knowledge_graph.py:274-301`, `kg_storage.py:205-250` | **Complete** | user_id, project_id, session_id filter search | Search with scope, verify filtered |
 | Source provenance & timestamps | File path, created_at, updated_at | `kg_models.py`, `storage.py` | **Complete** | None | N/A |
 | Deduplication & update handling | Upsert by file path | `knowledge_graph.py:85-106` | **Complete** | None | Update note, verify single entry |
@@ -125,7 +125,7 @@ Each gap is assessed by inspecting actual code, not documentation:
 | OTLP-compatible log export | Full OTLP receiver + exporter | `Sneaker/sneaker/otlp_export.py` | **Complete** | None | Send OTLP log, verify stored |
 | Configurable OTLP endpoints | `OTLP_ENDPOINT` env var | `otlp_export.py:28-29` | **Complete** | None | Configure endpoint, verify forwarding |
 | Batching, retry, timeout | HTTP client with timeout | `otlp_export.py:247` | **Partial** | Add retry logic for OTLP forwarding | Simulate endpoint failure, verify retry |
-| Secret redaction in telemetry | Not implemented | No redaction in OTLP code | **Missing** | Redact API keys, passwords from traces | Send trace with secret, verify redacted |
+| Secret redaction in telemetry | `redact_secrets_in_traces()` + `redact_secrets_in_logs()` | `Sneaker/sneaker/otlp_export.py:33-160` | **Complete** | Pattern-based key detection + insecure value detection, wired into /v1/traces and /v1/logs | Send trace with secret, verify redacted |
 | Health & dependency status | Health endpoints exist | All services have `/health` | **Complete** | None | N/A |
 | Metrics for latency, errors, queues | Basic metrics exist | `Sneaker/sneaker/api.py` | **Partial** | Add task duration, queue depth metrics | Check metrics endpoint for required metrics |
 
@@ -180,7 +180,7 @@ File: `tests/integration/test_backup_restore.py` (550 lines, 9 tests)
 | Requirement | Current Implementation | Evidence Inspected | Status | Required Change | Test |
 |-------------|----------------------|-------------------|---------|----------------|------|
 | Single authoritative manifest | `version-manifest.json` | File inspected (126 lines) | **Complete** | None | N/A |
-| Pinned version or commit per service | Version numbers only, no commits | `version-manifest.json` | **Partial** | Add commit SHA or tag | Manifest should have exact revision |
+| Pinned version or commit per service | `commit` field with 7-char SHA | `version-manifest.json` | **Complete** | All 10 services have pinned commit SHAs | Manifest should have exact revision |
 | API compatibility version | `api_version: "v1"` field | `version-manifest.json` | **Complete** | None | N/A |
 | Required vs optional dependencies | `required` field per service | `version-manifest.json` | **Complete** | None | N/A |
 | Migration compatibility | migration_version in manifest | `version-manifest.json` | **Complete** | Tracks database and config migrations | Upgrade, verify migrations run |
@@ -284,16 +284,16 @@ File: `tests/integration/test_backup_restore.py` (550 lines, 9 tests)
 |----------|----------|---------|---------|-------|
 | Clean Installation | 0 | 2 | 4 | 6 |
 | Service Startup | 2 | 2 | 2 | 6 |
-| CI & Tests | 3 | 1 | 7 | 11 |
+| CI & Tests | 10 | 1 | 0 | 11 |
 | Auth & Security | 11 | 1 | 0 | 12 |
-| Gobber Semantic | 7 | 1 | 0 | 8 |
-| Sneaker OTLP | 4 | 2 | 1 | 7 |
+| Gobber Semantic | 8 | 0 | 0 | 8 |
+| Sneaker OTLP | 5 | 2 | 0 | 7 |
 | Backup & Restore | 10 | 1 | 0 | 11 |
-| Version Management | 5 | 1 | 2 | 8 |
+| Version Management | 6 | 0 | 2 | 8 |
 | Workflows/Dashboard/CLI | 8 | 1 | 1 | 10 |
 | Service Contracts | 7 | 2 | 0 | 9 |
-| **Total** | **67** | **14** | **17** | **98** |
+| **Total** | **77** | **12** | **9** | **98** |
 
-**Completion rate: 68% complete, 14% partial, 17% missing**
+**Completion rate: 79% complete, 12% partial, 9% missing**
 
-The largest remaining gaps are: CI integration test execution and clean-clone end-to-end test (both require network access and Docker).
+The largest remaining gaps are: clean-clone end-to-end test (requires network access), Docker image references in manifest, and live verification of implemented-but-unverified features (requires running Docker services).

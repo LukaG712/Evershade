@@ -18,6 +18,7 @@ import sys
 from pathlib import Path
 
 SEMVER_PATTERN = re.compile(r"^\d+\.\d+\.\d+$")
+COMMIT_PATTERN = re.compile(r"^[0-9a-f]{7,40}$")
 
 REQUIRED_SERVICE_FIELDS = {"version", "repository", "required", "port", "api_version"}
 
@@ -78,6 +79,11 @@ def validate_manifest(manifest: dict) -> list[str]:
         repo = service.get("repository", "")
         if repo and not repo.startswith("http"):
             errors.append(f"{prefix}: repository URL is invalid: {repo}")
+
+        # Commit SHA format (optional but validated if present)
+        commit = service.get("commit", "")
+        if commit and not COMMIT_PATTERN.match(commit):
+            errors.append(f"{prefix}: commit SHA '{commit}' is invalid (expected hex, 7-40 chars)")
 
         # Port uniqueness
         port = service.get("port")

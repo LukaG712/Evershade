@@ -1,5 +1,5 @@
 {
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Evershade ecosystem version manifest — defines compatible service versions",
   "updated": "2026-10-22",
   "migration_version": 1,
@@ -18,17 +18,19 @@
   ],
   "services": {
     "Greenie": {
-      "version": "1.7.0",
+      "version": "1.8.0",
+      "commit": "98f518b",
       "repository": "https://github.com/LukaG712/Greenie",
       "required": true,
       "port": 8080,
       "api_version": "v1",
       "dependencies": ["Slinker", "Trapper", "Gobber"],
       "optional_dependencies": ["Sneaker", "Hider", "Poltergeist", "Shrewd"],
-      "notes": "API-only backend. Emergency stop, activity timeline, credential rotation, MCP, plugins, workflow engine, workstations, hybrid stores."
+      "notes": "API-only backend. Auth, CSRF, rate limiting, retry, idempotency, secret redaction, workflow engine, workstations, hybrid stores."
     },
     "Slinker": {
-      "version": "1.1.0",
+      "version": "1.2.0",
+      "commit": "d13f6a3",
       "repository": "https://github.com/LukaG712/Slinker",
       "required": true,
       "port": 8000,
@@ -38,7 +40,8 @@
       "notes": "Pluggable runner interface: Junie default, extensible to Ollama and other runners."
     },
     "Trapper": {
-      "version": "1.0.0",
+      "version": "1.1.0",
+      "commit": "a3e9e28",
       "repository": "https://github.com/LukaG712/Trapper",
       "required": true,
       "port": 3000,
@@ -47,26 +50,30 @@
       "optional_dependencies": []
     },
     "Gobber": {
-      "version": "1.0.0",
+      "version": "1.1.0",
+      "commit": "10da7fd",
       "repository": "https://github.com/LukaG712/Gobber",
       "required": true,
       "port": 8085,
       "api_version": "v1",
       "dependencies": [],
-      "optional_dependencies": ["Shrewd"]
+      "optional_dependencies": ["Shrewd"],
+      "notes": "Hybrid semantic+keyword search, batch embeddings, user/project scoping, link resolution."
     },
     "Sneaker": {
-      "version": "1.1.0",
+      "version": "1.2.0",
+      "commit": "77a33da",
       "repository": "https://github.com/LukaG712/Sneaker",
       "required": false,
       "port": 8086,
       "api_version": "v1",
       "dependencies": [],
       "optional_dependencies": ["Poltergeist"],
-      "notes": "Alerting system with deduplication, cooldown, and Poltergeist delivery."
+      "notes": "OTLP with secret redaction, alerting with deduplication, cooldown, and Poltergeist delivery."
     },
     "Hider": {
-      "version": "1.0.0",
+      "version": "1.1.0",
+      "commit": "1a54430",
       "repository": "https://github.com/LukaG712/Hider",
       "required": false,
       "port": 8087,
@@ -75,7 +82,8 @@
       "optional_dependencies": []
     },
     "Poltergeist": {
-      "version": "1.1.0",
+      "version": "1.2.0",
+      "commit": "8659ce7",
       "repository": "https://github.com/LukaG712/Poltergeist",
       "required": false,
       "port": 8088,
@@ -85,7 +93,8 @@
       "notes": "Real delivery: Slack, Discord, Email, Telegram, Webhook. SQLite persistence."
     },
     "Shrewd": {
-      "version": "1.1.0",
+      "version": "1.2.0",
+      "commit": "fb0113e",
       "repository": "https://github.com/LukaG712/Shrewd",
       "required": false,
       "port": 8089,
@@ -96,6 +105,7 @@
     },
     "Slammer": {
       "version": "1.4.0",
+      "commit": "881c6f1",
       "repository": "https://github.com/LukaG712/Slammer",
       "required": false,
       "port": 5173,
@@ -105,7 +115,8 @@
       "notes": "Single unified dashboard: services, agents, runs, workflows, workstations, metrics, logs, plugins/MCP management."
     },
     "Speedy": {
-      "version": "1.1.0",
+      "version": "1.2.0",
+      "commit": "d484d35",
       "repository": "https://github.com/LukaG712/Speedy",
       "required": false,
       "port": null,

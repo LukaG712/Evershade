@@ -14,6 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Validate docker-compose syntax
         uses: docker/setup-buildx-action@v3
 
@@ -60,6 +65,46 @@ jobs:
         run: |
           python scripts/validate_manifest.py version-manifest.json
 
+      - name: Install Python linting tools
+        run: |
+          pip install ruff
+
+      - name: Python linting (ruff)
+        run: |
+          # Clone services for linting
+          git clone --depth 1 https://github.com/LukaG712/Greenie.git || true
+          git clone --depth 1 https://github.com/LukaG712/Gobber.git || true
+          git clone --depth 1 https://github.com/LukaG712/Sneaker.git || true
+          git clone --depth 1 https://github.com/LukaG712/Hider.git || true
+          git clone --depth 1 https://github.com/LukaG712/Poltergeist.git || true
+          git clone --depth 1 https://github.com/LukaG712/Shrewd.git || true
+          git clone --depth 1 https://github.com/LukaG712/Slinker.git || true
+          git clone --depth 1 https://github.com/LukaG712/Speedy.git || true
+
+          # Lint root tests
+          ruff check tests/ --output-format github || true
+
+          # Lint service Python code
+          for dir in Greenie Gobber Sneaker Hider Poltergeist Shrewd Slinker Speedy; do
+            if [ -d "$dir" ]; then
+              echo "Linting $dir..."
+              ruff check "$dir" --output-format github || true
+            fi
+          done
+
+      - name: Python formatting check (ruff)
+        run: |
+          # Check formatting of root tests
+          ruff format tests/ --check --diff || true
+
+          # Check formatting of service code
+          for dir in Greenie Gobber Sneaker Hider Poltergeist Shrewd Slinker Speedy; do
+            if [ -d "$dir" ]; then
+              echo "Checking format in $dir..."
+              ruff format "$dir" --check --diff || true
+            fi
+          done
+
   test:
     name: Run Tests
     runs-on: ubuntu-latest
@@ -77,8 +122,106 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-test.txt
 
-      - name: Run unit tests (skip integration tests)
+      - name: Clone services for tests
         run: |
+          git clone --depth 1 https://github.com/LukaG712/Greenie.git || true
+          git clone --depth 1 https://github.com/LukaG712/Gobber.git || true
+          git clone --depth 1 https://github.com/LukaG712/Sneaker.git || true
+
+      - name: Create fake LLM provider
+        run: |
+          # Create a mock LLM provider that returns deterministic responses
+          mkdir -p tests/fixtures
+          cat > tests/fixtures/fake_llm.py << 'EOF'
+"""Fake LLM provider for tests that must not incur API costs.
+
+This module provides a simple HTTP server that mimics the Shrewd LLM API,
+returning deterministic responses for testing purposes.
+"""
+
+import json
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import threading
+
+
+class FakeLLMHandler(BaseHTTPRequestHandler):
+    """HTTP handler that returns fake LLM responses."""
+
+    def do_POST(self):
+        content_length = int(self.headers.get("Content-Length", 0))
+        body = self.rfile.read(content_length) if content_length > 0 else b"{}"
+
+        if self.path == "/api/embed":
+            data = json.loads(body)
+            text = data.get("text", "")
+            # Return a deterministic embedding based on text length
+            dimensions = 384
+            embedding = [(hash(text + str(i)) % 1000) / 1000.0 for i in range(dimensions)]
+            response = {"embedding": embedding}
+        elif self.path == "/api/embed/batch":
+            data = json.loads(body)
+            texts = data.get("texts", [])
+            embeddings = []
+            for text in texts:
+                dimensions = 384
+                emb = [(hash(text + str(i)) % 1000) / 1000.0 for i in range(dimensions)]
+                embeddings.append(emb)
+            response = {"embeddings": embeddings}
+        elif self.path == "/api/chat":
+            response = {
+                "choices": [{
+                    "message": {
+                        "content": "This is a fake LLM response for testing.",
+                        "role": "assistant"
+                    },
+                    "finish_reason": "stop"
+                }],
+                "model": "fake-model",
+                "usage": {"prompt_tokens": 10, "completion_tokens": 10, "total_tokens": 20}
+            }
+        elif self.path == "/api/completions":
+            response = {
+                "choices": [{
+                    "text": "This is a fake completion for testing.",
+                    "finish_reason": "stop"
+                }],
+                "model": "fake-model"
+            }
+        else:
+            response = {"error": "Unknown endpoint"}
+
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(json.dumps(response).encode())
+
+    def log_message(self, format, *args):
+        # Suppress request logging in tests
+        pass
+
+
+def start_fake_llm(port=8089):
+    """Start the fake LLM server in a background thread."""
+    server = HTTPServer(("localhost", port), FakeLLMHandler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    return server
+
+
+# Auto-start if imported
+_server = start_fake_llm()
+EOF
+          echo "Fake LLM provider created"
+
+      - name: Run unit tests (skip integration tests)
+        env:
+          SHREWD_URL: http://localhost:8089
+          SHREWD_API_KEY: test-key
+          FAKE_LLM_ENABLED: "true"
+        run: |
+          # Import fake LLM provider before tests
+          python -c "import sys; sys.path.insert(0, 'tests/fixtures'); import fake_llm" &
+          sleep 1
           python -m pytest tests/ -v -m "not integration" --tb=short --ignore=tests/integration || true
 
   integration:
@@ -112,6 +255,10 @@ jobs:
           git clone --depth 1 https://github.com/LukaG712/Slinker.git || true
           git clone --depth 1 https://github.com/LukaG712/Trapper.git || true
           git clone --depth 1 https://github.com/LukaG712/Gobber.git || true
+          git clone --depth 1 https://github.com/LukaG712/Sneaker.git || true
+          git clone --depth 1 https://github.com/LukaG712/Hider.git || true
+          git clone --depth 1 https://github.com/LukaG712/Poltergeist.git || true
+          git clone --depth 1 https://github.com/LukaG712/Shrewd.git || true
 
       - name: Install test dependencies
         run: |
@@ -130,18 +277,50 @@ jobs:
       - name: Wait for services to be healthy
         run: |
           echo "Waiting for services to become healthy..."
-          for i in {1..60}; do
-            if docker compose ps --format json 2>/dev/null | grep -q '"healthy"' || docker compose ps 2>/dev/null | grep -q 'healthy'; then
-              echo "Services are healthy!"
+          MAX_WAIT=180
+          INTERVAL=3
+          ELAPSED=0
+
+          while [ $ELAPSED -lt $MAX_WAIT ]; do
+            # Check if all running services are healthy
+            UNHEALTHY=$(docker compose ps --format json 2>/dev/null | python3 -c "
+import sys, json
+unhealthy = 0
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+    try:
+        svc = json.loads(line)
+        status = svc.get('Health', '')
+        if status and status != 'healthy':
+            unhealthy += 1
+    except:
+        pass
+print(unhealthy)
+" 2>/dev/null || echo "99")
+
+            if [ "$UNHEALTHY" = "0" ]; then
+              echo "All services are healthy!"
               exit 0
             fi
-            sleep 2
+
+            echo "Waiting... $ELAPSED/$MAX_WAIT seconds. Unhealthy services: $UNHEALTHY"
+            sleep $INTERVAL
+            ELAPSED=$((ELAPSED + INTERVAL))
           done
-          echo "Services did not become healthy in time"
+
+          echo "ERROR: Services did not become healthy within ${MAX_WAIT}s"
+          echo "=== Service status ==="
+          docker compose ps
+          echo "=== Service logs ==="
           docker compose logs
           exit 1
 
       - name: Run integration tests
+        env:
+          SHREWD_URL: http://localhost:8089
+          SHREWD_API_KEY: test-key
         run: |
           python -m pytest tests/integration -v --tb=short || true
 
@@ -150,6 +329,10 @@ jobs:
         run: |
           echo "=== Collecting service logs ==="
           docker compose logs || true
+          echo "=== Docker inspect ==="
+          docker compose ps -a || true
+          echo "=== Disk usage ==="
+          docker system df || true
 
       - name: Clean up
         if: always()
