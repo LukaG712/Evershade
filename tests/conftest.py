@@ -23,6 +23,7 @@ def pytest_collection_modifyitems(config, items):
         "test_security",
         "test_benchmarks",
         "test_evaluation",
+        "test_mission_cross_service",
     }
     # Tests within integration modules that DON'T need live services
     non_integration_tests = {

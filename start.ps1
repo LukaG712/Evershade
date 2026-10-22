@@ -1,4 +1,4 @@
-# Unified Workflow — Startup Script (Windows PowerShell)
+﻿# Unified Workflow — Startup Script (Windows PowerShell)
 # Validates configuration, checks dependencies, and starts all services.
 
 $ErrorActionPreference = "Stop"
@@ -10,36 +10,36 @@ Write-Host "Starting services..." -ForegroundColor Cyan
 # Check Docker
 try {
     $dockerVersion = docker --version 2>$null
-    Write-Host "[✓] Docker is available: $dockerVersion" -ForegroundColor Green
+    Write-Host "[[OK]] Docker is available: $dockerVersion" -ForegroundColor Green
 } catch {
-    Write-Host "[✗] ERROR: Docker is not installed. Please install Docker Desktop first." -ForegroundColor Red
+    Write-Host "[[XX]] ERROR: Docker is not installed. Please install Docker Desktop first." -ForegroundColor Red;
     exit 1
 }
 
 # Check Docker Compose
 try {
     $composeVersion = docker compose version 2>$null
-    Write-Host "[✓] Docker Compose is available" -ForegroundColor Green
+    Write-Host "[[OK]] Docker Compose is available" -ForegroundColor Green
 } catch {
-    Write-Host "[✗] ERROR: Docker Compose is not available." -ForegroundColor Red
+    Write-Host "[[XX]] ERROR: Docker Compose is not available." -ForegroundColor Red;
     exit 1
 }
 
 # Create .env from .env.example if it doesn't exist
 if (-not (Test-Path ".env")) {
     if (Test-Path ".env.example") {
-        Write-Host "[!] .env not found. Copying from .env.example..." -ForegroundColor Yellow
+        Write-Host "[[WARN]] .env not found. Copying from .env.example..." -ForegroundColor Yellow
         Copy-Item ".env.example" ".env"
-        Write-Host "[!] Please edit .env with your API keys before starting." -ForegroundColor Yellow
-        Write-Host "[!] Press Ctrl+C to edit, or Enter to continue with defaults..." -ForegroundColor Yellow
+        Write-Host "[[WARN]] Please edit .env with your API keys before starting." -ForegroundColor Yellow
+        Write-Host "[[WARN]] Press Ctrl+C to edit, or Enter to continue with defaults..." -ForegroundColor Yellow
         Read-Host
     } else {
-        Write-Host "[✗] ERROR: Neither .env nor .env.example found." -ForegroundColor Red
+        Write-Host "[[XX]] ERROR: Neither .env nor .env.example found." -ForegroundColor Red
         exit 1
     }
 }
 
-Write-Host "[✓] .env file found" -ForegroundColor Green
+Write-Host "[[OK]] .env file found" -ForegroundColor Green
 
 # Validate API keys are not using defaults
 $defaultKeys = @(
@@ -58,50 +58,50 @@ $hasDefaultKeys = $false
 foreach ($key in $defaultKeys) {
     $envValue = (Get-Content .env | Where-Object { $_ -match "^${key.Name}=" }) -replace "^${key.Name}=", ""
     if ($envValue -eq $key.Default) {
-        Write-Host "[✗] WARNING: ${key.Name} is using the default value '${key.Default}'" -ForegroundColor Red
+        Write-Host "[[XX]] WARNING: ${key.Name} is using the default value '${key.Default}'" -ForegroundColor Red
         $hasDefaultKeys = $true
     }
 }
 
 if ($hasDefaultKeys) {
     Write-Host "" 
-    Write-Host "[!] SECURITY RISK: Default API keys detected. These should be changed for production use." -ForegroundColor Red
-    Write-Host "[!] Generate secure keys: openssl rand -hex 32" -ForegroundColor Yellow
+    Write-Host "[[WARN]] SECURITY RISK: Default API keys detected. These should be changed for production use." -ForegroundColor Red
+    Write-Host "[[WARN]] Generate secure keys: openssl rand -hex 32" -ForegroundColor Yellow
     Write-Host "" 
-    Write-Host "[!] Press Ctrl+C to fix .env, or Enter to continue with defaults (NOT recommended)..." -ForegroundColor Yellow
+    Write-Host "[[WARN]] Press Ctrl+C to fix .env, or Enter to continue with defaults (NOT recommended)..." -ForegroundColor Yellow
     Read-Host
 }
 
-Write-Host "[✓] API key validation complete" -ForegroundColor Green
+Write-Host "[[OK]] API key validation complete" -ForegroundColor Green
 
 # Check required directories
 foreach ($dir in @("Greenie", "Slinker", "Trapper", "Gobber", "Sneaker", "Hider", "Poltergeist", "Shrewd", "Slammer")) {
     if (-not (Test-Path $dir)) {
-        Write-Host "[✗] ERROR: Directory '$dir' not found." -ForegroundColor Red
+        Write-Host "[[XX]] ERROR: Directory '$dir' not found." -ForegroundColor Red
         exit 1
     }
 }
 
-Write-Host "[✓] All service directories found" -ForegroundColor Green
+Write-Host "[[OK]] All service directories found" -ForegroundColor Green
 
 # Validate docker-compose.yml
 if (-not (Test-Path "docker-compose.yml")) {
-    Write-Host "[✗] ERROR: docker-compose.yml not found." -ForegroundColor Red
+    Write-Host "[[XX]] ERROR: docker-compose.yml not found." -ForegroundColor Red
     exit 1
 }
 
-Write-Host "[✓] docker-compose.yml found" -ForegroundColor Green
+Write-Host "[[OK]] docker-compose.yml found" -ForegroundColor Green
 
 # Check if Junie CLI is available (for code agents)
 try {
     $junieVersion = junie --version 2>$null
     if ($junieVersion) {
-        Write-Host "[✓] Junie CLI is available" -ForegroundColor Green
+        Write-Host "[[OK]] Junie CLI is available" -ForegroundColor Green
     } else {
-        Write-Host "[!] Junie CLI not found on PATH — code agents will not work" -ForegroundColor Yellow
+        Write-Host "[[WARN]] Junie CLI not found on PATH — code agents will not work" -ForegroundColor Yellow
     }
 } catch {
-    Write-Host "[!] Junie CLI not found on PATH — code agents will not work" -ForegroundColor Yellow
+    Write-Host "[[WARN]] Junie CLI not found on PATH — code agents will not work" -ForegroundColor Yellow
 }
 
 # Start services
@@ -112,7 +112,7 @@ Write-Host ""
 docker compose up -d
 
 Write-Host ""
-Write-Host "[✓] Services started!" -ForegroundColor Green
+Write-Host "[[OK]] Services started[WARN]" -ForegroundColor Green
 Write-Host ""
 Write-Host "Service URLs:" -ForegroundColor Cyan
 Write-Host "  Greenie:    http://localhost:8080"
