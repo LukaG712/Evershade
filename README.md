@@ -174,37 +174,41 @@ curl -X POST http://localhost:8080/api/pipeline \
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                   EXTERNAL ACCESS                           │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │  🌐 Browser (:8080/:5173)   ⚡ Speedy CLI          │    │
-│  └──────────────────────┬──────────────────────────────┘    │
-│                         ▼                                   │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │  🔒 Caddy Proxy (optional · TLS)                   │    │
-│  └──────────────────────┬──────────────────────────────┘    │
-└─────────────────────────┼───────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│                  EXTERNAL ACCESS                          │
+│                                                           │
+│  ┌─────────────────────────────────────────────────────┐  │
+│  │  🌐 Browser (:8080/:5173)   ⚡ Speedy CLI           │  │
+│  └──────────────────────┬──────────────────────────────┘  │
+│                         ▼                                 │
+│  ┌─────────────────────────────────────────────────────┐  │
+│  │  🔒 Caddy Proxy (optional · TLS)                    │  │
+│  └──────────────────────┬──────────────────────────────┘  │
+└─────────────────────────┼─────────────────────────────────┘
                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   USER INTERFACE                            │
-│  🟢 Greenie (:8080)  API backend · 320+ endpoints          │
-│  🔵 Slammer (:5173)   React dashboard                      │
-└──────────────────────┬──────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│                  USER INTERFACE                           │
+│                                                           │
+│  🟢 Greenie (:8080)  API backend · 320+ endpoints        │
+│  🔵 Slammer (:5173)   React dashboard                    │
+│                                                           │
+└──────────────────────┬────────────────────────────────────┘
                        ▼  (Bearer Token · Docker Network)
-┌─────────────────────────────────────────────────────────────┐
-│              MICROSERVICES  (Python + FastAPI)              │
-│                                                             │
-│  🔧 Slinker (:8000)  Code execution · Git worktrees        │
-│  🕸️  Trapper (:3000)  Web scraping · Playwright            │
-│  🧠 Shrewd (:8089)   LLM routing · Multi-provider          │
-│  💾 Gobber (:8085)   Storage · Knowledge graph             │
-│  🔐 Hider (:8087)    Secrets · AES-256-GCM                 │
-│  📢 Poltergeist(:8088) Notifications · Multi-channel       │
-│  👁️  Sneaker (:8086) Observability · OTLP                  │
-│                                                             │
-│  ── DATA LAYER ──                                           │
-│  SQLite · Redis · Obsidian Vault · Git Repos                │
-└─────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│            MICROSERVICES  (Python + FastAPI)              │
+│                                                           │
+│  🔧 Slinker (:8000)   Code execution · Git worktrees     │
+│  🕸️  Trapper (:3000)   Web scraping · Playwright         │
+│  🧠 Shrewd (:8089)    LLM routing · Multi-provider        │
+│  💾 Gobber (:8085)    Storage · Knowledge graph           │
+│  🔐 Hider (:8087)     Secrets · AES-256-GCM              │
+│  📢 Poltergeist(:8088) Notifications · Multi-channel      │
+│  👁️  Sneaker (:8086)  Observability · OTLP               │
+│                                                           │
+│  ── DATA LAYER ──                                        │
+│  SQLite · Redis · Obsidian Vault · Git Repos             │
+│                                                           │
+└───────────────────────────────────────────────────────────┘
 ```
 
 ### Data Flow
