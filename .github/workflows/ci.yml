@@ -56,6 +56,10 @@ jobs:
             grep -q "^${dir}/$" .gitignore || { echo "$dir/ not in .gitignore"; exit 1; }
           done
 
+      - name: Validate version manifest
+        run: |
+          python scripts/validate_manifest.py version-manifest.json
+
   test:
     name: Run Tests
     runs-on: ubuntu-latest

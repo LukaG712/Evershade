@@ -113,7 +113,27 @@ Outputs: `checksums.txt`, `signatures.json`, `provenance.json` (SLSA-style)
 
 ## 5. CI/CD
 
-Each service has its own GitHub Actions workflow. The root repository runs ecosystem-wide integration tests.
+Each service has its own GitHub Actions workflow. The root repository runs ecosystem-wide validation and integration tests.
+
+**Lint & Validate job:**
+- Docker Compose syntax validation
+- Shell script syntax (Bash and PowerShell)
+- Required files existence check
+- Service directories in .gitignore
+- Version manifest schema validation (`scripts/validate_manifest.py`)
+
+**Unit Tests job:**
+- Python unit tests with pytest
+- Integration tests excluded via markers
+
+**Integration Tests job:**
+- Clone required services from GitHub
+- Build Docker images via Compose
+- Start minimal profile services
+- Wait for health checks (polling, not fixed sleep)
+- Run integration tests against real services
+- Collect logs on failure
+- Clean up environment in `finally` block
 
 **Per-service CI:**
 - Lint and format check
@@ -126,6 +146,7 @@ Each service has its own GitHub Actions workflow. The root repository runs ecosy
 - Cross-service API compatibility
 - Workflow execution
 - Backup and restore
+- Manifest validation
 
 ---
 

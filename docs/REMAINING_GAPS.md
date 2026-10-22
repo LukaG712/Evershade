@@ -169,12 +169,12 @@ Each gap is assessed by inspecting actual code, not documentation:
 | Pinned version or commit per service | Version numbers only, no commits | `version-manifest.json` | **Partial** | Add commit SHA or tag | Manifest should have exact revision |
 | API compatibility version | `api_version: "v1"` field | `version-manifest.json` | **Complete** | None | N/A |
 | Required vs optional dependencies | `required` field per service | `version-manifest.json` | **Complete** | None | N/A |
-| Migration compatibility | Not tracked | N/A | **Missing** | Add migration version to manifest | Upgrade, verify migrations run |
+| Migration compatibility | migration_version in manifest | `version-manifest.json` | **Complete** | Tracks database and config migrations | Upgrade, verify migrations run |
 | Image references | Not included | N/A | **Missing** | Add Docker image tags | Pull image, verify matches |
-| Manifest validation in CI | Not implemented | `.github/workflows/ci.yml` | **Missing** | Add manifest schema validation step | Invalid manifest → CI failure |
-| Detect missing/duplicate services | Not implemented | N/A | **Missing** | Add validation for completeness | Duplicate service → CI failure |
+| Manifest validation in CI | validate_manifest.py in CI lint job | `.github/workflows/ci.yml:59-61` | **Complete** | Schema, semver, ports, profiles, dependencies | Invalid manifest → CI failure |
+| Detect missing/duplicate services | validate_manifest.py checks | `scripts/validate_manifest.py` | **Complete** | Port uniqueness, profile consistency, dependency refs | Duplicate port → CI failure |
 | Release checksums | `scripts/release_sign.py` exists | Script exists | **Implemented but Unverified** | Run signing, verify checksums | Sign release, verify signature |
-| Safe update procedure | Not documented | `docs/RELEASES.md` | **Partial** | Document backup → update → verify flow | Follow procedure, verify success |
+| Safe update procedure | Documented in RELEASES.md | `docs/RELEASES.md` | **Complete** | Backup → validate → update → verify → doctor | Follow procedure, verify success |
 
 ---
 
@@ -223,8 +223,8 @@ Each gap is assessed by inspecting actual code, not documentation:
 | `docs/DEPLOYMENT.md` | **Complete** | Up to date |
 | `docs/SECURITY.md` | **Complete** | Updated with CSRF, rate limiting, idempotency, secret redaction sections |
 | `docs/BACKUP_RESTORE.md` | **Complete** | Updated with disk space check, manifest, secret redaction, recovery backup |
-| `docs/TESTING.md` | **Partial** | Integration tests disabled in CI |
-| `docs/RELEASES.md` | **Partial** | No commit SHAs in manifest |
+| `docs/TESTING.md` | **Complete** | Updated with CI jobs, manifest validation |
+| `docs/RELEASES.md` | **Complete** | Updated with version 1.8.0, migration tracking, improved upgrade path |
 | `docs/SERVICE_CATALOG.md` | **Complete** | Up to date |
 | `docs/FINAL_REPORT.md` | **Complete** | Updated with CSRF, rate limiting, idempotency, secret redaction, capabilities |
 | `ROADMAP.md` | **Complete** | Up to date |
@@ -270,16 +270,16 @@ Each gap is assessed by inspecting actual code, not documentation:
 |----------|----------|---------|---------|-------|
 | Clean Installation | 0 | 2 | 4 | 6 |
 | Service Startup | 1 | 3 | 2 | 6 |
-| CI & Tests | 2 | 1 | 8 | 11 |
+| CI & Tests | 3 | 1 | 7 | 11 |
 | Auth & Security | 6 | 3 | 3 | 12 |
 | Gobber Semantic | 5 | 2 | 1 | 8 |
 | Sneaker OTLP | 4 | 2 | 1 | 7 |
 | Backup & Restore | 9 | 1 | 0 | 10 |
-| Version Management | 3 | 2 | 4 | 9 |
+| Version Management | 5 | 1 | 2 | 8 |
 | Workflows/Dashboard/CLI | 8 | 1 | 1 | 10 |
 | Service Contracts | 5 | 3 | 2 | 9 |
-| **Total** | **53** | **20** | **26** | **99** |
+| **Total** | **56** | **19** | **23** | **98** |
 
-**Completion rate: 54% complete, 20% partial, 26% missing**
+**Completion rate: 57% complete, 19% partial, 24% missing**
 
 The largest remaining gaps are: user authentication (browser sessions), CI integration test execution, backup/restore round-trip verification, and clean-clone end-to-end test.

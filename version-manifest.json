@@ -1,7 +1,15 @@
 {
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Evershade ecosystem version manifest — defines compatible service versions",
   "updated": "2026-10-22",
+  "migration_version": 1,
+  "migrations": [
+    {
+      "version": 1,
+      "description": "Initial migration tracking — Hider secrets encrypted at rest in SQLite",
+      "breaking": true
+    }
+  ],
   "breaking_changes": [
     "All services require Authorization: Bearer header — query parameter auth removed",
     "Hider requires ENCRYPTION_KEY environment variable for AES-256-GCM encryption",
@@ -104,7 +112,7 @@
       "api_version": null,
       "dependencies": [],
       "optional_dependencies": [],
-      "notes": "Full CLI: install, start, stop, logs, doctor, backup/restore."
+      "notes": "Full CLI: install, start, stop, restart, logs, doctor, backup/restore, config validate."
     }
   },
   "infrastructure": {

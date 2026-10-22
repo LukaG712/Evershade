@@ -107,9 +107,15 @@ The Evershade ecosystem consists of 10 specialized services:
 - **Speedy CLI:** Added `config validate` command — validates .env, docker-compose.yml, Docker availability, required variables, service API keys, and service directories
 - **Slammer dashboard verified:** All 9 pages (services, agents, runs, workflows, workstations, metrics, logs, plugins, missions) connected to real APIs with health polling
 
----
+### Phase 10 — Documentation & Version Management
+- **Manifest validation:** `scripts/validate_manifest.py` — validates schema, semver versions, port uniqueness, profile consistency, dependency references
+- **CI manifest check:** Added to `.github/workflows/ci.yml` lint job — fails CI on invalid manifest
+- **Migration tracking:** `version-manifest.json` now includes `migration_version` and `migrations` array
+- **RELEASES.md:** Updated with version 1.8.0, full compatibility table, migration tracking, improved upgrade procedure
+- **TESTING.md:** Updated with CI job details (lint, unit, integration), manifest validation
+- **version-manifest.json:** Updated to v1.8.0 with migration tracking and Speedy CLI note
 
-## 3. Architecture Decisions
+---
 
 | Decision | Rationale |
 |----------|-----------|
@@ -331,6 +337,10 @@ Not applicable — all changes made in the root repository working tree. No exte
 | Failure injection tests | ✓ |
 | Release signing | ✓ |
 | Documentation complete | ✓ (27+ docs) |
+| Manifest validation in CI | ✓ (validate_manifest.py in lint job) |
+| Migration tracking | ✓ (migration_version in manifest) |
+| RELEASES.md updated | ✓ (version 1.8.0, migration tracking) |
+| TESTING.md updated | ✓ (CI jobs, manifest validation) |
 | Clean-clone installation verified | ⚠ (bootstrap scripts created, not tested) |
 | Ubuntu VM + remote access verified | ✗ (blocked) |
 | Reboot persistence verified | ✗ (blocked) |
