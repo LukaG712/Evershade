@@ -1,12 +1,47 @@
-# Evershade ~ Full Ecosystem
-# Run: docker compose up -d
+# Evershade — Full Ecosystem
+#
+# Profiles:
+#   docker compose --profile minimal up      # Core services only
+#   docker compose --profile standard up     # All services except dashboard
+#   docker compose --profile full up         # Everything including Slammer
+#   docker compose --profile ollama up       # Ollama for local models
+#   docker compose --profile proxy up        # Caddy reverse proxy with TLS
+#   docker compose --profile dev up          # Development mode with all ports exposed
+#
+# Modes:
+#   Set EVERSHADE_MODE=server in .env for headless server deployment
+#   Default (desktop) binds to loopback only
+
+name: evershade
+
+networks:
+  internal:
+    driver: bridge
+    internal: false
+  frontend:
+    driver: bridge
+
+volumes:
+  redis_data:
+  greenie_data:
+  slinker_logs:
+  gobber_data:
+  sneaker_data:
+  hider_data:
+  poltergeist_data:
+  ollama_data:
+  caddy_data:
+  caddy_config:
+
+# ═══════════════════════════════════════════════════════════════════
+# Infrastructure
+# ═══════════════════════════════════════════════════════════════════
 
 services:
-  # ─── Redis (shared by Trapper) ───────────────────────────────────────
   redis:
     image: redis:8-alpine
-    ports:
-      - "6379:6379"
+    networks:
+      - internal
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
@@ -24,59 +59,80 @@ services:
         reservations:
           cpus: '0.25'
           memory: 128M
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /data
 
-  # ─── Greenie (main dashboard, port 8080) ──────────────────────────────
+# ═══════════════════════════════════════════════════════════════════
+# Core Services (Required)
+# ═══════════════════════════════════════════════════════════════════
+
   Greenie:
     build: ./Greenie
+    profiles: ["minimal", "standard", "full", "dev"]
+    networks:
+      - internal
+      - frontend
     ports:
-      - "8080:8080"
+      - "${EVERSHADE_BIND_ADDRESS:-127.0.0.1}:8080:8080"
     environment:
-      - HUB_API_KEY=${HUB_API_KEY:-Greenie-dev-key-change-me}
+      # API Key (new naming + legacy alias)
+      - EVERSHADE_GREENIE_API_KEY=${EVERSHADE_GREENIE_API_KEY:${HUB_API_KEY:-Greenie-dev-key-change-me}}
+      - HUB_API_KEY=${EVERSHADE_GREENIE_API_KEY:${HUB_API_KEY:-Greenie-dev-key-change-me}}
       - HUB_PORT=8080
       - HUB_TIMEOUT=1800
-      - JUNIE_BIN=${JUNIE_BIN:-junie}
-      # Slinker integration
-      - Slinker_URL=http://Slinker:8000
-      - Slinker_API_KEY=${Slinker_API_KEY:-Slinker-dev-key-change-me}
-      # Trapper integration
-      - Trapper_URL=http://Trapper-api:3000
-      - Trapper_API_KEY=${Trapper_API_KEY:-Trapper-dev-key-change-me}
-      # Gobber integration
+      - JUNIE_BIN=${EVERSHADE_JUNIE_BIN:${JUNIE_BIN:-junie}}
+      # Service URLs (internal network)
+      - SLINKER_URL=http://Slinker:8000
+      - TRAPPER_URL=http://Trapper-api:3000
       - GOBBER_URL=http://Gobber:8085
-      - GOBBER_API_KEY=${GOBBER_API_KEY:-Gobber-dev-key-change-me}
-      # Sneaker integration
       - SNEAKER_URL=http://Sneaker:8086
-      - SNEAKER_API_KEY=${SNEAKER_API_KEY:-Sneaker-dev-key-change-me}
-      # Hider integration
       - HIDER_URL=http://Hider:8087
-      - HIDER_API_KEY=${HIDER_API_KEY:-Hider-dev-key-change-me}
-      # Poltergeist integration
       - POLTERGEIST_URL=http://Poltergeist:8088
-      - POLTERGEIST_API_KEY=${POLTERGEIST_API_KEY:-Poltergeist-dev-key-change-me}
-      # Shrewd integration
       - SHREWD_URL=http://Shrewd:8089
-      - SHREWD_API_KEY=${SHREWD_API_KEY:-Shrewd-dev-key-change-me}
-      # Ollama (optional)
-      - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
-      # Redis (for multi-instance cluster support)
+      # Service API Keys (new naming + legacy aliases)
+      - EVERSHADE_SLINKER_API_KEY=${EVERSHADE_SLINKER_API_KEY:${Slinker_API_KEY:-Slinker-dev-key-change-me}}
+      - SLINKER_API_KEY=${EVERSHADE_SLINKER_API_KEY:${Slinker_API_KEY:-Slinker-dev-key-change-me}}
+      - EVERSHADE_TRAPPER_API_KEY=${EVERSHADE_TRAPPER_API_KEY:${Trapper_API_KEY:-Trapper-dev-key-change-me}}
+      - TRAPPER_API_KEY=${EVERSHADE_TRAPPER_API_KEY:${Trapper_API_KEY:-Trapper-dev-key-change-me}}
+      - EVERSHADE_GOBBER_API_KEY=${EVERSHADE_GOBBER_API_KEY:${GOBBER_API_KEY:-Gobber-dev-key-change-me}}
+      - GOBBER_API_KEY=${EVERSHADE_GOBBER_API_KEY:${GOBBER_API_KEY:-Gobber-dev-key-change-me}}
+      - EVERSHADE_SNEAKER_API_KEY=${EVERSHADE_SNEAKER_API_KEY:${SNEAKER_API_KEY:-Sneaker-dev-key-change-me}}
+      - SNEAKER_API_KEY=${EVERSHADE_SNEAKER_API_KEY:${SNEAKER_API_KEY:-Sneaker-dev-key-change-me}}
+      - EVERSHADE_HIDER_API_KEY=${EVERSHADE_HIDER_API_KEY:${HIDER_API_KEY:-Hider-dev-key-change-me}}
+      - HIDER_API_KEY=${EVERSHADE_HIDER_API_KEY:${HIDER_API_KEY:-Hider-dev-key-change-me}}
+      - EVERSHADE_POLTERGEIST_API_KEY=${EVERSHADE_POLTERGEIST_API_KEY:${POLTERGEIST_API_KEY:-Poltergeist-dev-key-change-me}}
+      - POLTERGEIST_API_KEY=${EVERSHADE_POLTERGEIST_API_KEY:${POLTERGEIST_API_KEY:-Poltergeist-dev-key-change-me}}
+      - EVERSHADE_SHREWD_API_KEY=${EVERSHADE_SHREWD_API_KEY:${SHREWD_API_KEY:-Shrewd-dev-key-change-me}}
+      - SHREWD_API_KEY=${EVERSHADE_SHREWD_API_KEY:${SHREWD_API_KEY:-Shrewd-dev-key-change-me}}
+      # Ollama
+      - OLLAMA_URL=${EVERSHADE_OLLAMA_URL:-http://host.docker.internal:11434}
+      # Redis
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - REDIS_PASSWORD=${EVERSHADE_REDIS_PASSWORD:-}
       - REDIS_DB=0
+      # Deployment
+      - EVERSHADE_MODE=${EVERSHADE_MODE:-desktop}
+      - EVERSHADE_PUBLIC_URL=${EVERSHADE_PUBLIC_URL:-http://localhost:8080}
       # Logging
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LOG_LEVEL=${EVERSHADE_LOG_LEVEL:-INFO}
     volumes:
-      - ./Greenie/hub.yaml:/app/hub.yaml
-      - ./Greenie/data:/app/data
-      - ./Greenie/skills:/app/skills
-      # Mount workspace so agents can access projects
-      - ${WORKSPACE_PATH:-./workspace}:/workspace
+      - ./Greenie/hub.yaml:/app/hub.yaml:ro
+      - greenie_data:/app/data
+      - ./Greenie/skills:/app/skills:ro
+      - ${EVERSHADE_WORKSPACE_PATH:-./workspace}:/workspace
     depends_on:
       redis:
         condition: service_healthy
       Slinker:
         condition: service_healthy
       Trapper-api:
+        condition: service_healthy
+      Gobber:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
@@ -95,27 +151,41 @@ services:
         reservations:
           cpus: '0.50'
           memory: 512M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
 
-  # ─── Slinker (execution engine, port 8000) ────────────────────────────
   Slinker:
     build: ./Slinker
+    profiles: ["minimal", "standard", "full", "dev"]
+    networks:
+      - internal
+    # No host port — only accessible via Greenie or internal network
+    # Dev profile exposes port for direct access:
     ports:
-      - "8000:8000"
+      - target: 8000
+        published: "8000"
+        protocol: tcp
+        mode: host
     environment:
-      - API_KEY=${Slinker_API_KEY:-Slinker-dev-key-change-me}
+      - API_KEY=${EVERSHADE_SLINKER_API_KEY:${Slinker_API_KEY:-Slinker-dev-key-change-me}}
       - PORT=8000
       - JUNIE_TIMEOUT=1800
-      - JUNIE_BIN=${JUNIE_BIN:-junie}
+      - JUNIE_BIN=${EVERSHADE_JUNIE_BIN:${JUNIE_BIN:-junie}}
       - WORKSPACE_PATH=/workspace
-      - MAX_CONCURRENT_WORKERS=${MAX_CONCURRENT_WORKERS:-1}
-      - ISOLATION_MODE=${ISOLATION_MODE:-worktree}
-      # Ollama (optional)
-      - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
-      - OLLAMA_MODEL=${OLLAMA_MODEL:-gemma4:12b}
-      - REFINE_PROMPT=${REFINE_PROMPT:-false}
+      - MAX_CONCURRENT_WORKERS=${EVERSHADE_MAX_CONCURRENT_WORKERS:-1}
+      - ISOLATION_MODE=${EVERSHADE_ISOLATION_MODE:-worktree}
+      - OLLAMA_URL=${EVERSHADE_OLLAMA_URL:-http://host.docker.internal:11434}
+      - OLLAMA_MODEL=${EVERSHADE_OLLAMA_MODEL:-gemma4:12b}
+      - REFINE_PROMPT=${EVERSHADE_REFINE_PROMPT:-false}
+      - LOG_LEVEL=${EVERSHADE_LOG_LEVEL:-INFO}
     volumes:
-      - ${WORKSPACE_PATH:-./workspace}:/workspace
-      - Slinker_logs:/app/logs
+      - ${EVERSHADE_WORKSPACE_PATH:-./workspace}:/workspace
+      - slinker_logs:/app/logs
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 15s
@@ -133,28 +203,36 @@ services:
         reservations:
           cpus: '0.50'
           memory: 512M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/logs
 
-  # ─── Trapper API (web scraping, port 3000) ───────────────────────────
   Trapper-api:
     build: ./Trapper
-    ports:
-      - "3000:3000"
+    profiles: ["minimal", "standard", "full", "dev"]
+    networks:
+      - internal
     environment:
       - PORT=3000
       - HOST=0.0.0.0
-      - API_KEY=${Trapper_API_KEY:-Trapper-dev-key-change-me}
+      - API_KEY=${EVERSHADE_TRAPPER_API_KEY:${Trapper_API_KEY:-Trapper-dev-key-change-me}}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - RATE_LIMIT_MAX=60
       - RATE_LIMIT_WINDOW_MS=60000
-      - SCRAPE_TIMEOUT=30000
+      - SCRAPE_TIMEOUT=${EVERSHADE_SCRAPE_TIMEOUT:-30000}
       - SCRAPE_ONLY_MAIN_CONTENT=true
       - SCRAPE_BLOCK_ADS=true
-      - CRAWL_MAX_DEPTH=10
-      - CRAWL_MAX_PAGES=100
-      - CRAWL_MAX_CONCURRENCY=5
+      - CRAWL_MAX_DEPTH=${EVERSHADE_CRAWL_MAX_DEPTH:-10}
+      - CRAWL_MAX_PAGES=${EVERSHADE_CRAWL_MAX_PAGES:-100}
+      - CRAWL_MAX_CONCURRENCY=${EVERSHADE_CRAWL_MAX_CONCURRENCY:-5}
       - CRAWL_DELAY=1000
-      - BROWSER_HEADLESS=true
+      - BROWSER_HEADLESS=${EVERSHADE_BROWSER_HEADLESS:-true}
       - LOG_LEVEL=info
     depends_on:
       redis:
@@ -174,25 +252,34 @@ services:
         reservations:
           cpus: '0.50'
           memory: 256M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
 
-  # ─── Trapper Worker (background crawl jobs) ──────────────────────────
   Trapper-worker:
     build: ./Trapper
+    profiles: ["minimal", "standard", "full", "dev"]
+    networks:
+      - internal
     command: node dist/worker.js
     environment:
       - PORT=3000
       - HOST=0.0.0.0
-      - API_KEY=${Trapper_API_KEY:-Trapper-dev-key-change-me}
+      - API_KEY=${EVERSHADE_TRAPPER_API_KEY:${Trapper_API_KEY:-Trapper-dev-key-change-me}}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - SCRAPE_TIMEOUT=30000
+      - SCRAPE_TIMEOUT=${EVERSHADE_SCRAPE_TIMEOUT:-30000}
       - SCRAPE_ONLY_MAIN_CONTENT=true
       - SCRAPE_BLOCK_ADS=true
-      - CRAWL_MAX_DEPTH=10
-      - CRAWL_MAX_PAGES=100
-      - CRAWL_MAX_CONCURRENCY=5
+      - CRAWL_MAX_DEPTH=${EVERSHADE_CRAWL_MAX_DEPTH:-10}
+      - CRAWL_MAX_PAGES=${EVERSHADE_CRAWL_MAX_PAGES:-100}
+      - CRAWL_MAX_CONCURRENCY=${EVERSHADE_CRAWL_MAX_CONCURRENCY:-5}
       - CRAWL_DELAY=1000
-      - BROWSER_HEADLESS=true
+      - BROWSER_HEADLESS=${EVERSHADE_BROWSER_HEADLESS:-true}
       - LOG_LEVEL=info
     depends_on:
       redis:
@@ -206,22 +293,30 @@ services:
         reservations:
           cpus: '0.50'
           memory: 256M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
 
-  # ─── Gobber (persistent storage, port 8085) ──────────────────────────
   Gobber:
     build: ./Gobber
-    ports:
-      - "8085:8085"
+    profiles: ["minimal", "standard", "full", "dev"]
+    networks:
+      - internal
     environment:
-      - API_KEY=${GOBBER_API_KEY:-Gobber-dev-key-change-me}
+      - API_KEY=${EVERSHADE_GOBBER_API_KEY:${GOBBER_API_KEY:-Gobber-dev-key-change-me}}
       - DB_PATH=/app/data/gobber.db
       - REDIS_URL=redis://redis:6379/1
-      - OBSIDIAN_VAULT_PATH=${OBSIDIAN_VAULT_PATH:-/app/vault}
+      - OBSIDIAN_VAULT_PATH=${EVERSHADE_OBSIDIAN_VAULT_PATH:-/app/vault}
       - SHREWD_URL=http://Shrewd:8089
-      - SHREWD_API_KEY=${SHREWD_API_KEY:-Shrewd-dev-key-change-me}
+      - SHREWD_API_KEY=${EVERSHADE_SHREWD_API_KEY:${SHREWD_API_KEY:-Shrewd-dev-key-change-me}}
+      - LOG_LEVEL=${EVERSHADE_LOG_LEVEL:-INFO}
     volumes:
       - gobber_data:/app/data
-      - ${OBSIDIAN_VAULT_PATH:-./obsidian-vault}:/app/vault:ro
+      - ${EVERSHADE_OBSIDIAN_VAULT_PATH:-./obsidian-vault}:/app/vault:ro
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8085/health')"]
       interval: 30s
@@ -237,14 +332,30 @@ services:
         reservations:
           cpus: '0.25'
           memory: 128M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/data
 
-  # ─── Sneaker (observability, port 8086) ──────────────────────────────
+# ═══════════════════════════════════════════════════════════════════
+# Supporting Services (Optional)
+# ═══════════════════════════════════════════════════════════════════
+
   Sneaker:
     build: ./Sneaker
-    ports:
-      - "8086:8086"
+    profiles: ["standard", "full", "dev"]
+    networks:
+      - internal
     environment:
-      - API_KEY=${SNEAKER_API_KEY:-Sneaker-dev-key-change-me}
+      - API_KEY=${EVERSHADE_SNEAKER_API_KEY:${SNEAKER_API_KEY:-Sneaker-dev-key-change-me}}
+      - DB_PATH=/app/data/sneaker.db
+      - LOG_LEVEL=${EVERSHADE_LOG_LEVEL:-INFO}
+    volumes:
+      - sneaker_data:/app/data
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8086/health')"]
       interval: 30s
@@ -260,15 +371,26 @@ services:
         reservations:
           cpus: '0.25'
           memory: 128M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
 
-  # ─── Hider (secrets/config, port 8087) ───────────────────────────────
   Hider:
     build: ./Hider
-    ports:
-      - "8087:8087"
+    profiles: ["standard", "full", "dev"]
+    networks:
+      - internal
     environment:
-      - API_KEY=${HIDER_API_KEY:-Hider-dev-key-change-me}
-      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-change-me-in-production}
+      - API_KEY=${EVERSHADE_HIDER_API_KEY:${HIDER_API_KEY:-Hider-dev-key-change-me}}
+      - ENCRYPTION_KEY=${EVERSHADE_ENCRYPTION_KEY:-change-me-in-production}
+      - DB_PATH=/app/data/hider.db
+      - LOG_LEVEL=${EVERSHADE_LOG_LEVEL:-INFO}
+    volumes:
+      - hider_data:/app/data
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8087/health')"]
       interval: 30s
@@ -284,14 +406,25 @@ services:
         reservations:
           cpus: '0.25'
           memory: 128M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
 
-  # ─── Poltergeist (notifications, port 8088) ────────────────────────────
   Poltergeist:
     build: ./Poltergeist
-    ports:
-      - "8088:8088"
+    profiles: ["standard", "full", "dev"]
+    networks:
+      - internal
     environment:
-      - API_KEY=${POLTERGEIST_API_KEY:-Poltergeist-dev-key-change-me}
+      - API_KEY=${EVERSHADE_POLTERGEIST_API_KEY:${POLTERGEIST_API_KEY:-Poltergeist-dev-key-change-me}}
+      - DB_PATH=/app/data/poltergeist.db
+      - LOG_LEVEL=${EVERSHADE_LOG_LEVEL:-INFO}
+    volumes:
+      - poltergeist_data:/app/data
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8088/health')"]
       interval: 30s
@@ -307,16 +440,26 @@ services:
         reservations:
           cpus: '0.25'
           memory: 128M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
 
-  # ─── Shrewd (LLM abstraction, port 8089) ───────────────────────────
   Shrewd:
     build: ./Shrewd
-    ports:
-      - "8089:8089"
+    profiles: ["standard", "full", "dev"]
+    networks:
+      - internal
     environment:
-      - API_KEY=${SHREWD_API_KEY:-Shrewd-dev-key-change-me}
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-      - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
+      - API_KEY=${EVERSHADE_SHREWD_API_KEY:${SHREWD_API_KEY:-Shrewd-dev-key-change-me}}
+      - OPENAI_API_KEY=${EVERSHADE_OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${EVERSHADE_ANTHROPIC_API_KEY:-}
+      - GOOGLE_API_KEY=${EVERSHADE_GOOGLE_API_KEY:-}
+      - OLLAMA_URL=${EVERSHADE_OLLAMA_URL:-http://host.docker.internal:11434}
+      - LOG_LEVEL=${EVERSHADE_LOG_LEVEL:-INFO}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8089/health')"]
       interval: 30s
@@ -334,12 +477,26 @@ services:
         reservations:
           cpus: '0.25'
           memory: 128M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/data
 
-  # ─── Slammer (web dashboard, port 5173) ───────────────────────────────
+# ═══════════════════════════════════════════════════════════════════
+# Frontend
+# ═══════════════════════════════════════════════════════════════════
+
   Slammer:
     build: ./Slammer
+    profiles: ["full", "dev"]
+    networks:
+      - frontend
     ports:
-      - "5173:80"
+      - "${EVERSHADE_BIND_ADDRESS:-127.0.0.1}:5173:80"
     depends_on:
       - Greenie
     restart: unless-stopped
@@ -351,8 +508,60 @@ services:
         reservations:
           cpus: '0.25'
           memory: 128M
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    cap_drop:
+      - ALL
 
-volumes:
-  redis_data:
-  Slinker_logs:
-  gobber_data:
+# ═══════════════════════════════════════════════════════════════════
+# Optional: Ollama (Local LLM)
+# ═══════════════════════════════════════════════════════════════════
+
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["ollama"]
+    networks:
+      - internal
+    ports:
+      - "${EVERSHADE_BIND_ADDRESS:-127.0.0.1}:11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 8G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+
+# ═══════════════════════════════════════════════════════════════════
+# Optional: Caddy Reverse Proxy (TLS)
+# ═══════════════════════════════════════════════════════════════════
+
+  caddy:
+    image: caddy:2-alpine
+    profiles: ["proxy"]
+    networks:
+      - frontend
+      - internal
+    ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - Greenie
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE

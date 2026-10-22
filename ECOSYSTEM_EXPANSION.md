@@ -1,7 +1,9 @@
-# Unified Workflow — Ecosystem Expansion Analysis
+# Evershade — Ecosystem Expansion Analysis
 
-**Date:** 2026-10-21
-**Status:** Comprehensive analysis of expansion opportunities for the three-service platform
+**Date:** 2026-10-21 (updated 2026-10-22)
+**Status:** Comprehensive analysis with audit-driven decisions
+
+> **Update (2026-10-22):** This document has been supplemented by a complete ecosystem audit. See [docs/ECOSYSTEM_AUDIT.md](docs/ECOSYSTEM_AUDIT.md) for verified findings and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the updated architecture. Planned service decisions have been recorded below.
 
 ---
 
@@ -548,4 +550,18 @@ The first 4 items alone would transform the platform from a collection of APIs i
 
 ---
 
-*This document provides a comprehensive roadmap for expanding the Unified Workflow ecosystem. The analysis is based on actual code inspection of all three services, their 257+ API endpoints, and the existing architecture. Priorities are ranked by impact relative to effort, with foundational improvements taking precedence over feature additions.*
+*This document provides a comprehensive roadmap for expanding the Evershade ecosystem. The analysis is based on actual code inspection of all services and their API endpoints. Priorities are ranked by impact relative to effort, with foundational improvements taking precedence over feature additions.*
+
+---
+
+## 10. Planned Service Decisions (Audit-Driven)
+
+After the complete ecosystem audit (see [docs/ECOSYSTEM_AUDIT.md](docs/ECOSYSTEM_AUDIT.md)), the following decisions were made regarding planned services:
+
+| Planned Service | Original Role | Decision | Rationale |
+|-----------------|--------------|----------|-----------|
+| **Mnemos** | Semantic memory using vector embeddings | **DROP** | Gobber already provides embeddings, semantic search, and knowledge graph. Extend Gobber instead of building a parallel memory store. |
+| **Bridge** | External integrations (GitHub, calendar, email) | **EVALUATE** | Greenie already has webhook and GitHub webhook integration. Only build if new integration types beyond webhooks are needed. |
+| **Courier** | S3-compatible file storage service | **EVALUATE** | Greenie already has file upload (50MB limit). Only build if persistent object storage beyond 50MB is required. |
+
+**Rule:** No planned service will be built until the audit documents a concrete gap that cannot be closed by extending an existing service. This prevents duplication and keeps the ecosystem maintainable.

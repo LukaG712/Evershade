@@ -1,0 +1,125 @@
+{
+  "version": "1.7.0",
+  "description": "Evershade ecosystem version manifest — defines compatible service versions",
+  "updated": "2026-10-22",
+  "breaking_changes": [
+    "All services require Authorization: Bearer header — query parameter auth removed",
+    "Hider requires ENCRYPTION_KEY environment variable for AES-256-GCM encryption",
+    "Hider secrets are now encrypted at rest in SQLite — migration required from in-memory data",
+    "Slammer is the single dashboard — Greenie operates as API-only backend"
+  ],
+  "services": {
+    "Greenie": {
+      "version": "1.7.0",
+      "repository": "https://github.com/LukaG712/Greenie",
+      "required": true,
+      "port": 8080,
+      "api_version": "v1",
+      "dependencies": ["Slinker", "Trapper", "Gobber"],
+      "optional_dependencies": ["Sneaker", "Hider", "Poltergeist", "Shrewd"],
+      "notes": "API-only backend. Emergency stop, activity timeline, credential rotation, MCP, plugins, workflow engine, workstations, hybrid stores."
+    },
+    "Slinker": {
+      "version": "1.1.0",
+      "repository": "https://github.com/LukaG712/Slinker",
+      "required": true,
+      "port": 8000,
+      "api_version": "v1",
+      "dependencies": [],
+      "optional_dependencies": [],
+      "notes": "Pluggable runner interface: Junie default, extensible to Ollama and other runners."
+    },
+    "Trapper": {
+      "version": "1.0.0",
+      "repository": "https://github.com/LukaG712/Trapper",
+      "required": true,
+      "port": 3000,
+      "api_version": "v1",
+      "dependencies": ["redis"],
+      "optional_dependencies": []
+    },
+    "Gobber": {
+      "version": "1.0.0",
+      "repository": "https://github.com/LukaG712/Gobber",
+      "required": true,
+      "port": 8085,
+      "api_version": "v1",
+      "dependencies": [],
+      "optional_dependencies": ["Shrewd"]
+    },
+    "Sneaker": {
+      "version": "1.1.0",
+      "repository": "https://github.com/LukaG712/Sneaker",
+      "required": false,
+      "port": 8086,
+      "api_version": "v1",
+      "dependencies": [],
+      "optional_dependencies": ["Poltergeist"],
+      "notes": "Alerting system with deduplication, cooldown, and Poltergeist delivery."
+    },
+    "Hider": {
+      "version": "1.0.0",
+      "repository": "https://github.com/LukaG712/Hider",
+      "required": false,
+      "port": 8087,
+      "api_version": "v1",
+      "dependencies": [],
+      "optional_dependencies": []
+    },
+    "Poltergeist": {
+      "version": "1.1.0",
+      "repository": "https://github.com/LukaG712/Poltergeist",
+      "required": false,
+      "port": 8088,
+      "api_version": "v1",
+      "dependencies": [],
+      "optional_dependencies": [],
+      "notes": "Real delivery: Slack, Discord, Email, Telegram, Webhook. SQLite persistence."
+    },
+    "Shrewd": {
+      "version": "1.1.0",
+      "repository": "https://github.com/LukaG712/Shrewd",
+      "required": false,
+      "port": 8089,
+      "api_version": "v1",
+      "dependencies": [],
+      "optional_dependencies": [],
+      "notes": "Real LLM providers: OpenAI, Anthropic, Google, Ollama. Cost tracking and privacy classification."
+    },
+    "Slammer": {
+      "version": "1.4.0",
+      "repository": "https://github.com/LukaG712/Slammer",
+      "required": false,
+      "port": 5173,
+      "api_version": null,
+      "dependencies": ["Greenie"],
+      "optional_dependencies": ["Sneaker"],
+      "notes": "Single unified dashboard: services, agents, runs, workflows, workstations, metrics, logs, plugins/MCP management."
+    },
+    "Speedy": {
+      "version": "1.1.0",
+      "repository": "https://github.com/LukaG712/Speedy",
+      "required": false,
+      "port": null,
+      "api_version": null,
+      "dependencies": [],
+      "optional_dependencies": [],
+      "notes": "Full CLI: install, start, stop, logs, doctor, backup/restore."
+    }
+  },
+  "infrastructure": {
+    "redis": {
+      "image": "redis:8-alpine",
+      "required": true
+    }
+  },
+  "minimum_compose_version": "2.20",
+  "profiles": {
+    "minimal": ["Greenie", "Slinker", "Trapper", "Gobber", "redis"],
+    "standard": ["Greenie", "Slinker", "Trapper", "Gobber", "Sneaker", "Hider", "Poltergeist", "Shrewd", "redis"],
+    "full": ["Greenie", "Slinker", "Trapper", "Gobber", "Sneaker", "Hider", "Poltergeist", "Shrewd", "Slammer", "redis"],
+    "ollama": ["ollama"],
+    "proxy": ["caddy"],
+    "dev": ["Greenie", "Slinker", "Trapper", "Gobber", "Sneaker", "Hider", "Poltergeist", "Shrewd", "Slammer", "redis"]
+  }
+}

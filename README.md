@@ -9,19 +9,6 @@ All service names are inspired by [Luigi's Mansion ghosts](https://luigi-mansion
 
 ---
 
-## About
-
-**Evershade** is a self-hosted AI agent platform built as a collection of specialized microservices, orchestrated together via Docker Compose. Each service is an independent repository that can run alone or as part of the full ecosystem.
-
-| | |
-|---|---|
-| **Website** | [http://localhost:8080](http://localhost:8080) |
-| **Services** | [Greenie](https://github.com/LukaG712/Greenie) · [Slinker](https://github.com/LukaG712/Slinker) · [Trapper](https://github.com/LukaG712/Trapper) · [Gobber](https://github.com/LukaG712/Gobber) · [Sneaker](https://github.com/LukaG712/Sneaker) · [Hider](https://github.com/LukaG712/Hider) · [Poltergeist](https://github.com/LukaG712/Poltergeist) · [Shrewd](https://github.com/LukaG712/Shrewd) · [Slammer](https://github.com/LukaG712/Slammer) · [Speedy](https://github.com/LukaG712/Speedy) |
-| **Topics** | ai-agents · microservices · self-hosted · docker-compose · web-scraping · code-execution · luigis-mansion |
-| **Built with** | Python · TypeScript · FastAPI · Playwright · Junie CLI |
-
----
-
 ## Services
 
 > *"The Dark Moon has shattered, Luigi! We need to find it and restore peace to Evershade Valley, posthaste!"*
@@ -214,39 +201,51 @@ The terminal companion. Speedy provides an `evershade` command for managing serv
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     Your Browser                            │
-│                  http://localhost:8080                      │
-│              (Greenie's Web Dashboard)                      │
-└──────────────────────────────┬──────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                        Your Browser                                 │
+│              http://localhost:8080 (Greenie)                        │
+│              http://localhost:5173 (Slammer Dashboard)              │
+└──────────────────────────────┬──────────────────────────────────────┘
                                │
-                    ┌──────────▼──────────┐
-                    │    Greenie (8080)  │  ← Hub + Dashboard
-                    │  ┌───────────────┐  │
-                    │  │  Web UI + API │  │
-                    │  │  SQLite DB    │  │
-                    │  └───────────────┘  │
-                    └──────┬──────┬──────┘
-                           │      │
-              ┌────────────┘      └────────────┐
-              ▼                                  ▼
-┌─────────────────────────┐      ┌─────────────────────────┐
-│   Slinker (8000)       │      │   Trapper (3000)        │
-│  ┌───────────────────┐  │      │  ┌───────────────────┐  │
-│  │ Git worktree mgmt │  │      │  │ Playwright browser│  │
-│  │ Junie CLI runner  │  │      │  │ Content cleaning  │  │
-│  │ Task persistence  │  │      │  │ Redis queue       │  │
-│  └───────────────────┘  │      │  └───────────────────┘  │
-└─────────────────────────┘      └─────────────────────────┘
+              ┌────────────────┼────────────────┐
+              │                │                │
+     ┌────────▼────────┐ ┌────▼─────┐  ┌──────▼──────┐
+     │   Greenie       │ │ Slammer  │  │   Speedy    │
+     │   (8080)        │ │ (5173)   │  │   CLI       │
+     │  Hub + Dashboard│ │ Dashboard│  │  Terminal   │
+     └───┬─────┬───────┘ └──────────┘  └─────────────┘
+         │     │
+    ┌────▼─────▼────┐
+    │  Service Mesh  │  ← Internal Docker network
+    │  (Bearer Auth) │
+    └───┬─────┬──────┘
+        │     │
+ ┌──────▼──┐ ┌▼──────────┐ ┌──────────┐ ┌──────────┐
+ │ Slinker │ │ Trapper    │ │  Gobber  │ │  Hider   │
+ │ (8000)  │ │ (3000)     │ │ (8085)   │ │ (8087)   │
+ │ Execute │ │ Scrape     │ │ Storage  │ │ Secrets  │
+ └─────────┘ └────────────┘ └──────────┘ └──────────┘
+ 
+ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
+ │ Polter-  │ │  Shrewd  │ │ Sneaker  │ │  Caddy   │
+ │ geist    │ │ (8089)   │ │ (8086)   │ │  Proxy   │
+ │ (8088)   │ │ LLM      │ │ Metrics  │ │ (443)    │
+ │ Notify   │ │ Routing  │ │ Traces   │ │ TLS      │
+ └──────────┘ └──────────┘ └──────────┘ └──────────┘
 ```
 
 ### How they work together
 
-1. **You** interact with Greenie's web dashboard at `localhost:8080`
-2. **Greenie** manages your agents, sessions, and pipelines
+1. **You** interact with Greenie's web dashboard at `localhost:8080` or Slammer at `localhost:5173`
+2. **Greenie** manages your agents, sessions, pipelines, workflows, and workstations
 3. When a task needs code execution, Greenie sends it to **Slinker**
 4. When a task needs web data, Greenie sends it to **Trapper**
-5. Results flow back through Greenie to your dashboard
+5. **Shrewd** routes LLM requests to OpenAI, Anthropic, Google, or Ollama
+6. **Hider** stores secrets encrypted at rest (AES-256-GCM)
+7. **Gobber** provides persistent storage, cache, and knowledge graph
+8. **Poltergeist** sends notifications to Slack, Discord, email, Telegram
+9. **Sneaker** collects metrics and traces for observability
+10. Results flow back through Greenie to your dashboard
 
 ### Cross-service pipelines
 
@@ -262,6 +261,32 @@ POST /api/pipeline
   ]
 }
 ```
+
+### Workflow Engine
+
+Automate multi-step workflows with triggers, approvals, and conditions:
+
+```json
+POST /api/workflows
+{
+  "name": "Research Pipeline",
+  "trigger": { "type": "schedule", "cron": "0 9 * * 1" },
+  "steps": [
+    { "type": "service", "service": "Trapper", "action": "scrape", "url": "https://news.example.com" },
+    { "type": "agent", "agent": "researcher", "prompt": "Summarize the latest news" },
+    { "type": "approval", "message": "Review the summary before sending" },
+    { "type": "notify", "channel": "slack", "recipient": "#research" }
+  ]
+}
+```
+
+### Security Model
+
+- **Bearer token auth** on all services (query params rejected)
+- **AES-256-GCM encryption** for secrets at rest (Hider)
+- **SSRF protection** blocks private IPs and cloud metadata (Trapper)
+- **Read-only containers** with capability dropping
+- **Internal Docker network** — only Greenie exposed on host
 
 ---
 
@@ -280,11 +305,31 @@ POST /api/pipeline
 ```bash
 git clone https://github.com/LukaG712/Evershade.git && cd Evershade
 cp .env.example .env
-# Edit .env with your API keys
-docker compose up -d --build
+# Edit .env with your API keys (see docs/CONFIGURATION.md)
+docker compose --profile minimal up -d
 ```
 
 The dashboard will be available at **http://localhost:8080**.
+
+### Installation Profiles
+
+| Profile | Services | Command |
+|---------|----------|---------|
+| **Minimal** | Core only | `docker compose --profile minimal up -d` |
+| **Standard** | All services | `docker compose --profile standard up -d` |
+| **Full** | + Dashboard | `docker compose --profile full up -d` |
+| **+ Ollama** | Local LLM | `docker compose --profile standard --profile ollama up -d` |
+
+### Remote Access
+
+For server deployment (headless VM, access from another computer), see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+```bash
+# Server mode: edit .env
+EVERSHADE_MODE=server
+EVERSHADE_BIND_ADDRESS=0.0.0.0
+EVERSHADE_PUBLIC_URL=http://YOUR_SERVER_IP:8080
+```
 
 ### Startup Scripts
 
@@ -392,11 +437,9 @@ Each sub-project is an independent Git repository with its own CI pipeline. The 
 
 ## Configuration
 
-### Environment Variables
+Copy `.env.example` to `.env` and configure. See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for the full reference.
 
-Copy `.env.example` to `.env` and configure:
-
-#### API Keys (Required)
+### API Keys (Required)
 
 Generate unique keys for each service. **Never use the default values in production.**
 
@@ -405,71 +448,182 @@ Generate unique keys for each service. **Never use the default values in product
 openssl rand -hex 32
 ```
 
+All variables use the `EVERSHADE_<SERVICE>_<SETTING>` naming convention. Legacy names (e.g., `HUB_API_KEY`) still work but are deprecated.
+
 | Variable | Description |
 |----------|-------------|
-| `HUB_API_KEY` | Greenie API key |
-| `Slinker_API_KEY` | Slinker API key |
-| `Trapper_API_KEY` | Trapper API key |
-| `GOBBER_API_KEY` | Gobber API key |
-| `SNEAKER_API_KEY` | Sneaker API key |
-| `HIDER_API_KEY` | Hider API key |
-| `POLTERGEIST_API_KEY` | Poltergeist API key |
-| `SHREWD_API_KEY` | Shrewd API key |
-| `ENCRYPTION_KEY` | Hider encryption key for stored secrets |
+| `EVERSHADE_GREENIE_API_KEY` | Greenie API key |
+| `EVERSHADE_SLINKER_API_KEY` | Slinker API key |
+| `EVERSHADE_TRAPPER_API_KEY` | Trapper API key |
+| `EVERSHADE_GOBBER_API_KEY` | Gobber API key |
+| `EVERSHADE_ENCRYPTION_KEY` | Hider encryption key |
 
-#### Optional Configuration
+### Optional Configuration
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `OPENAI_API_KEY` | *(empty)* | OpenAI API key for Shrewd LLM abstraction |
-| `OLLAMA_URL` | `http://host.docker.internal:11434` | Ollama API endpoint for local LLM inference |
-| `OLLAMA_MODEL` | `gemma4:12b` | Ollama model name for Slinker |
-| `REDIS_PASSWORD` | *(empty)* | Redis password for cluster support |
-| `WORKSPACE_PATH` | `./workspace` | Path to workspace directory (use absolute path in production) |
-| `MAX_CONCURRENT_WORKERS` | `1` | Maximum concurrent Slinker workers |
-| `ISOLATION_MODE` | `worktree` | Slinker task isolation mode (`worktree` or `none`) |
-| `JUNIE_BIN` | `junie` | Junie CLI binary path |
-| `REFINE_PROMPT` | `false` | Whether to refine prompts before sending to Junie |
-| `OBSIDIAN_VAULT_PATH` | `./obsidian-vault` | Path to Obsidian vault for Gobber knowledge graph |
-| `LOG_LEVEL` | `INFO` | Log verbosity (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
+| `EVERSHADE_OPENAI_API_KEY` | *(empty)* | OpenAI API key |
+| `EVERSHADE_OLLAMA_URL` | `http://host.docker.internal:11434` | Ollama endpoint |
+| `EVERSHADE_OLLAMA_MODEL` | `gemma4:12b` | Default Ollama model |
+| `EVERSHADE_WORKSPACE_PATH` | `./workspace` | Workspace directory |
+| `EVERSHADE_MAX_CONCURRENT_WORKERS` | `1` | Concurrent Slinker workers |
+| `EVERSHADE_ISOLATION_MODE` | `worktree` | Isolation mode |
+| `EVERSHADE_OBSIDIAN_VAULT_PATH` | `./obsidian-vault` | Obsidian vault path |
+| `EVERSHADE_LOG_LEVEL` | `INFO` | Log verbosity |
 
-#### Workspace Path
+### Deployment Mode
 
-The `WORKSPACE_PATH` variable controls where agents access projects. Use an **absolute path** in production to avoid issues if docker-compose is run from a different directory:
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `EVERSHADE_MODE` | `desktop` | `desktop` = loopback, `server` = all interfaces |
+| `EVERSHADE_BIND_ADDRESS` | `127.0.0.1` | Bind address for host ports |
+| `EVERSHADE_PUBLIC_URL` | `http://localhost:8080` | Public base URL |
+
+### Security Notes
+
+- Server mode refuses to start with default API keys.
+- Resource limits are applied to all services.
+- Store your `.env` file securely and never commit it to version control.
+- See [docs/SECURITY.md](docs/SECURITY.md) for the full security model.
+
+---
+
+## Testing & Quality
+
+Evershade includes a comprehensive test suite covering integration, security, performance, and reliability:
+
+| Category | Description | Command |
+|----------|-------------|---------|
+| **Integration** | Cross-service communication | `./tests/run-all-tests.sh integration` |
+| **Security** | Prompt injection, SSRF, auth bypass | `./tests/run-all-tests.sh security` |
+| **Benchmarks** | Latency, throughput, concurrency | `./tests/run-all-tests.sh benchmarks` |
+| **Evaluation** | Agent quality scoring | `./tests/run-all-tests.sh evaluation` |
+| **Chaos** | Failure injection, resilience | `./tests/run-all-tests.sh chaos` |
+| **All** | Run everything | `./tests/run-all-tests.sh all` |
+
+### Running Tests
 
 ```bash
-# Recommended for production
-WORKSPACE_PATH=/home/user/projects
+# Start all services first
+docker compose --profile standard up -d
 
-# Development default (relative path)
-WORKSPACE_PATH=./workspace
+# Run all tests
+cd tests
+pytest -v
+
+# Or use the runner script
+./run-all-tests.sh all
+
+# Run a specific category
+./run-all-tests.sh security
 ```
 
-#### Security Notes
+### Release Signing
 
-- The startup scripts (`start.sh` / `start.ps1`) will warn you if default API keys are detected.
-- Resource limits are applied to all services to prevent any single service from consuming all host resources.
-- Store your `.env` file securely and never commit it to version control.
+```bash
+# Sign all artifacts for a release
+python scripts/release_sign.py --version 1.5.0 --sign-all --secret "your-signing-key"
+
+# Verify a release
+python scripts/verify_release.py --release release/ --secret "your-signing-key"
+```
+
+---
+
+## Tutorial: Your First Agent
+
+This tutorial walks you through setting up Evershade and running your first AI agent.
+
+### Step 1: Install and Start
+
+```bash
+# Clone and configure
+git clone https://github.com/LukaG712/Evershade.git && cd Evershade
+cp .env.example .env
+
+# Edit .env — at minimum, set unique API keys
+# (See docs/CONFIGURATION.md for all options)
+
+# Start with minimal profile
+docker compose --profile minimal up -d
+```
+
+### Step 2: Access the Dashboard
+
+Open **http://localhost:8080** in your browser. You'll see the Greenie dashboard with:
+
+- **Chat** — Talk to AI agents
+- **Dashboard** — Manage agents, runs, pipelines
+- **API Docs** — Swagger UI at `/docs`
+
+### Step 3: Create Your First Agent
+
+1. Go to **Dashboard → Agents**
+2. Click **Create Agent**
+3. Fill in:
+ - **Name**: `researcher`
+ - **Runner**: `junie`
+ - **Guidelines**: `Always cite your sources.`
+4. Click **Save**
+
+### Step 4: Run a Task
+
+1. Go to **Chat**
+2. Select your `researcher` agent
+3. Type: `Summarize the key points of climate change`
+4. Watch the agent work in real-time
+
+### Step 5: Try a Pipeline
+
+Create a cross-service pipeline via the API:
+
+```bash
+curl -X POST http://localhost:8080/api/pipeline \
+  -H "Authorization: Bearer $EVERSHADE_GREENIE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "steps": [
+      { "service": "Trapper", "action": "scrape", "url": "https://news.ycombinator.com" },
+      { "service": "Greenie", "action": "chat", "agent": "researcher", "prompt": "Summarize the top 5 stories" }
+    ]
+  }'
+```
+
+### Step 6: Explore More
+
+- **Workflows** — Automate recurring tasks with schedules and triggers
+- **Slammer Dashboard** — Standalone dashboard at `http://localhost:5173`
+- **Speedy CLI** — Manage everything from the terminal: `evershade agents list`
+- **Notifications** — Configure Slack/Discord alerts via Poltergeist
+- **LLM Providers** — Connect OpenAI, Anthropic, or Ollama via Shrewd
 
 ---
 
 ## Future Expansion
 
-The ecosystem is designed to grow. Future additions (names TBD from the ghost list above):
+The ecosystem is designed to grow. Planned service decisions after audit:
 
-| Service | Role | Status |
-|---------|------|--------|
-| **Mnemos** | Semantic memory using vector embeddings | Planned |
-| **Bridge** | External integrations (GitHub, calendar, email) | Planned |
-| **Courier** | S3-compatible file storage service | Planned |
+| Service | Role | Decision | Rationale |
+|---------|------|----------|-----------|
+| **Mnemos** | Semantic memory | **DROP** | Gobber already covers this. Extend Gobber instead. |
+| **Bridge** | External integrations | **EVALUATE** | Greenie has webhooks. Only if new types needed. |
+| **Courier** | File storage | **EVALUATE** | Greenie has 50MB upload. Only if more needed. |
 
-See [ECOSYSTEM_EXPANSION.md](ECOSYSTEM_EXPANSION.md) for the full expansion roadmap.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [ROADMAP.md](ROADMAP.md) for details.
 
 ---
 
 ## License
 
-Each sub-project may have its own license. Check the individual repositories.
+This project is licensed under the [MIT License](LICENSE).
+
+| Repository | License |
+|------------|---------|
+| Evershade (root) | MIT |
+| Greenie | MIT (see [Greenie/LICENSE](Greenie/LICENSE)) |
+| Slinker | MIT |
+| Trapper | MIT (see [Trapper/LICENSE](Trapper/LICENSE)) |
+| Other services | MIT |
 
 ---
 
@@ -478,3 +632,7 @@ Each sub-project may have its own license. Check the individual repositories.
 
 > *"Oh boy..."* 
 > ~ **Luigi**, probably
+
+---
+
+> **Disclaimer:** This project is a fan-made, independent software project. It is not affiliated with, endorsed by, or in any way connected to Nintendo, Next Level Games, or any of their subsidiaries. All Luigi's Mansion trademarks and character names are property of their respective owners. Service names are used purely for thematic inspiration.

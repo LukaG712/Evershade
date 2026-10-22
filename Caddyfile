@@ -1,0 +1,63 @@
+# Caddy reverse proxy for Evershade
+# Provides TLS termination and routes to all services
+# Slammer is the single dashboard; Greenie is API-only
+
+{
+	# Use internal CA for self-signed certificates
+	# Replace with acme_dns for production DNS-based certificates
+	auto_https off
+}
+
+# HTTP → HTTPS redirect
+:80 {
+	redir https://{host}{uri} permanent
+}
+
+# HTTPS → Unified dashboard gateway
+:443 {
+	# TLS with internal CA (self-signed)
+	tls internal
+
+	# Trust X-Forwarded-* headers from Caddy
+	trusted_proxies range 0.0.0.0/0
+
+	# Security headers
+	header {
+		-X-Powered-By
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+	}
+
+	# Slammer static files (dashboard frontend)
+	reverse_proxy / Slammer:80 {
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-Host {host}
+		header_up X-Forwarded-For {remote_host}
+	}
+
+	# API routes → Greenie (orchestration backend)
+	reverse_proxy /api/* Greenie:8080 {
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-Host {host}
+		header_up X-Forwarded-For {remote_host}
+	}
+
+	# Sneaker metrics routes
+	reverse_proxy /sneaker/* Sneaker:8003 {
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-Host {host}
+		header_up X-Forwarded-For {remote_host}
+	}
+
+	# WebSocket support for terminals and real-time features
+	@ws {
+		header Connection *Upgrade*
+		header Upgrade websocket
+	}
+	reverse_proxy @ws Greenie:8080 {
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-Host {host}
+		header_up X-Forwarded-For {remote_host}
+	}
+}
