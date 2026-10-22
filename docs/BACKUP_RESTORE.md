@@ -26,17 +26,23 @@
 
 ```bash
 # Using the CLI (recommended)
-evershade backup
+evershade backup create
 
 # This creates a timestamped backup in ./backups/
-# Example: backups/evershade_20261022_101500.tar.gz
+# Example: backups/evershade-20261022-101500.tar.gz
+
+# Include secrets (default: redacted)
+evershade backup create --include-secrets
+
+# Custom output path
+evershade backup create --output ./my-backup.tar.gz
 ```
 
 The backup includes:
-- All SQLite databases (using the online backup API, not raw file copy)
-- Redis RDB snapshot
-- Configuration files (`.env` is excluded unless explicitly requested)
-- Backup manifest with checksums
+- All SQLite databases (using `sqlite3 .backup` API for consistent snapshots)
+- Configuration files (`.env` is redacted by default — secrets replaced with `<redacted>`)
+- Backup manifest (`manifest.json`) with SHA-256 checksums for all files
+- **Free disk space check** before starting — fails gracefully if insufficient space
 
 ---
 
@@ -54,20 +60,25 @@ curl -X POST http://localhost:8080/api/backups/schedule \
 
 ---
 
-## 4. Restore
+## 3. Restore
 
 ```bash
-# List available backups
-evershade backup --list
-
 # Restore from a specific backup
-evershade restore backups/evershade_20261022_101500.tar.gz
+evershade backup restore backups/evershade-20261022-101500.tar.gz
 
 # Dry run (validate without restoring)
-evershade restore --dry-run backups/evershade_20261022_101500.tar.gz
+evershade backup restore --dry-run backups/evershade-20261022-101500.tar.gz
 ```
 
-**Warning:** Restore replaces current data. A pre-restore backup is created automatically.
+**Warning:** Restore replaces current data. A pre-restore recovery backup is created automatically in `backups/recovery/`.
+
+The restore process:
+1. Verifies archive integrity (SHA-256 checksums)
+2. Checks for path traversal attacks in archive entries
+3. Creates a recovery backup of current data
+4. Stops services if running
+5. Restores databases and configuration
+6. Verifies restored data integrity
 
 ---
 

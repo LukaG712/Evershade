@@ -148,20 +148,56 @@ The emergency stop (`evershade panic`) provides a global kill switch:
 
 ---
 
-## 9. Residual Risks
+## 8. CSRF Protection
+
+Greenie implements CSRF protection for cookie-authenticated browser sessions:
+
+- CSRF tokens are required for state-changing requests (POST, PUT, DELETE)
+- Bearer-authenticated API clients are exempt (not vulnerable to CSRF)
+- Origin/Referer header validation for cross-origin requests
+- Configurable excluded paths (health checks, metrics, etc.)
+
+## 9. Rate Limiting
+
+Greenie applies rate limiting to prevent abuse:
+
+- **Authentication failures**: 10 failures per 60 seconds per IP address
+- **Expensive operations**: Stricter limits for LLM requests (20/min), code execution (5/min), workflow creation (10/min), web crawling (10/min)
+- **Default limit**: 60 requests per minute for other endpoints
+- Sliding window algorithm with per-IP and per-API-key tracking
+- Configurable via `RATE_LIMIT_ENABLED` and `RATE_LIMIT_DEFAULT_REQUESTS` environment variables
+
+## 10. Idempotency
+
+Retryable operations support idempotency keys via the `X-Idempotency-Key` header:
+
+- Safe retries for workflow creation, agent execution, and backup operations
+- Original response is returned for duplicate keys without re-execution
+- Keys expire after 24 hours by default (configurable via `IDEMPOTENCY_TTL_SECONDS`)
+- Enabled by default (disable via `IDEMPOTENCY_ENABLED=false`)
+
+## 11. Secret Redaction
+
+Sensitive data is automatically redacted from log output:
+
+- API keys, passwords, tokens, and secrets are replaced with `[REDACTED]`
+- Applies to all log levels and formats (JSON and plain text)
+- Covers common patterns: Bearer tokens, AWS credentials, private keys, connection strings
+- Enabled by default (disable via `REDACT_SECRETS=false`)
+
+## 12. Residual Risks
 
 | Risk | Status | Mitigation |
 |------|--------|------------|
 | Worktree mode is not a security boundary | **Documented** | Default to container mode; document worktree limitations |
 | SSRF via Trapper | **Mitigated** | Private IP blocking, metadata endpoint blocking |
-| No CSRF protection for cookie sessions | **Planned** | CSRF tokens for web UI |
-| No rate limiting on auth endpoints | **Planned** | Rate limiting and lockout |
 | Docker socket access for workstation manager | **Accepted** | Isolated behind narrow authenticated interface |
 | DNS rebinding after SSRF check | **Accepted** | SSRF check validates URL at request time; DNS resolution happens at fetch time. Mitigated by network isolation. |
+| User authentication (browser sessions) | **Planned** | Full user accounts with sessions not yet implemented; API key auth is sufficient for single-operator deployments |
 
 ---
 
-## 10. Reporting Security Issues
+## 13. Reporting Security Issues
 
 Report security vulnerabilities to the repository maintainers. Do not open public issues for security concerns.
 

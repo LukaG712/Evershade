@@ -183,13 +183,18 @@ The Evershade ecosystem consists of 10 specialized services:
 - Container hardening → Read-only filesystem, cap_drop ALL, no-new-privileges, tmpfs
 
 ### Unresolved Risks
-- No user authentication system (API key only)
-- No CSRF protection for web UI sessions
-- No rate limiting on auth endpoints
+- No user authentication system (API key only) — sufficient for single-operator deployments
 - No TLS enforcement (optional via Caddy profile)
 - Slinker worktree mode is NOT a security boundary
-- No user account management or RBAC beyond API keys
-- Session management not implemented
+
+### Completed Since Last Report
+- **CSRF protection:** ✅ Implemented — middleware wired into Greenie, Bearer-authenticated API clients exempt
+- **Rate limiting:** ✅ Implemented — auth failure rate limiting (10/60s per IP) and expensive operation limits (LLM 20/min, code execution 5/min, workflows 10/min)
+- **Idempotency keys:** ✅ Implemented — X-Idempotency-Key header for safe retries on workflow creation, agent execution, and backup
+- **Secret redaction in logs:** ✅ Implemented — automatic redaction of API keys, passwords, tokens, and secrets from all log output
+- **Service capabilities endpoint:** ✅ Implemented — /api/capabilities reports all features and integrations
+- **Free disk space check:** ✅ Implemented — backup command checks available space before starting
+- **Backup improvements:** ✅ SQLite snapshots via sqlite3 .backup, manifest.json with SHA-256 checksums, secret redaction by default, path traversal prevention, --dry-run flag, recovery backup before overwrite
 
 ---
 
@@ -256,16 +261,15 @@ Not applicable — all changes made in the root repository working tree. No exte
 ## 10. Remaining Work
 
 ### Incomplete Features
-- **User authentication:** No user accounts, login, or session management
-- **CSRF protection:** Not implemented for web UI (test exists but middleware not wired)
-- **Rate limiting:** Not implemented on auth endpoints
+- **User authentication:** No user accounts, login, or session management (API key auth sufficient for single-operator)
 - **Slinker VM driver:** Only container driver implemented
 - **Slinker registered-machine driver:** Experimental, not implemented
-- **Backup/restore verification:** Backup script exists but restore not verified with real data
+- **Backup/restore round-trip verification:** Requires running Docker services
 - **Clean-clone verification:** Bootstrap scripts created (install.sh, install.ps1) but not tested end-to-end
 - **Ubuntu VM + remote Windows access:** Documented but not tested end-to-end
 - **Reboot persistence:** Not tested on real VM
 - **CI integration tests:** Pipeline enabled but requires network access to clone services
+- **Service capability endpoints:** Only Greenie has /api/capabilities; other services should add similar endpoints
 
 ### Corrected Status (Previously Reported as Incomplete)
 - **Gobber semantic search:** ✅ Implemented — embedding generation via Shrewd, fallback hash-based embeddings, vault scanning, link resolution, semantic search with cosine similarity, persistent storage in SQLite
@@ -279,14 +283,13 @@ Not applicable — all changes made in the root repository working tree. No exte
 - Cannot run integration tests without Docker in CI environment
 
 ### Prioritized Next Steps
-1. Implement user authentication and session management
-2. Add CSRF protection for web UI
-3. Implement rate limiting on auth endpoints
-4. Verify backup/restore with real data round-trip test
-5. Test bootstrap scripts (install.sh, install.ps1) end-to-end
-6. Test end-to-end on real Ubuntu VM
-7. Verify CI integration pipeline with actual service communication
-8. Add secret redaction to logs and telemetry
+1. Implement user authentication and session management (if multi-user is needed)
+2. Verify backup/restore with real data round-trip test (requires Docker)
+3. Test bootstrap scripts (install.sh, install.ps1) end-to-end (requires network)
+4. Test end-to-end on real Ubuntu VM
+5. Verify CI integration pipeline with actual service communication
+6. Add /api/capabilities endpoints to other services (Slinker, Trapper, Gobber, etc.)
+7. Add retry with backoff to all inter-service HTTP calls
 
 ---
 
@@ -323,8 +326,12 @@ Not applicable — all changes made in the root repository working tree. No exte
 | Ubuntu VM + remote access verified | ✗ (blocked) |
 | Reboot persistence verified | ✗ (blocked) |
 | User authentication | ✗ (deferred) |
-| CSRF protection | ✗ (deferred) |
-| Rate limiting | ✗ (deferred) |
+| CSRF protection | ✓ (implemented, Bearer clients exempt) |
+| Rate limiting | ✓ (auth failures + expensive ops) |
+| Idempotency keys | ✓ (X-Idempotency-Key header) |
+| Secret redaction in logs | ✓ (automatic redaction) |
+| Service capabilities endpoint | ✓ (Greenie /api/capabilities) |
+| Free disk space check | ✓ (backup command) |
 | CI integration tests enabled | ✓ (pipeline created, requires Docker in CI) |
 | Bootstrap scripts (install.sh, install.ps1) | ✓ (created) |
 | Startup scripts use profiles | ✓ (start.sh, start.ps1 updated) |

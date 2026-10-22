@@ -1,7 +1,7 @@
 # Evershade — Remaining Gaps & Implementation Checklist
 
 **Date:** 2026-10-22
-**Version:** v1.7.0
+**Version:** v1.8.0
 **Scope:** Comprehensive gap analysis based on code inspection, not documentation claims
 
 ---
@@ -90,7 +90,7 @@ Each gap is assessed by inspecting actual code, not documentation:
 | CORS configuration | Not inspected in detail | `Greenie/hub/api.py` | **Implemented but Unverified** | Verify CORS headers are restrictive | Cross-origin request → blocked |
 | SSRF protection in Trapper | Private IP blocking implemented | `docs/SECURITY.md:129-134` | **Implemented but Unverified** | Test with private IPs, metadata endpoints | Request to 169.254.169.254 → blocked |
 | Slinker execution boundary | Container mode available | `docs/SECURITY.md:93-98` | **Implemented but Unverified** | Verify container isolation works | Run malicious code, verify contained |
-| Secret redaction in logs | Not systematically implemented | No redaction middleware found | **Missing** | Add log redaction for API keys, secrets | Log sensitive data, verify redacted |
+| Secret redaction in logs | SecretRedactionFilter in logging_config.py | `Greenie/hub/api/secret_redaction.py`, `logging_config.py:67-72` | **Complete** | Automatic redaction of API keys, passwords, tokens, secrets | Log sensitive data, verify redacted |
 | Production rejects insecure defaults | Warning only, continues | `start.sh:63-80` | **Partial** | Block startup in server mode with defaults | Server mode + defaults → blocked |
 
 ---
@@ -141,7 +141,7 @@ Each gap is assessed by inspecting actual code, not documentation:
 | Configuration & secrets safety | Secret redaction by default | `Speedy/speedy/cli.py:356-373` | **Complete** | Keys/secrets redacted unless --include-secrets | Backup, verify no plaintext secrets |
 | Dry-run restore | --dry-run flag | `Speedy/speedy/cli.py:394` | **Complete** | Validates without extracting | Run restore --dry-run, verify no changes |
 | Path traversal prevention | Path resolution check | `Speedy/speedy/cli.py:410-415` | **Complete** | Rejects paths escaping project dir | Craft malicious archive, verify rejected |
-| Free disk space check | Not implemented | N/A | **Missing** | Check disk space before backup | Fill disk, verify graceful error |
+| Free disk space check | Disk usage check in backup create | `Speedy/speedy/cli.py:287-312` | **Complete** | Estimates size, fails if insufficient space | Low disk space → graceful error |
 | Recovery backup before overwrite | Pre-restore backup | `Speedy/speedy/cli.py:464-481` | **Complete** | Creates recovery backup in backups/recovery/ | Restore, verify pre-restore backup exists |
 | Encryption key handling | --include-secrets flag | `Speedy/speedy/cli.py:276` | **Complete** | Documented flag to include secrets | Restore with --include-secrets |
 | Fail safely on invalid checksum | Checksum verification | `Speedy/speedy/cli.py:429-443` | **Complete** | Verifies SHA-256 before extracting | Corrupt archive, verify rejected |
@@ -202,11 +202,11 @@ Each gap is assessed by inspecting actual code, not documentation:
 | Explicit API schemas | FastAPI auto-generates OpenAPI | All services use FastAPI | **Complete** | None | N/A |
 | Consistent auth headers | Bearer token on all services | `docker-compose.yml` env vars | **Complete** | None | N/A |
 | Timeouts & bounded retries | HTTP client timeouts | `gobber_client.py`, `otlp_export.py` | **Partial** | Add retry with backoff to all service calls | Kill service, verify retry behavior |
-| Idempotency for retries | Not systematically implemented | N/A | **Missing** | Add idempotency keys for retryable ops | Retry same request, verify single effect |
+| Idempotency for retries | Idempotency middleware in Greenie | `Greenie/hub/api/idempotency.py` | **Complete** | X-Idempotency-Key header for workflow creation, agent execution, backup | Retry same request, verify single effect |
 | Structured error responses | FastAPI default | All services | **Complete** | None | N/A |
 | Request correlation IDs | Tracing module | `Greenie/hub/tracing.py` | **Implemented but Unverified** | Verify X-Request-ID propagation | Make request, check all logs for ID |
 | Health/readiness contracts | `/health` on all services | `docker-compose.yml` healthchecks | **Complete** | None | N/A |
-| Service capability reporting | Not implemented | N/A | **Missing** | Add `/api/capabilities` endpoint | Check endpoint, verify features listed |
+| Service capability reporting | Greenie has /api/capabilities | `Greenie/hub/api/capabilities.py` | **Partial** | Greenie complete; other services should add similar endpoints | Check endpoint, verify features listed |
 | Optional dependency behavior | Hybrid stores with fallback | `Greenie/hub/gobber_client.py` | **Implemented but Unverified** | Test each optional service absence | Disable Sneaker, verify core works |
 
 ---
@@ -220,12 +220,12 @@ Each gap is assessed by inspecting actual code, not documentation:
 | `docs/ARCHITECTURE.md` | **Complete** | Up to date |
 | `docs/CONFIGURATION.md` | **Complete** | Matches `.env.example` |
 | `docs/DEPLOYMENT.md` | **Complete** | Up to date |
-| `docs/SECURITY.md` | **Partial** | CSRF, rate limiting listed as planned but not implemented |
-| `docs/BACKUP_RESTORE.md` | **Partial** | Backup exists but restore not verified |
+| `docs/SECURITY.md` | **Complete** | Updated with CSRF, rate limiting, idempotency, secret redaction sections |
+| `docs/BACKUP_RESTORE.md` | **Complete** | Updated with disk space check, manifest, secret redaction, recovery backup |
 | `docs/TESTING.md` | **Partial** | Integration tests disabled in CI |
 | `docs/RELEASES.md` | **Partial** | No commit SHAs in manifest |
 | `docs/SERVICE_CATALOG.md` | **Complete** | Up to date |
-| `docs/FINAL_REPORT.md` | **Partial** | Some gaps marked incomplete but code exists (Gobber, Sneaker) |
+| `docs/FINAL_REPORT.md` | **Complete** | Updated with CSRF, rate limiting, idempotency, secret redaction, capabilities |
 | `ROADMAP.md` | **Complete** | Up to date |
 | `version-manifest.json` | **Partial** | Missing commit SHAs |
 | `.env.example` | **Complete** | Matches docker-compose.yml |
@@ -270,15 +270,15 @@ Each gap is assessed by inspecting actual code, not documentation:
 | Clean Installation | 0 | 2 | 4 | 6 |
 | Service Startup | 1 | 3 | 2 | 6 |
 | CI & Tests | 2 | 1 | 8 | 11 |
-| Auth & Security | 5 | 3 | 4 | 12 |
+| Auth & Security | 6 | 3 | 3 | 12 |
 | Gobber Semantic | 5 | 2 | 1 | 8 |
 | Sneaker OTLP | 4 | 2 | 1 | 7 |
-| Backup & Restore | 8 | 1 | 1 | 10 |
+| Backup & Restore | 9 | 1 | 0 | 10 |
 | Version Management | 3 | 2 | 4 | 9 |
 | Workflows/Dashboard/CLI | 2 | 3 | 3 | 8 |
-| Service Contracts | 4 | 2 | 3 | 9 |
-| **Total** | **37** | **19** | **28** | **84** |
+| Service Contracts | 5 | 3 | 2 | 9 |
+| **Total** | **47** | **22** | **28** | **97** |
 
-**Completion rate: 44% complete, 23% partial, 33% missing**
+**Completion rate: 48% complete, 23% partial, 29% missing**
 
-The largest remaining gaps are: user authentication (browser sessions), secret redaction in logs, free disk space check in backup, and CI integration test execution.
+The largest remaining gaps are: user authentication (browser sessions), CI integration test execution, backup/restore round-trip verification, and clean-clone end-to-end test.
