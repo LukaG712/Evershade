@@ -347,18 +347,68 @@ print(unhealthy)
       - uses: actions/checkout@v4
 
       - name: Check sub-project CI status
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Each sub-project has its own CI pipeline in its own repository."
+          echo "Checking CI status for each sub-project..."
           echo ""
-          echo "Sub-projects and their repos:"
-          echo "  Greenie:     https://github.com/LukaG712/Greenie"
-          echo "  Slinker:     https://github.com/LukaG712/Slinker"
-          echo "  Trapper:     https://github.com/LukaG712/Trapper"
-          echo "  Gobber:      https://github.com/LukaG712/Gobber"
-          echo "  Sneaker:     https://github.com/LukaG712/Sneaker"
-          echo "  Hider:       https://github.com/LukaG712/Hider"
-          echo "  Poltergeist: https://github.com/LukaG712/Poltergeist"
-          echo "  Shrewd:      https://github.com/LukaG712/Shrewd"
-          echo "  Slammer:     https://github.com/LukaG712/Slammer"
+
+          REPOS=(
+            "LukaG712/Greenie"
+            "LukaG712/Slinker"
+            "LukaG712/Trapper"
+            "LukaG712/Gobber"
+            "LukaG712/Sneaker"
+            "LukaG712/Hider"
+            "LukaG712/Poltergeist"
+            "LukaG712/Shrewd"
+            "LukaG712/Slammer"
+            "LukaG712/Speedy"
+          )
+
+          FAILED=0
+          for repo in "${REPOS[@]}"; do
+            name=$(echo "$repo" | cut -d'/' -f2)
+            echo -n "  $name: "
+
+            # Get the latest workflow run for the master branch
+            response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/$repo/actions/runs?branch=master&per_page=1" 2>/dev/null) || {
+              echo "⚠️  Could not fetch CI status (rate limited or private)"
+              continue
+            }
+
+            status=$(echo "$response" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+if data.get('workflow_runs'):
+    run = data['workflow_runs'][0]
+    status = run.get('status', 'unknown')
+    conclusion = run.get('conclusion', 'unknown')
+    print(f'{status} ({conclusion})')
+else:
+    print('no runs found')
+" 2>/dev/null) || status="error parsing response"
+
+            if echo "$status" | grep -qi "success"; then
+              echo "✅ $status"
+            elif echo "$status" | grep -qi "failure"; then
+              echo "❌ $status"
+              FAILED=1
+            elif echo "$status" | grep -qi "in_progress\|queued"; then
+              echo "🔄 $status"
+            else
+              echo "⚠️  $status"
+            fi
+          done
+
+          echo ""
+          echo "Sub-project CI URLs:"
+          for repo in "${REPOS[@]}"; do
+            name=$(echo "$repo" | cut -d'/' -f2)
+            echo "  $name: https://github.com/$repo/actions"
+          done
+
           echo ""
           echo "This root CI validates orchestration files only."
+          echo "Each sub-project has its own CI pipeline in its own repository."
