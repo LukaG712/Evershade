@@ -494,28 +494,28 @@ Evershade includes a comprehensive test suite covering integration, security, pe
 
 | Category | Description | Command |
 |----------|-------------|---------|
+| **Unit** | Tests without live services | `./tests/run-all-tests.sh unit` |
 | **Integration** | Cross-service communication | `./tests/run-all-tests.sh integration` |
 | **Security** | Prompt injection, SSRF, auth bypass | `./tests/run-all-tests.sh security` |
 | **Benchmarks** | Latency, throughput, concurrency | `./tests/run-all-tests.sh benchmarks` |
 | **Evaluation** | Agent quality scoring | `./tests/run-all-tests.sh evaluation` |
 | **Chaos** | Failure injection, resilience | `./tests/run-all-tests.sh chaos` |
-| **All** | Run everything | `./tests/run-all-tests.sh all` |
+| **All** | Run everything (requires services) | `./tests/run-all-tests.sh all` |
 
 ### Running Tests
 
 ```bash
-# Start all services first
+# Run unit tests (no services required)
+./tests/run-all-tests.sh unit
+
+# Start all services first (for integration tests)
 docker compose --profile standard up -d
 
-# Run all tests
-cd tests
-pytest -v
-
-# Or use the runner script
-./run-all-tests.sh all
+# Run all tests (requires services)
+./tests/run-all-tests.sh all
 
 # Run a specific category
-./run-all-tests.sh security
+./tests/run-all-tests.sh security
 ```
 
 ### Release Signing

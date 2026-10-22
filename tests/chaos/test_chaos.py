@@ -16,8 +16,8 @@ class TestServiceCrash:
     def test_health_check_on_down_service(self):
         """Health check should fail gracefully on unreachable service."""
         # Connect to a port that should have nothing listening
-        resp = requests.get("http://localhost:19999/health", timeout=2)
-        assert resp.status_code == 0  # Connection error returns status 0 in requests
+        with pytest.raises(requests.exceptions.ConnectionError):
+            requests.get("http://localhost:19999/health", timeout=2)
 
     def test_request_timeout_handling(self):
         """Request should timeout gracefully, not hang forever."""

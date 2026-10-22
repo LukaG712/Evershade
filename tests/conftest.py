@@ -4,6 +4,65 @@ import os
 import pytest
 
 
+def pytest_configure(config):
+    """Register custom markers."""
+    config.addinivalue_line(
+        "markers", "integration: marks tests as requiring live services (deselect with '-m \"not integration\"')"
+    )
+    config.addinivalue_line(
+        "markers", "slow: marks tests as slow running (deselect with '-m \"not slow\"')"
+    )
+
+
+def pytest_collection_modifyitems(config, items):
+    """Automatically mark tests that require live services as integration tests."""
+    # Tests that connect to localhost services are integration tests
+    # We mark entire test modules based on their category
+    integration_modules = {
+        "test_integration",
+        "test_security",
+        "test_benchmarks",
+        "test_evaluation",
+    }
+    # Tests within integration modules that DON'T need live services
+    non_integration_tests = {
+        "test_report_generation",  # Pure unit test in evaluation module
+    }
+    for item in items:
+        module_name = item.module.__name__ if hasattr(item, "module") and item.module else ""
+        module_basename = module_name.split(".")[-1] if module_name else ""
+
+        # Skip tests that are explicitly non-integration
+        if item.name in non_integration_tests:
+            continue
+
+        # Mark integration, security, benchmarks, and evaluation tests
+        if module_basename in integration_modules:
+            item.add_marker(pytest.mark.integration)
+
+        # Mark specific chaos tests that need services
+        if module_basename == "test_chaos":
+            # These tests don't need services
+            chaos_non_integration = {
+                "test_health_check_on_down_service",
+                "test_request_timeout_handling",
+                "test_dns_failure_handling",
+            }
+            if item.name not in chaos_non_integration:
+                item.add_marker(pytest.mark.integration)
+
+        # Mark slow tests
+        slow_tests = {
+            "test_rapid_requests",
+            "test_many_secrets",
+            "test_full_evaluation",
+            "test_concurrent_writes",
+            "test_read_during_write",
+        }
+        if item.name in slow_tests:
+            item.add_marker(pytest.mark.slow)
+
+
 # Service URLs from environment or defaults
 SERVICES = {
     "greenie": os.getenv("EVERSHADE_GREENIE_URL", "http://localhost:8000"),
@@ -30,7 +89,7 @@ API_KEYS = {
 
 
 @pytest.fixture
-def headers(service: str):
+def headers(request, service: str):
     """Return Bearer auth headers for a given service."""
     return {
         "Authorization": f"Bearer {API_KEYS[service]}",

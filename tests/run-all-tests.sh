@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Run all ecosystem-wide tests.
 # Usage: ./tests/run-all-tests.sh [test_category]
-# Categories: integration, security, benchmarks, evaluation, chaos, all
+# Categories: integration, security, benchmarks, evaluation, chaos, all, unit
+#
+# Note: Integration tests require running services (via Docker Compose).
+# Use 'unit' to run only tests that don't require live services.
 
 set -e
 
@@ -22,13 +25,13 @@ echo ""
 
 # Check if pytest is available
 if ! command -v pytest &> /dev/null; then
-    echo -e "${RED}Error: pytest not found. Install with: pip install pytest requests${NC}"
+    echo -e "${RED}Error: pytest not found. Install with: pip install -r requirements-test.txt${NC}"
     exit 1
 fi
 
 # Check if requests is available
 if ! python -c "import requests" 2>/dev/null; then
-    echo -e "${RED}Error: requests not found. Install with: pip install requests${NC}"
+    echo -e "${RED}Error: requests not found. Install with: pip install -r requirements-test.txt${NC}"
     exit 1
 fi
 
@@ -57,6 +60,17 @@ run_tests() {
 }
 
 case "$CATEGORY" in
+    unit)
+        echo -e "${GREEN}Running unit tests (skipping integration tests)...${NC}"
+        echo "----------------------------------------"
+        cd "$TESTS_DIR"
+        if pytest -v -m "not integration" --tb=short 2>&1; then
+            echo -e "${GREEN}✓ Unit tests passed${NC}"
+        else
+            echo -e "${RED}✗ Unit tests failed${NC}"
+            exit 1
+        fi
+        ;;
     integration)
         run_tests integration
         ;;
@@ -73,6 +87,9 @@ case "$CATEGORY" in
         run_tests chaos
         ;;
     all)
+        echo -e "${YELLOW}Note: Running ALL tests requires live services.${NC}"
+        echo -e "${YELLOW}Start services first: docker compose --profile minimal up -d${NC}"
+        echo ""
         FAILED=0
         for cat in integration security benchmarks evaluation chaos; do
             if ! run_tests "$cat"; then
@@ -90,7 +107,7 @@ case "$CATEGORY" in
         ;;
     *)
         echo -e "${RED}Unknown category: $CATEGORY${NC}"
-        echo "Available: integration, security, benchmarks, evaluation, chaos, all"
+        echo "Available: unit, integration, security, benchmarks, evaluation, chaos, all"
         exit 1
         ;;
 esac

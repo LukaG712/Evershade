@@ -56,6 +56,35 @@ jobs:
             grep -q "^${dir}/$" .gitignore || { echo "$dir/ not in .gitignore"; exit 1; }
           done
 
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-test.txt
+
+      - name: Run unit tests (skip integration tests)
+        run: |
+          python -m pytest tests/ -v -m "not integration" --tb=short
+
+      - name: Run integration tests (with services)
+        if: false  # Enable when Docker Compose services are available in CI
+        run: |
+          docker compose --profile minimal up -d
+          sleep 30  # Wait for services to start
+          python -m pytest tests/ -v -m "integration" --tb=short
+          docker compose down
+
   subproject-ci:
     name: Sub-project CI Status
     runs-on: ubuntu-latest
