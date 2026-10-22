@@ -174,44 +174,20 @@ curl -X POST http://localhost:8080/api/pipeline \
 ## Architecture
 
 ```
-  ┌──────────────────────────────────────────────────────────┐
-  │              EXTERNAL ACCESS                             │
-  ├──────────────────────────────────────────────────────────┤
-  │                                                          │
-  │  ┌──────────────────────────────────────────────────┐    │
-  │  │  🌐 Browser (:8080/:5173)  ⚡ Speedy CLI        │    │
-  │  └──────────────────────┬───────────────────────────┘    │
-  │                         ▼                                │
-  │  ┌──────────────────────────────────────────────────┐    │
-  │  │  🔒 Caddy Proxy (optional · TLS)                │    │
-  │  └──────────────────────┬───────────────────────────┘    │
-  └─────────────────────────┼────────────────────────────────┘
-                            ▼
-  ┌──────────────────────────────────────────────────────────┐
-  │              USER INTERFACE                              │
-  ├──────────────────────────────────────────────────────────┤
-  │                                                          │
-  │  🟢 Greenie (:8080)    API backend · 320+ endpoints     │
-  │  🔵 Slammer (:5173)    React dashboard                   │
-  │                                                          │
-  └─────────────────────────┼────────────────────────────────┘
-                            ▼  (Bearer Token · Docker)
-  ┌──────────────────────────────────────────────────────────┐
-  │          MICROSERVICES  (Python + FastAPI)               │
-  ├──────────────────────────────────────────────────────────┤
-  │                                                          │
-  │  🔧 Slinker (:8000)     Code execution                   │
-  │  🕸️  Trapper (:3000)     Web scraping                    │
-  │  🧠 Shrewd (:8089)      LLM routing                      │
-  │  💾 Gobber (:8085)      Storage & knowledge graph        │
-  │  🔐 Hider (:8087)       Encrypted secrets                │
-  │  📢 Poltergeist (:8088) Notifications                    │
-  │  👁️  Sneaker (:8086)   Observability & OTLP             │
-  │                                                          │
-  │  ── DATA LAYER ──                                       │
-  │  SQLite · Redis · Obsidian Vault · Git Repos            │
-  │                                                          │
-  └──────────────────────────────────────────────────────────┘
+Evershade
+├── 🌐 Browser (:8080/:5173)
+├── ⚡ Speedy CLI
+└── 🔒 Caddy Proxy (TLS)
+    ├── 🟢 Greenie (:8080) — API backend
+    │   ├── 🔧 Slinker (:8000) — Code execution
+    │   ├── 🕸️ Trapper (:3000) — Web scraping
+    │   ├── 🧠 Shrewd (:8089) — LLM routing
+    │   ├── 💾 Gobber (:8085) — Storage & knowledge graph
+    │   ├── 🔐 Hider (:8087) — Encrypted secrets
+    │   ├── 📢 Poltergeist (:8088) — Notifications
+    │   └── 👁️ Sneaker (:8086) — Observability & OTLP
+    │       └── SQLite · Redis · Obsidian Vault · Git
+    └── 🔵 Slammer (:5173) — React dashboard
 ```
 
 ### Data Flow
