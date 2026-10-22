@@ -140,130 +140,151 @@ curl -X POST http://localhost:8080/api/pipeline \
 
 ### System Overview
 
-```
- ╔══════════════════════════════════════════════════════════════════════════╗
- ║                           EXTERNAL ACCESS                                ║
- ║                                                                          ║
- ║                  ┌─────────────────────────┐                            ║
- ║                  │      Your Browser        │                            ║
- ║                  │   localhost:8080/5173    │                            ║
- ║                  └───────────┬─────────────┘                            ║
- ║                              │                                           ║
- ║                  ┌───────────▼─────────────┐                            ║
- ║                  │       Caddy Proxy        │  ← TLS / Reverse Proxy    ║
- ║                  │         (Port 443)       │                            ║
- ║                  └───────────┬─────────────┘                            ║
- ╚══════════════════════════════┼══════════════════════════════════════════╝
-                                │
-         ┌──────────────────────┼──────────────────────┐
-         │                      │                      │
- ┌───────▼────────┐    ┌────────▼────────┐   ┌────────▼────────┐
- │   GREENIE      │    │    SLAMMER      │   │     SPEEDY      │
- │   (Port 8080)  │    │   (Port 5173)   │   │     (CLI)       │
- │                │    │                 │   │                 │
- │ ┌────────────┐ │    │ ┌─────────────┐ │   │ ┌─────────────┐ │
- │ │ Web UI     │ │    │ │ React App   │ │   │ │  evershade  │ │
- │ │ Dashboard  │ │    │ │ Dashboard   │ │   │ │   commands  │ │
- │ │ Chat       │ │    │ │             │ │   │ └─────────────┘ │
- │ │ API Docs   │ │    │ └─────────────┘ │   │                 │
- │ └────────────┘ │    └─────────────────┘   └─────────────────┘
- │                │
- │ ┌────────────┐ │
- │ │   API      │ │  ← 320+ endpoints
- │ │ Server     │ │     Swagger + ReDoc
- │ └─────┬──────┘ │
- └───────┼────────┘
-         │
- ╔═══════▼═══════════════════════════════════════════════════════════════╗
- ║                    INTERNAL DOCKER NETWORK                            ║
- ║                    (Bearer Token Authentication)                      ║
- ║                                                                       ║
- ║  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ ║
- ║  │   SLINKER   │  │   TRAPPER   │  │   GOBBER    │  │    HIDER    │ ║
- ║  │  (Port 8000)│  │  (Port 3000)│  │  (Port 8085)│  │  (Port 8087)│ ║
- ║  │             │  │             │  │             │  │             │ ║
- ║  │ Code Agent  │  │ Web Scraping│  │  Storage    │  │  Secrets    │ ║
- ║  │  Execution  │  │  & Crawling │  │  & Memory   │  │  & Config   │ ║
- ║  │             │  │             │  │             │  │             │ ║
- ║  │ • Git       │  │ • Playwright│  │ • SQLite    │  │ • AES-256   │ ║
- ║  │   Worktrees │  │ • Redis     │  │   WAL       │  │   Encryption│ ║
- ║  │ • Junie CLI │  │ • Job Queue │  │ • Obsidian  │  │ • Versioned │ ║
- ║  └──────┬──────┘  └──────┬──────┘  │   Vault     │  │   Config    │ ║
- ║         │                │         └──────┬──────┘  └──────┬──────┘ ║
- ║         │                │                │                │         ║
- ║  ┌──────▼──────┐  ┌──────▼──────┐  ┌─────▼───────┐  ┌────▼───────┐ ║
- ║  │  POLTER-    │  │   SHREWD    │  │   SNEAKER   │  │   (ALL     │ ║
- ║  │  GEIST      │  │             │  │             │  │    SERVICES)│ ║
- ║  │  (Port 8088)│  │ (Port 8089) │  │ (Port 8086) │  │            │ ║
- ║  │             │  │             │  │             │  │            │ ║
- ║  │ Notifications│  │  LLM        │  │ Observability│  │  Collect  │ ║
- ║  │             │  │  Routing    │  │             │  │  Metrics    │ ║
- ║  │ • Slack     │  │             │  │ • Metrics   │  │  & Traces   │ ║
- ║  │ • Discord   │  │ • OpenAI    │  │ • Traces    │  │             │ ║
- ║  │ • Email     │  │ • Anthropic │  │ • Logs      │  │             │ ║
- ║  │ • Telegram  │  │ • Google    │  │             │  │             │ ║
- ║  │ • Webhooks  │  │ • Ollama    │  │             │  │             │ ║
- ║  └─────────────┘  └─────────────┘  └─────────────┘  └────────────┘ ║
- ║                                                                       ║
- ║  ┌──────────────────────────────────────────────────────────────────┐ ║
- ║  │                    DATA LAYER                                    │ ║
- ║  │  SQLite Databases  •  Redis Cache  •  Obsidian Vault  •  Git    │ ║
- ║  └──────────────────────────────────────────────────────────────────┘ ║
- ╚═══════════════════════════════════════════════════════════════════════╝
+```mermaid
+graph TB
+    subgraph External["External Access"]
+        Browser["🌐 Your Browser<br/>localhost:8080/5173"]
+        Caddy["🔒 Caddy Proxy<br/>Port 443 · TLS"]
+    end
+
+    subgraph Interfaces["User Interfaces"]
+        Greenie["🟢 Greenie<br/>Port 8080<br/>Web Dashboard + API"]
+        Slammer["🔵 Slammer<br/>Port 5173<br/>React Dashboard"]
+        Speedy["⚡ Speedy<br/>CLI Tool"]
+    end
+
+    subgraph DockerNetwork["Internal Docker Network · Bearer Token Auth"]
+        subgraph Services["Microservices"]
+            Slinker["🔧 Slinker<br/>Port 8000<br/>Code Execution"]
+            Trapper["🕸️ Trapper<br/>Port 3000<br/>Web Scraping"]
+            Gobber["💾 Gobber<br/>Port 8085<br/>Storage &amp; Memory"]
+            Hider["🔐 Hider<br/>Port 8087<br/>Secrets &amp; Config"]
+            Poltergeist["📢 Poltergeist<br/>Port 8088<br/>Notifications"]
+            Shrewd["🧠 Shrewd<br/>Port 8089<br/>LLM Routing"]
+            Sneaker["👁️ Sneaker<br/>Port 8086<br/>Observability"]
+        end
+
+        subgraph DataLayer["Data Layer"]
+            SQLite["SQLite Databases"]
+            Redis["Redis Cache"]
+            Obsidian["Obsidian Vault"]
+            Git["Git Repos"]
+        end
+    end
+
+    Browser --> Caddy
+    Caddy --> Greenie
+    Caddy --> Slammer
+    Speedy --> Greenie
+
+    Greenie --> Slinker
+    Greenie --> Trapper
+    Greenie --> Shrewd
+    Greenie --> Gobber
+    Greenie --> Hider
+    Greenie --> Poltergeist
+    Greenie --> Sneaker
+
+    Slinker --> Gobber
+    Trapper --> Gobber
+
+    Gobber --> SQLite
+    Trapper --> Redis
+    Slinker --> Git
+    Gobber --> Obsidian
+
+    style Greenie fill:#4CAF50,stroke:#2E7D32,color:#fff
+    style Slammer fill:#2196F3,stroke:#1565C0,color:#fff
+    style Speedy fill:#FF9800,stroke:#E65100,color:#fff
+    style Caddy fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    style Slinker fill:#795548,stroke:#4E342E,color:#fff
+    style Trapper fill:#607D8B,stroke:#37474F,color:#fff
+    style Gobber fill:#3F51B5,stroke:#283593,color:#fff
+    style Hider fill:#F44336,stroke:#C62828,color:#fff
+    style Poltergeist fill:#E91E63,stroke:#AD1457,color:#fff
+    style Shrewd fill:#009688,stroke:#00695C,color:#fff
+    style Sneaker fill:#FF5722,stroke:#D84315,color:#fff
 ```
 
 ### Data Flow Diagram
 
-```
-  User Request
-       │
-       ▼
-  ┌─────────┐
-  │ Greenie │  ← Route & orchestrate
-  └────┬────┘
-       │
-       ├──────────► Need LLM? ──────► Shrewd ──────► OpenAI/Anthropic/Ollama
-       │
-       ├──────────► Need code? ─────► Slinker ─────► Junie CLI ──► Git worktree
-       │
-       ├──────────► Need web data? ─► Trapper ─────► Playwright ─► Structured data
-       │
-       ├──────────► Need storage? ──► Gobber ──────► SQLite/Obsidian
-       │
-       ├──────────► Need secrets? ──► Hider ───────► Encrypted vault
-       │
-       ├──────────► Notify user? ───► Poltergeist ─► Slack/Discord/Email
-       │
-       └──────────► Monitor? ───────► Sneaker ─────► Metrics/Traces/Logs
-       │
-       ▼
-  Response returned to user
+```mermaid
+flowchart TD
+    User["User Request"] --> Greenie["🟢 Greenie<br/>Route &amp; Orchestrate"]
+
+    Greenie --> LLM{"Need LLM?"}
+    Greenie --> Code{"Need code?"}
+    Greenie --> Web{"Need web data?"}
+    Greenie --> Storage{"Need storage?"}
+    Greenie --> Secrets{"Need secrets?"}
+    Greenie --> Notify{"Notify user?"}
+    Greenie --> Monitor{"Monitor?"}
+
+    LLM -->|Yes| Shrewd["🧠 Shrewd"]
+    Shrewd --> Providers["OpenAI / Anthropic / Ollama"]
+
+    Code -->|Yes| Slinker["🔧 Slinker"]
+    Slinker --> Junie["Junie CLI"]
+    Junie --> Git["Git Worktree"]
+
+    Web -->|Yes| Trapper["🕸️ Trapper"]
+    Trapper --> Playwright["Playwright"]
+    Playwright --> Structured["Structured Data"]
+
+    Storage -->|Yes| Gobber["💾 Gobber"]
+    Gobber --> DB["SQLite / Obsidian"]
+
+    Secrets -->|Yes| Hider["🔐 Hider"]
+    Hider --> Vault["Encrypted Vault"]
+
+    Notify -->|Yes| Poltergeist["📢 Poltergeist"]
+    Poltergeist --> Channels["Slack / Discord / Email"]
+
+    Monitor -->|Yes| Sneaker["👁️ Sneaker"]
+    Sneaker --> Metrics["Metrics / Traces / Logs"]
+
+    Providers --> Response["Response returned to user"]
+    Git --> Response
+    Structured --> Response
+    DB --> Response
+    Vault --> Response
+    Channels --> Response
+    Metrics --> Response
+
+    style Greenie fill:#4CAF50,stroke:#2E7D32,color:#fff
+    style Shrewd fill:#009688,stroke:#00695C,color:#fff
+    style Slinker fill:#795548,stroke:#4E342E,color:#fff
+    style Trapper fill:#607D8B,stroke:#37474F,color:#fff
+    style Gobber fill:#3F51B5,stroke:#283593,color:#fff
+    style Hider fill:#F44336,stroke:#C62828,color:#fff
+    style Poltergeist fill:#E91E63,stroke:#AD1457,color:#fff
+    style Sneaker fill:#FF5722,stroke:#D84315,color:#fff
 ```
 
 ### Service Dependencies
 
-```
-  Greenie (Hub)
-  ├──► Slinker      (Task execution)
-  ├──► Trapper      (Web scraping)
-  ├──► Shrewd       (LLM routing)
-  ├──► Gobber       (Storage & memory)
-  ├──► Hider        (Secrets management)
-  ├──► Poltergeist  (Notifications)
-  └──► Sneaker      (Observability)
+```mermaid
+graph LR
+    Greenie["🟢 Greenie<br/>Hub"] --> Slinker["🔧 Slinker<br/>Task Execution"]
+    Greenie --> Trapper["🕸️ Trapper<br/>Web Scraping"]
+    Greenie --> Shrewd["🧠 Shrewd<br/>LLM Routing"]
+    Greenie --> Gobber["💾 Gobber<br/>Storage"]
+    Greenie --> Hider["🔐 Hider<br/>Secrets"]
+    Greenie --> Poltergeist["📢 Poltergeist<br/>Notifications"]
+    Greenie --> Sneaker["👁️ Sneaker<br/>Observability"]
 
-  Slinker
-  └──► Gobber       (Store execution results)
-  └──► Shrewd       (LLM for code generation)
+    Slinker --> SlinkerGobber["Gobber<br/>Store Results"]
+    Slinker --> SlinkerShrewd["Shrewd<br/>Code Generation"]
 
-  Trapper
-  └──► Gobber       (Cache scraped data)
+    Trapper --> TrapperGobber["Gobber<br/>Cache Data"]
 
-  Slammer (Dashboard)
-  └──► Greenie      (API client)
+    Slammer["🔵 Slammer<br/>Dashboard"] --> SlammerGreenie["Greenie<br/>API Client"]
 
-  Speedy (CLI)
-  └──► Greenie      (API client)
+    Speedy["⚡ Speedy<br/>CLI"] --> SpeedyGreenie["Greenie<br/>API Client"]
+
+    style Greenie fill:#4CAF50,stroke:#2E7D32,color:#fff
+    style Slammer fill:#2196F3,stroke:#1565C0,color:#fff
+    style Speedy fill:#FF9800,stroke:#E65100,color:#fff
 ```
 
 ### How They Work Together
