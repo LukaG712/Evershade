@@ -122,6 +122,15 @@ The Evershade ecosystem consists of 10 specialized services:
 - **Service capabilities:** `/api/capabilities` endpoint added to all 8 services (Greenie, Slinker, Trapper, Gobber, Shrewd, Hider, Poltergeist, Sneaker)
 - **Capability reporting:** Each service reports features, versions, and API compatibility for client discovery
 
+### Phase 12 — User Authentication & Session Management
+- **Auth module:** `Greenie/hub/api/auth.py` (731 lines) — bcrypt password hashing, HMAC-signed sessions, user CRUD, session management
+- **Auth routes:** `Greenie/hub/api/auth_routes.py` (274 lines) — 11 endpoints for login, logout, profile, password change, user management
+- **Persistence:** `Greenie/hub/feature_store.py` — auth_users and auth_sessions tables, init/save/cleanup functions
+- **Integration:** Wired into `core.py` create_app() and lifespan — loads users/sessions on startup, creates default admin
+- **Tests:** `Greenie/tests/test_auth.py` (420 lines) — 30+ tests covering password hashing, user CRUD, sessions, login/logout, authorization
+- **Security:** HTTP-only cookies, SameSite=Lax, session expiration (8h default), revocation on logout/password change
+- **RBAC:** Admin/user/viewer roles with role-based endpoint access
+
 ---
 
 | Decision | Rationale |
@@ -202,11 +211,11 @@ The Evershade ecosystem consists of 10 specialized services:
 - Container hardening → Read-only filesystem, cap_drop ALL, no-new-privileges, tmpfs
 
 ### Unresolved Risks
-- No user authentication system (API key only) — sufficient for single-operator deployments
 - No TLS enforcement (optional via Caddy profile)
 - Slinker worktree mode is NOT a security boundary
 
 ### Completed Since Last Report
+- **User authentication:** ✅ Implemented — full browser-based auth with bcrypt, HMAC-signed sessions, RBAC, SQLite persistence
 - **CSRF protection:** ✅ Implemented — middleware wired into Greenie, Bearer-authenticated API clients exempt
 - **Rate limiting:** ✅ Implemented — auth failure rate limiting (10/60s per IP) and expensive operation limits (LLM 20/min, code execution 5/min, workflows 10/min)
 - **Idempotency keys:** ✅ Implemented — X-Idempotency-Key header for safe retries on workflow creation, agent execution, and backup
@@ -280,7 +289,6 @@ Not applicable — all changes made in the root repository working tree. No exte
 ## 10. Remaining Work
 
 ### Incomplete Features
-- **User authentication:** No user accounts, login, or session management (API key auth sufficient for single-operator)
 - **Slinker VM driver:** Only container driver implemented
 - **Slinker registered-machine driver:** Experimental, not implemented
 - **Backup/restore round-trip verification:** Requires running Docker services
@@ -305,13 +313,11 @@ Not applicable — all changes made in the root repository working tree. No exte
 - Cannot run integration tests without Docker in CI environment
 
 ### Prioritized Next Steps
-1. Implement user authentication and session management (if multi-user is needed)
-2. Verify backup/restore with real data round-trip test (requires Docker)
-3. Test bootstrap scripts (install.sh, install.ps1) end-to-end (requires network)
-4. Test end-to-end on real Ubuntu VM
-5. Verify CI integration pipeline with actual service communication
-6. Add /api/capabilities endpoints to other services (Slinker, Trapper, Gobber, etc.)
-7. Add retry with backoff to all inter-service HTTP calls
+1. Verify backup/restore with real data round-trip test (requires Docker)
+2. Test bootstrap scripts (install.sh, install.ps1) end-to-end (requires network)
+3. Test end-to-end on real Ubuntu VM
+4. Verify CI integration pipeline with actual service communication
+5. Add correlation ID propagation tests across services
 
 ---
 
@@ -353,7 +359,7 @@ Not applicable — all changes made in the root repository working tree. No exte
 | Clean-clone installation verified | ⚠ (bootstrap scripts created, not tested) |
 | Ubuntu VM + remote access verified | ✗ (blocked) |
 | Reboot persistence verified | ✗ (blocked) |
-| User authentication | ✗ (deferred) |
+| User authentication | ✓ (bcrypt, HMAC sessions, RBAC, SQLite persistence) |
 | CSRF protection | ✓ (implemented, Bearer clients exempt) |
 | Rate limiting | ✓ (auth failures + expensive ops) |
 | Idempotency keys | ✓ (X-Idempotency-Key header) |

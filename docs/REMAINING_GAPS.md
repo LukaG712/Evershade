@@ -79,10 +79,10 @@ Each gap is assessed by inspecting actual code, not documentation:
 
 | Requirement | Current Implementation | Evidence Inspected | Status | Required Change | Test |
 |-------------|----------------------|-------------------|---------|----------------|------|
-| User authentication (browser sessions) | API key only, no user accounts | `docs/SECURITY.md:31-34`, `Greenie/hub/` | **Missing** | Implement login, session creation, validation | Login, access protected endpoint, verify session |
-| Secure session management | Not implemented | No session code found | **Missing** | Session store, expiration, revocation | Create session, wait for expiry, verify rejected |
-| Password hashing | Not applicable (no password auth) | N/A | **Missing** | bcrypt/argon2 if password-based login added | Hash password, verify secure |
-| RBAC for users/projects | RBAC tables in Gobber storage | `Gobber/gobber/storage.py:102-115` | **Partial** | Wire RBAC into Greenie auth middleware | Create user, assign role, verify access control |
+| User authentication (browser sessions) | Full auth module with login, sessions, bcrypt | `Greenie/hub/api/auth.py` (731 lines), `auth_routes.py` (274 lines) | **Complete** | Username/password login, HMAC-signed sessions, RBAC, SQLite persistence | Login, access protected endpoint, verify session |
+| Secure session management | Sessions with expiration, revocation, cleanup | `Greenie/hub/api/auth.py` | **Complete** | Session store, expiration (8h default), revocation on logout/password change | Create session, wait for expiry, verify rejected |
+| Password hashing | bcrypt with SHA-256 fallback | `Greenie/hub/api/auth.py` | **Complete** | bcrypt 12 rounds, SHA-256 salted fallback | Hash password, verify secure |
+| RBAC for users/projects | RBAC integrated with auth module | `Greenie/hub/api/auth.py`, `auth_routes.py` | **Complete** | Admin/user/viewer roles, role-based endpoint access | Create user, assign role, verify access control |
 | CSRF protection | Middleware exists, now wired into create_app | `Greenie/hub/api/csrf.py`, `core.py:742-748` | **Complete** | Bearer-authenticated requests skip CSRF; cookie sessions require token | POST without token → 403, with token → 200 |
 | Rate limiting on login | Auth failure rate limiter in core.py | `Greenie/hub/api/core.py:83-111` | **Complete** | 10 failures per 60 seconds per IP | 10 rapid logins → lockout or delay |
 | Rate limiting on expensive ops | New middleware with sliding window | `Greenie/hub/api/rate_limit_middleware.py` | **Complete** | Stricter limits for LLM, code execution, workflows, crawling | Exceed limit → 429 |
@@ -271,15 +271,15 @@ Each gap is assessed by inspecting actual code, not documentation:
 | Clean Installation | 0 | 2 | 4 | 6 |
 | Service Startup | 1 | 3 | 2 | 6 |
 | CI & Tests | 3 | 1 | 7 | 11 |
-| Auth & Security | 6 | 3 | 3 | 12 |
+| Auth & Security | 10 | 2 | 0 | 12 |
 | Gobber Semantic | 5 | 2 | 1 | 8 |
 | Sneaker OTLP | 4 | 2 | 1 | 7 |
 | Backup & Restore | 9 | 1 | 0 | 10 |
 | Version Management | 5 | 1 | 2 | 8 |
 | Workflows/Dashboard/CLI | 8 | 1 | 1 | 10 |
 | Service Contracts | 7 | 2 | 0 | 9 |
-| **Total** | **58** | **17** | **23** | **98** |
+| **Total** | **62** | **17** | **19** | **98** |
 
-**Completion rate: 59% complete, 17% partial, 24% missing**
+**Completion rate: 63% complete, 17% partial, 19% missing**
 
-The largest remaining gaps are: user authentication (browser sessions), CI integration test execution, backup/restore round-trip verification, and clean-clone end-to-end test.
+The largest remaining gaps are: CI integration test execution, backup/restore round-trip verification, and clean-clone end-to-end test.

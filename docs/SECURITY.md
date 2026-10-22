@@ -28,10 +28,35 @@ Authorization: Bearer <your-api-key>
 
 ### User Authentication
 
-Greenie provides user authentication with:
-- API key-based access for programmatic clients
-- Session management for web UI users
-- Role-based access control (RBAC) via Gobber
+Greenie provides browser-based user authentication with:
+
+- **Username/password login** via `POST /api/auth/login`
+- **Password hashing** using bcrypt (12 rounds) with SHA-256 salted fallback
+- **HMAC-signed session tokens** stored in HTTP-only, SameSite=Lax cookies
+- **Session expiration** (default 8 hours, configurable via `SESSION_MAX_AGE`)
+- **Session revocation** on logout and password change
+- **Role-based access control**: admin, user, viewer roles
+- **Default admin user** created on first startup (set `ADMIN_PASSWORD` env var)
+- **User management API** for admins: create, update, disable, reset password
+- **Secure cookie settings**: httponly, samesite, configurable secure flag
+- **Persistence**: Users and sessions stored in SQLite via feature_store
+- **Session cleanup**: Expired and revoked sessions are automatically purged
+
+API endpoints:
+- `POST /api/auth/login` — Login with username/password
+- `POST /api/auth/logout` — Logout and revoke session
+- `GET /api/auth/me` — Get current user profile
+- `PUT /api/auth/me` — Update profile (display name, email)
+- `POST /api/auth/me/password` — Change password
+- `GET /api/auth/session` — Check authentication status
+- `GET /api/auth/users` — List all users (admin)
+- `POST /api/auth/users` — Create user (admin)
+- `PUT /api/auth/users/{username}` — Update user (admin)
+- `DELETE /api/auth/users/{username}` — Disable user (admin)
+- `POST /api/auth/users/{username}/reset-password` — Reset password (admin)
+
+User sessions are separate from service-to-service API key authentication.
+API keys authenticate service clients; user sessions authenticate browser users.
 
 ### API Tokens
 
@@ -193,7 +218,7 @@ Sensitive data is automatically redacted from log output:
 | SSRF via Trapper | **Mitigated** | Private IP blocking, metadata endpoint blocking |
 | Docker socket access for workstation manager | **Accepted** | Isolated behind narrow authenticated interface |
 | DNS rebinding after SSRF check | **Accepted** | SSRF check validates URL at request time; DNS resolution happens at fetch time. Mitigated by network isolation. |
-| User authentication (browser sessions) | **Planned** | Full user accounts with sessions not yet implemented; API key auth is sufficient for single-operator deployments |
+| User authentication (browser sessions) | **Complete** | Full user accounts with bcrypt password hashing, HMAC-signed sessions, RBAC, and SQLite persistence |
 
 ---
 
