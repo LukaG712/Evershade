@@ -174,105 +174,52 @@ curl -X POST http://localhost:8080/api/pipeline \
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                                                                                             │
-│                            EXTERNAL ACCESS LAYER                                                            │
-│                                                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐    │
-│  │                                                                                                     │    │
-│  │  ┌──────────────────────────────────────────────────────────────────────────────────────────────┐  │    │
-│  │  │                        YOUR BROWSER / CLI                                                    │  │    │
-│  │  │                                                                                              │  │    │
-│  │  │   🌐 Browser (localhost:8080 / :5173)          ⚡ Speedy CLI (evershade command)             │  │    │
-│  │  │                                                                                              │  │    │
-│  │  └──────────────────────────────────────────────────────────────────────────────────────────────┘  │    │
-│  │                                                                                                     │    │
-│  │                                      │                                                              │    │
-│  │                                      ▼                                                              │    │    │
-│  │  ┌──────────────────────────────────────────────────────────────────────────────────────────────┐  │    │
-│  │  │                        🔒 CADDY PROXY (Optional)                                             │  │    │
-│  │  │                        Port 443 · Automatic TLS                                              │  │    │
-│  │  └──────────────────────────────────────────────────────────────────────────────────────────────┘  │    │
-│  │                                                                                                     │    │
-│  └─────────────────────────────────────────────────────────────────────────────────────────────────────┘    │
-│                                                                                                             │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-                              │                               │
-                              ▼                               ▼
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                                                                                             │
-│                         USER INTERFACE LAYER                                                                │
-│                                                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐    │
-│  │                                                                                                     │    │
-│  │  🟢 GREENIE (Port 8080)              🔵 SLAMMER (Port 5173)                                        │    │
-│  │  Central API Backend                 React Dashboard                                                │    │
-│  │  · 320+ API endpoints                · Unified management UI                                        │    │
-│  │  · Agent/chat/pipeline mgmt          · Real-time SSE logs                                           │    │
-│  │  · Mission Control                   · Mission dashboard                                            │    │
-│  │  · Workflow engine                   · Metrics & logs view                                          │    │
-│  │  · MCP server                        · Workstation access                                           │    │
-│  │                                                                                                     │    │
-│  └─────────────────────────────────────────────────────────────────────────────────────────────────────┘    │
-│                                                                                                             │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼  (Bearer Token Auth · Docker Internal Network)
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                                                                                             │
-│                      MICROSERVICE LAYER  (All Python + FastAPI)                                             │
-│                                                                                                             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                 │
-│  │              │  │              │  │              │  │              │  │              │                 │
-│  │ 🔧 SLINKER   │  │ 🕸️ TRAPPER   │  │ 🧠 SHREWD    │  │ 💾 GOBBER    │  │ 🔐 HIDER     │                 │
-│  │ Port 8000    │  │ Port 3000    │  │ Port 8089    │  │ Port 8085    │  │ Port 8087    │                 │
-│  │              │  │              │  │              │  │              │  │              │                 │
-│  │ Code Exec    │  │ Web Scraping │  │ LLM Routing  │  │ Storage &    │  │ Secrets &    │                 │
-│  │ Git Worktrees│  │ Playwright   │  │ Multi-prov.  │  │ Knowledge    │  │ Config       │                 │
-│  │ Junie CLI    │  │ Deep Crawl   │  │ Cost Track   │  │ Graph        │  │ AES-256-GCM  │                 │
-│  │              │  │ Site Map     │  │ Privacy Class│  │ Embeddings   │  │ Versioned    │                 │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘                 │
-│         │                 │                 │                 │                 │                         │
-│         │                 │                 ▼                 │                 │                         │
-│         │                 │        ┌────────────────┐         │                 │                         │
-│         │                 │        │  EXTERNAL LLM  │         │                 │                         │
-│         │                 │        │  PROVIDERS     │         │                 │                         │
-│         │                 │        │  OpenAI        │         │                 │                         │
-│         │                 │        │  Anthropic     │         │                 │                         │
-│         │                 │        │  Google AI     │         │                 │                         │
-│         │                 │        │  Ollama (local)│         │                 │                         │
-│         │                 │        └────────────────┘         │                 │                         │
-│         │                 │                                   │                 │                         │
-│         └────────┬────────┼───────────────────────────────────┼─────────────────┘                     │
-│                  │        │                                   │                                         │
-│                  ▼        ▼                                   ▼                                         │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                                              │    │
-│  │              │  │              │  │              │                                              │    │
-│  │ 📢 POLTERGEIST│  │ 👁️ SNEAKER   │  │  DATA LAYER   │                                              │    │
-│  │ Port 8088    │  │ Port 8086    │  │              │                                              │    │
-│  │              │  │              │  │ SQLite DBs   │                                              │    │
-│  │ Notifications│  │ Observability│  │ Redis Cache  │                                              │    │
-│  │ Slack        │  │ Metrics      │  │ Obsidian     │                                              │    │
-│  │ Discord      │  │ Traces       │  │ Vault        │                                              │    │
-│  │ Email        │  │ Logs         │  │ Git Repos    │                                              │    │
-│  │ Telegram     │  │ OTLP Export  │  │              │                                              │    │
-│  │ Alerting     │  │ Alerting     │  │              │                                              │    │
-│  └──────────────┘  └──────────────┘  └──────────────┘                                              │    │
-│                                                                                                             │
-│  ─── DATA FLOW ───                                                                                         │
-│                                                                                                             │
-│  Greenie ──► Slinker ──► Gobber  (store execution results)                                                  │
-│  Greenie ──► Trapper  ──► Gobber  (cache scraped data)                                                      │
-│  Greenie ──► Trapper  ──► Redis   (job queue)                                                              │
-│  Greenie ──► Shrewd    ──► External LLM providers                                                           │
-│  Greenie ──► Gobber    ──► SQLite / Obsidian / Embeddings                                                   │
-│  Greenie ──► Hider     ──► Encrypted secrets vault                                                          │
-│  Greenie ──► Poltergeist ──► Slack / Discord / Email / Telegram                                             │
-│  Greenie ──► Sneaker   ──► Metrics / Traces / Logs / OTLP                                                  │
-│  Slinker ──► Shrewd    (code generation via LLM)                                                            │
-│                                                                                                             │
-└─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                   EXTERNAL ACCESS                           │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  🌐 Browser (:8080/:5173)   ⚡ Speedy CLI           │    │
+│  └──────────────────────┬──────────────────────────────┘    │
+│                         ▼                                   │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  🔒 Caddy Proxy (optional · TLS)                   │    │
+│  └──────────────────────┬──────────────────────────────┘    │
+└─────────────────────────┼───────────────────────────────────┘
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   USER INTERFACE                            │
+│  🟢 Greenie (:8080)  API backend · 320+ endpoints          │
+│  🔵 Slammer (:5173)   React dashboard                      │
+└──────────────────────┬──────────────────────────────────────┘
+                       ▼  (Bearer Token · Docker Network)
+┌─────────────────────────────────────────────────────────────┐
+│              MICROSERVICES  (Python + FastAPI)              │
+│                                                             │
+│  🔧 Slinker (:8000)  Code execution · Git worktrees        │
+│  🕸️  Trapper (:3000)  Web scraping · Playwright            │
+│  🧠 Shrewd (:8089)   LLM routing · Multi-provider          │
+│  💾 Gobber (:8085)   Storage · Knowledge graph             │
+│  🔐 Hider (:8087)    Secrets · AES-256-GCM                 │
+│  📢 Poltergeist(:8088) Notifications · Multi-channel       │
+│  👁️  Sneaker (:8086) Observability · OTLP                 │
+│                                                             │
+│  ── DATA LAYER ──                                          │
+│  SQLite · Redis · Obsidian Vault · Git Repos               │
+└─────────────────────────────────────────────────────────────┘
 ```
+
+### Data Flow
+
+How requests flow through the system:
+
+- **Greenie** ──► **Slinker** ──► **Gobber** (store execution results)
+- **Greenie** ──► **Trapper** ──► **Gobber** (cache scraped data)
+- **Greenie** ──► **Trapper** ──► **Redis** (job queue)
+- **Greenie** ──► **Shrewd** ──► External LLM providers
+- **Greenie** ──► **Gobber** ──► SQLite / Obsidian / Embeddings
+- **Greenie** ──► **Hider** ──► Encrypted secrets vault
+- **Greenie** ──► **Poltergeist** ──► Slack / Discord / Email / Telegram
+- **Greenie** ──► **Sneaker** ──► Metrics / Traces / Logs / OTLP
+- **Slinker** ──► **Shrewd** (code generation via LLM)
 
 ### How They Work Together
 
