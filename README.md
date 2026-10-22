@@ -138,38 +138,132 @@ curl -X POST http://localhost:8080/api/pipeline \
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        Your Browser                                 │
-│              http://localhost:8080 (Greenie)                        │
-│              http://localhost:5173 (Slammer Dashboard)              │
-└──────────────────────────────┬──────────────────────────────────────┘
-                               │
-              ┌────────────────┼────────────────┐
-              │                │                │
-     ┌────────▼────────┐ ┌────▼─────┐  ┌──────▼──────┐
-     │   Greenie       │ │ Slammer  │  │   Speedy    │
-     │   (8080)        │ │ (5173)   │  │   CLI       │
-     │  Hub + Dashboard│ │ Dashboard│  │  Terminal   │
-     └───┬─────┬───────┘ └──────────┘  └─────────────┘
-         │     │
-    ┌────▼─────▼────┐
-    │  Service Mesh  │  ← Internal Docker network
-    │  (Bearer Auth) │
-    └───┬─────┬──────┘
-        │     │
- ┌──────▼──┐ ┌▼──────────┐ ┌──────────┐ ┌──────────┐
- │ Slinker │ │ Trapper    │ │  Gobber  │ │  Hider   │
- │ (8000)  │ │ (3000)     │ │ (8085)   │ │ (8087)   │
- │ Execute │ │ Scrape     │ │ Storage  │ │ Secrets  │
- └─────────┘ └────────────┘ └──────────┘ └──────────┘
+### System Overview
 
- ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
- │ Polter-  │ │  Shrewd  │ │ Sneaker  │ │  Caddy   │
- │ geist    │ │ (8089)   │ │ (8086)   │ │  Proxy   │
- │ (8088)   │ │ LLM      │ │ Metrics  │ │ (443)    │
- │ Notify   │ │ Routing  │ │ Traces   │ │ TLS      │
- └──────────┘ └──────────┘ └──────────┘ └──────────┘
+```
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║                           EXTERNAL ACCESS                                ║
+ ║                                                                          ║
+ ║                  ┌─────────────────────────┐                            ║
+ ║                  │      Your Browser        │                            ║
+ ║                  │   localhost:8080/5173    │                            ║
+ ║                  └───────────┬─────────────┘                            ║
+ ║                              │                                           ║
+ ║                  ┌───────────▼─────────────┐                            ║
+ ║                  │       Caddy Proxy        │  ← TLS / Reverse Proxy    ║
+ ║                  │         (Port 443)       │                            ║
+ ║                  └───────────┬─────────────┘                            ║
+ ╚══════════════════════════════┼══════════════════════════════════════════╝
+                                │
+         ┌──────────────────────┼──────────────────────┐
+         │                      │                      │
+ ┌───────▼────────┐    ┌────────▼────────┐   ┌────────▼────────┐
+ │   GREENIE      │    │    SLAMMER      │   │     SPEEDY      │
+ │   (Port 8080)  │    │   (Port 5173)   │   │     (CLI)       │
+ │                │    │                 │   │                 │
+ │ ┌────────────┐ │    │ ┌─────────────┐ │   │ ┌─────────────┐ │
+ │ │ Web UI     │ │    │ │ React App   │ │   │ │  evershade  │ │
+ │ │ Dashboard  │ │    │ │ Dashboard   │ │   │ │   commands  │ │
+ │ │ Chat       │ │    │ │             │ │   │ └─────────────┘ │
+ │ │ API Docs   │ │    │ └─────────────┘ │   │                 │
+ │ └────────────┘ │    └─────────────────┘   └─────────────────┘
+ │                │
+ │ ┌────────────┐ │
+ │ │   API      │ │  ← 320+ endpoints
+ │ │ Server     │ │     Swagger + ReDoc
+ │ └─────┬──────┘ │
+ └───────┼────────┘
+         │
+ ╔═══════▼═══════════════════════════════════════════════════════════════╗
+ ║                    INTERNAL DOCKER NETWORK                            ║
+ ║                    (Bearer Token Authentication)                      ║
+ ║                                                                       ║
+ ║  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ ║
+ ║  │   SLINKER   │  │   TRAPPER   │  │   GOBBER    │  │    HIDER    │ ║
+ ║  │  (Port 8000)│  │  (Port 3000)│  │  (Port 8085)│  │  (Port 8087)│ ║
+ ║  │             │  │             │  │             │  │             │ ║
+ ║  │ Code Agent  │  │ Web Scraping│  │  Storage    │  │  Secrets    │ ║
+ ║  │  Execution  │  │  & Crawling │  │  & Memory   │  │  & Config   │ ║
+ ║  │             │  │             │  │             │  │             │ ║
+ ║  │ • Git       │  │ • Playwright│  │ • SQLite    │  │ • AES-256   │ ║
+ ║  │   Worktrees │  │ • Redis     │  │   WAL       │  │   Encryption│ ║
+ ║  │ • Junie CLI │  │ • Job Queue │  │ • Obsidian  │  │ • Versioned │ ║
+ ║  └──────┬──────┘  └──────┬──────┘  │   Vault     │  │   Config    │ ║
+ ║         │                │         └──────┬──────┘  └──────┬──────┘ ║
+ ║         │                │                │                │         ║
+ ║  ┌──────▼──────┐  ┌──────▼──────┐  ┌─────▼───────┐  ┌────▼───────┐ ║
+ ║  │  POLTER-    │  │   SHREWD    │  │   SNEAKER   │  │   (ALL     │ ║
+ ║  │  GEIST      │  │             │  │             │  │    SERVICES)│ ║
+ ║  │  (Port 8088)│  │ (Port 8089) │  │ (Port 8086) │  │            │ ║
+ ║  │             │  │             │  │             │  │            │ ║
+ ║  │ Notifications│  │  LLM        │  │ Observability│  │  Collect  │ ║
+ ║  │             │  │  Routing    │  │             │  │  Metrics    │ ║
+ ║  │ • Slack     │  │             │  │ • Metrics   │  │  & Traces   │ ║
+ ║  │ • Discord   │  │ • OpenAI    │  │ • Traces    │  │             │ ║
+ ║  │ • Email     │  │ • Anthropic │  │ • Logs      │  │             │ ║
+ ║  │ • Telegram  │  │ • Google    │  │             │  │             │ ║
+ ║  │ • Webhooks  │  │ • Ollama    │  │             │  │             │ ║
+ ║  └─────────────┘  └─────────────┘  └─────────────┘  └────────────┘ ║
+ ║                                                                       ║
+ ║  ┌──────────────────────────────────────────────────────────────────┐ ║
+ ║  │                    DATA LAYER                                    │ ║
+ ║  │  SQLite Databases  •  Redis Cache  •  Obsidian Vault  •  Git    │ ║
+ ║  └──────────────────────────────────────────────────────────────────┘ ║
+ ╚═══════════════════════════════════════════════════════════════════════╝
+```
+
+### Data Flow Diagram
+
+```
+  User Request
+       │
+       ▼
+  ┌─────────┐
+  │ Greenie │  ← Route & orchestrate
+  └────┬────┘
+       │
+       ├──────────► Need LLM? ──────► Shrewd ──────► OpenAI/Anthropic/Ollama
+       │
+       ├──────────► Need code? ─────► Slinker ─────► Junie CLI ──► Git worktree
+       │
+       ├──────────► Need web data? ─► Trapper ─────► Playwright ─► Structured data
+       │
+       ├──────────► Need storage? ──► Gobber ──────► SQLite/Obsidian
+       │
+       ├──────────► Need secrets? ──► Hider ───────► Encrypted vault
+       │
+       ├──────────► Notify user? ───► Poltergeist ─► Slack/Discord/Email
+       │
+       └──────────► Monitor? ───────► Sneaker ─────► Metrics/Traces/Logs
+       │
+       ▼
+  Response returned to user
+```
+
+### Service Dependencies
+
+```
+  Greenie (Hub)
+  ├──► Slinker      (Task execution)
+  ├──► Trapper      (Web scraping)
+  ├──► Shrewd       (LLM routing)
+  ├──► Gobber       (Storage & memory)
+  ├──► Hider        (Secrets management)
+  ├──► Poltergeist  (Notifications)
+  └──► Sneaker      (Observability)
+
+  Slinker
+  └──► Gobber       (Store execution results)
+  └──► Shrewd       (LLM for code generation)
+
+  Trapper
+  └──► Gobber       (Cache scraped data)
+
+  Slammer (Dashboard)
+  └──► Greenie      (API client)
+
+  Speedy (CLI)
+  └──► Greenie      (API client)
 ```
 
 ### How They Work Together
