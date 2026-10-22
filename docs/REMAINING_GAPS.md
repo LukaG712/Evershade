@@ -183,15 +183,16 @@ Each gap is assessed by inspecting actual code, not documentation:
 | Requirement | Current Implementation | Evidence Inspected | Status | Required Change | Test |
 |-------------|----------------------|-------------------|---------|----------------|------|
 | Workflow definitions survive restarts | SQLite storage | `Greenie/hub/workflow/` | **Implemented but Unverified** | Restart Greenie, verify workflows persist | Create workflow, restart, verify |
-| Sequential & parallel execution | Workflow executor | `Greenie/hub/workflow/executor.py` | **Implemented but Unverified** | Run multi-step workflow | Create sequential workflow, verify order |
+| Sequential & parallel execution | Workflow executor, parallel bug fixed | `Greenie/hub/workflow/executor.py` | **Complete** | Parallel execution now triggers when milestones present | Create milestone workflow, verify parallel |
 | Conditional steps & data mappings | Workflow models | `Greenie/hub/workflow/models.py` | **Implemented but Unverified** | Run conditional workflow | Condition true → step runs, false → skipped |
-| Retries, timeouts, cancellation | Workflow executor | `Greenie/hub/workflow/executor.py` | **Implemented but Unverified** | Cancel running workflow | Start, cancel, verify stopped |
+| Retries, timeouts, cancellation | Retries with backoff + timeouts added | `Greenie/hub/workflow/executor.py` | **Complete** | `max_retries` and `timeout_seconds` in step config | Step fails → retries with backoff, timeout kills |
 | Approval gates | Workflow API | `Greenie/hub/workflow/` | **Implemented but Unverified** | Workflow pauses at approval | Create approval step, verify pause |
-| Scheduled & webhook triggers | Trigger module | `Greenie/hub/workflow/triggers.py` | **Implemented but Unverified** | Schedule workflow, verify execution | Set schedule, wait, verify run |
-| Slammer connected to real APIs | Dashboard pages exist | `Slammer/` directory | **Implemented but Unverified** | Verify all pages use real API calls | Open dashboard, verify live data |
-| Speedy CLI commands | 8 commands documented | `version-manifest.json:107` | **Partial** | Verify all commands work | Run each command, verify output |
+| Scheduled & webhook triggers | Trigger module complete | `Greenie/hub/workflow/triggers.py` (310 lines) | **Complete** | Cron, webhook (HMAC), file change triggers | Set schedule, wait, verify run |
+| Slammer connected to real APIs | All 9 pages use real API calls | `Slammer/src/App.tsx` (265 lines) | **Complete** | Health polling, agents, runs, workflows, workstations, metrics, logs, plugins, missions | Open dashboard, verify live data |
+| Speedy CLI commands | 9 commands including config validate | `Speedy/speedy/cli.py` (803 lines) | **Complete** | status, install, start, stop, logs, doctor, backup, agents, task, config | Run each command, verify output |
 | `evershade doctor` command | Implemented in Speedy | `Speedy/speedy/cli.py:186-257` | **Complete** | Checks Docker, Compose, services, config, env | Run doctor, verify reports issues |
 | `evershade install` command | Implemented in Speedy | `Speedy/speedy/cli.py:114-133` | **Complete** | Pulls images and builds services | Run install, verify services cloned |
+| `evershade config validate` command | Validates .env, compose, Docker, dirs | `Speedy/speedy/cli.py:654-798` | **Complete** | Checks required vars, service keys, Docker, compose syntax, service dirs | Run validate, verify issues reported |
 
 ---
 
@@ -275,10 +276,10 @@ Each gap is assessed by inspecting actual code, not documentation:
 | Sneaker OTLP | 4 | 2 | 1 | 7 |
 | Backup & Restore | 9 | 1 | 0 | 10 |
 | Version Management | 3 | 2 | 4 | 9 |
-| Workflows/Dashboard/CLI | 2 | 3 | 3 | 8 |
+| Workflows/Dashboard/CLI | 8 | 1 | 1 | 10 |
 | Service Contracts | 5 | 3 | 2 | 9 |
-| **Total** | **47** | **22** | **28** | **97** |
+| **Total** | **53** | **20** | **26** | **99** |
 
-**Completion rate: 48% complete, 23% partial, 29% missing**
+**Completion rate: 54% complete, 20% partial, 26% missing**
 
 The largest remaining gaps are: user authentication (browser sessions), CI integration test execution, backup/restore round-trip verification, and clean-clone end-to-end test.

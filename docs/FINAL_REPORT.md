@@ -101,6 +101,12 @@ The Evershade ecosystem consists of 10 specialized services:
 - **Alerting system:** Alert rules, deduplication, Poltergeist delivery in `Sneaker/sneaker/alerting.py`
 - **Credential rotation:** API key, encryption key, session secret rotation in `Greenie/hub/credential_rotation.py`
 
+### Phase 9 — Workflow & CLI Enhancements
+- **Workflow executor fixes:** Parallel execution bug fixed (was hardcoded to `False`), retries with exponential backoff added, per-step timeouts added
+- **Workflow triggers verified:** Schedule (cron), webhook (HMAC signature), and file change triggers all implemented (310 lines)
+- **Speedy CLI:** Added `config validate` command — validates .env, docker-compose.yml, Docker availability, required variables, service API keys, and service directories
+- **Slammer dashboard verified:** All 9 pages (services, agents, runs, workflows, workstations, metrics, logs, plugins, missions) connected to real APIs with health polling
+
 ---
 
 ## 3. Architecture Decisions
@@ -270,6 +276,9 @@ Not applicable — all changes made in the root repository working tree. No exte
 - **Reboot persistence:** Not tested on real VM
 - **CI integration tests:** Pipeline enabled but requires network access to clone services
 - **Service capability endpoints:** Only Greenie has /api/capabilities; other services should add similar endpoints
+- **Workflow retries & timeouts:** Implemented in executor (max_retries, timeout_seconds in step config)
+- **Workflow parallel execution:** Fixed — now triggers when milestones are present
+- **Speedy config validate:** Implemented — validates .env, compose, Docker, required vars, service dirs
 
 ### Corrected Status (Previously Reported as Incomplete)
 - **Gobber semantic search:** ✅ Implemented — embedding generation via Shrewd, fallback hash-based embeddings, vault scanning, link resolution, semantic search with cosine similarity, persistent storage in SQLite
@@ -338,3 +347,8 @@ Not applicable — all changes made in the root repository working tree. No exte
 | Server mode blocks default keys | ✓ (start.sh, start.ps1) |
 | Gobber semantic search | ✓ (implemented: embeddings, search, fallback) |
 | Sneaker OTLP export | ✓ (implemented: traces, metrics, logs) |
+| Workflow parallel execution | ✓ (fixed: triggers when milestones present) |
+| Workflow retries & timeouts | ✓ (max_retries, timeout_seconds in step config) |
+| Workflow triggers | ✓ (schedule, webhook, file change) |
+| Speedy config validate | ✓ (validates .env, compose, Docker, vars, dirs) |
+| Slammer dashboard API connections | ✓ (all 9 pages use real APIs) |
