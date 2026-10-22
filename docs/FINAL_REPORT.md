@@ -1,9 +1,9 @@
 # Evershade Final Implementation Report
 
 **Date:** 2026-10-22
-**Version:** v1.13.0
+**Version:** v1.14.0
 **Author:** Junie (autonomous agent)
-**Scope:** 19-phase implementation of the complete Evershade ecosystem
+**Scope:** 20-phase implementation of the complete Evershade ecosystem
 
 ---
 
@@ -185,6 +185,15 @@ The Evershade ecosystem consists of 10 specialized services:
 - **Website Architecture**: Added install.sh/install.ps1 and version-manifest.json to repository structure diagram
 - **REMAINING_GAPS.md**: Updated summary table to use "Implemented but Unverified" as separate category from "Missing" — 97 Complete, 17 Unverified, 2 Missing out of 116 total (84% complete)
 - **All code and documentation changes complete**: Remaining 16% requires running Docker services or network access
+
+### Phase 20 — CI for All Service Repos
+
+- **Per-service CI workflows**: All 10 service repos now have their own CI pipeline with lint, test, and build jobs
+- **Python services** (Greenie, Slinker, Gobber, Shrewd, Hider, Poltergeist, Sneaker, Speedy): ruff lint + format check, pytest unit tests, Docker image build
+- **TypeScript services** (Trapper, Slammer): npm lint, TypeScript type check, npm test (Jest/Vitest), Docker image build
+- **Root CI sub-project status**: Updated to query GitHub API for each repo's latest CI run and report status with emoji indicators
+- **Version manifest**: Updated with new commit SHAs for all 10 services, bumped to v1.14.0
+- **All repos committed and pushed**: Greenie (860adf6), Slinker (366e659), Trapper (a332072), Gobber (6249dd6), Shrewd (fd84cc7), Hider (54a6fd8), Poltergeist (843940d), Sneaker (5a8b1f5), Slammer (e38b6b0), Speedy (b22078a)
 
 ---
 
@@ -450,4 +459,6 @@ Not applicable — all changes made in the root repository working tree. No exte
 | Website updated | ✓ (all 6 pages: version, bootstrap scripts, startup profiles) |
 | REMAINING_GAPS.md summary | ✓ (accurate Unverified vs Missing categories, 84% complete) |
 | All code/docs changes complete | ✓ (remaining 16% requires Docker/network) |
-| Completion rate | 84% (97/116 requirements complete) |
+| Per-service CI workflows | ✓ (all 10 repos: lint, test, build) |
+| Root CI sub-project status | ✓ (GitHub API checks each repo) |
+| Completion rate | 84% (99/118 requirements complete) |

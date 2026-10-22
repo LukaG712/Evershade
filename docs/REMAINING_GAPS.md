@@ -1,7 +1,7 @@
 # Evershade — Remaining Gaps & Implementation Checklist
 
 **Date:** 2026-10-22
-**Version:** v1.13.0
+**Version:** v1.14.0
 **Scope:** Comprehensive gap analysis based on code inspection, not documentation claims
 
 ---
@@ -57,6 +57,8 @@ Each gap is assessed by inspecting actual code, not documentation:
 | Clean up test environment | `docker compose down -v` in always() | `.github/workflows/ci.yml:337-340` | **Complete** | Always runs cleanup | CI always cleans up |
 | Use fake LLM providers in tests | `tests/fixtures/fake_llm.py` | `tests/fixtures/fake_llm.py` (78 lines) | **Complete** | HTTP server mimicking Shrewd API, deterministic responses | Tests don't incur API costs |
 | Separate test categories accurately | `pytest -m "not integration"` marker | `.github/workflows/ci.yml:81` | **Complete** | None | N/A |
+| Per-service CI workflows | Each service has its own CI pipeline | All 10 service repos have `.github/workflows/ci.yml` | **Complete** | Lint, test, and build jobs for each service | Check GitHub Actions for each repo |
+| Root CI checks sub-project status | GitHub API checks latest workflow runs | `.github/workflows/ci.yml:342-414` | **Complete** | Queries each repo's latest CI run and reports status | Run root CI, verify sub-project status reported |
 
 ### Required Integration Scenarios
 
@@ -284,6 +286,11 @@ File: `tests/integration/test_backup_restore.py` (550 lines, 9 tests)
 19. **User authentication** — ✅ Full auth with bcrypt, sessions, RBAC
 20. **Readiness endpoint** — ✅ `/ready` separate from `/health` liveness
 
+### Phase 6: CI for All Repos (✅ Complete)
+
+21. **Per-service CI workflows** — ✅ All 10 service repos have CI (lint, test, build)
+22. **Root CI sub-project status** — ✅ GitHub API checks each repo's latest CI run
+
 ---
 
 ## Summary
@@ -292,7 +299,7 @@ File: `tests/integration/test_backup_restore.py` (550 lines, 9 tests)
 |----------|----------|------------|---------|-------|
 | Clean Installation | 5 | 0 | 1 | 6 |
 | Service Startup | 4 | 1 | 1 | 6 |
-| CI & Tests | 10 | 1 | 0 | 11 |
+| CI & Tests | 12 | 1 | 0 | 13 |
 | Auth & Security | 11 | 3 | 0 | 14 |
 | Gobber Semantic | 8 | 2 | 0 | 10 |
 | Sneaker OTLP | 7 | 3 | 0 | 10 |
@@ -300,9 +307,9 @@ File: `tests/integration/test_backup_restore.py` (550 lines, 9 tests)
 | Version Management | 7 | 1 | 0 | 8 |
 | Workflows/Dashboard/CLI | 8 | 3 | 0 | 11 |
 | Service Contracts | 7 | 2 | 0 | 9 |
-| **Total** | **97** | **17** | **2** | **116** |
+| **Total** | **99** | **17** | **2** | **118** |
 
-**Completion rate: 84% complete, 15% implemented but unverified, 2% missing**
+**Completion rate: 84% complete, 14% implemented but unverified, 2% missing**
 
 The remaining gaps are:
 - **Implemented but Unverified (17)**: Features that exist in code and have tests, but require running Docker services to verify live behavior. This includes cross-service integration tests, optional service degradation, CORS/SSRF/container isolation verification, semantic search retrieval, OTLP structured logs, correlation ID propagation, workflow persistence, and more.
