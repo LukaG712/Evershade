@@ -71,6 +71,7 @@ jobs:
       - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip
+          rm -rf Greenie
           git clone --depth 1 https://github.com/LukaG712/Greenie.git
           pip install -e ./Greenie
           pip install -r requirements-test.txt
