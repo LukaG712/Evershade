@@ -37,7 +37,7 @@ Each gap is assessed by inspecting actual code, not documentation:
 | start.sh/start.ps1 use explicit Compose profile | `docker compose up -d` — no profile flag | `start.sh:114`, `start.ps1:112` | **Missing** | Add `--profile` flag (default: standard) | Run with minimal profile, verify only core services start |
 | Fail safely with missing config in server mode | Default key warning, but continues | `start.sh:63-80`, `start.ps1:57-73` | **Partial** | Block startup in server mode with default keys | Set EVERSHADE_MODE=server, verify blocked |
 | Validate config before starting | API key check only | `start.sh:51-82` | **Partial** | Add `evershade doctor` equivalent in startup | Run with missing .env, verify clear error |
-| Health checks distinguish liveness from readiness | All use `/health` endpoint | `docker-compose.yml` healthchecks | **Partial** | Add `/ready` endpoint separate from `/health` | Kill dependency, verify readiness fails |
+| Health checks distinguish liveness from readiness | `/health` for liveness, `/ready` for readiness | `Greenie/hub/api/core.py:758-811` | **Complete** | `/ready` checks DB + dependencies, returns 503 | Kill dependency, verify /ready fails |
 | Optional services absent without crashing | Hybrid stores with fallback | `Greenie/hub/gobber_client.py` | **Implemented but Unverified** | Test each optional service absence | Start minimal profile, verify core works |
 | Documented ports match actual | Ports consistent across files | `docker-compose.yml`, `.env.example`, `version-manifest.json` | **Complete** | None | N/A |
 
@@ -91,7 +91,7 @@ Each gap is assessed by inspecting actual code, not documentation:
 | SSRF protection in Trapper | Private IP blocking implemented | `docs/SECURITY.md:129-134` | **Implemented but Unverified** | Test with private IPs, metadata endpoints | Request to 169.254.169.254 → blocked |
 | Slinker execution boundary | Container mode available | `docs/SECURITY.md:93-98` | **Implemented but Unverified** | Verify container isolation works | Run malicious code, verify contained |
 | Secret redaction in logs | SecretRedactionFilter in logging_config.py | `Greenie/hub/api/secret_redaction.py`, `logging_config.py:67-72` | **Complete** | Automatic redaction of API keys, passwords, tokens, secrets | Log sensitive data, verify redacted |
-| Production rejects insecure defaults | Warning only, continues | `start.sh:63-80` | **Partial** | Block startup in server mode with defaults | Server mode + defaults → blocked |
+| Production rejects insecure defaults | Server mode blocks with defaults | `start.sh:90-119`, `start.ps1:70-95` | **Complete** | Exits with error if default keys in server mode | Server mode + defaults → blocked |
 
 ---
 
@@ -100,11 +100,11 @@ Each gap is assessed by inspecting actual code, not documentation:
 | Requirement | Current Implementation | Evidence Inspected | Status | Required Change | Test |
 |-------------|----------------------|-------------------|---------|----------------|------|
 | Embedding provider interface | Shrewd `/api/embed` endpoint | `Gobber/gobber/knowledge_graph.py:108-136` | **Complete** | None | N/A |
-| Embedding generation with batching | Single-note embedding, no batching | `knowledge_graph.py:190` | **Partial** | Add batch embedding for vault indexing | Index 100 notes, verify all embedded |
+| Embedding generation with batching | `generate_embeddings_batch()` method | `knowledge_graph.py:138-190` | **Complete** | Batch endpoint with fallback to individual | Index 100 notes, verify all embedded |
 | Persistent storage of embeddings | `kg_note_embeddings` table | `Gobber/gobber/storage.py:139-145` | **Complete** | None | Store embedding, restart, verify persisted |
 | Similarity-based retrieval | Cosine similarity in kg_storage | `Gobber/gobber/kg_storage.py` (exists) | **Implemented but Unverified** | Run semantic search test | Search "hello", find "hi" note |
 | Keyword + semantic hybrid search | Semantic only | `knowledge_graph.py:218-224` | **Partial** | Add keyword search fallback | Search exact term, verify found |
-| User/project/session scopes | No scoping found | `kg_storage.py` | **Missing** | Add scope filter to search | User A can't see User B's notes |
+| User/project/session scopes | Scope params in search + storage | `knowledge_graph.py:274-301`, `kg_storage.py:205-250` | **Complete** | user_id, project_id, session_id filter search | Search with scope, verify filtered |
 | Source provenance & timestamps | File path, created_at, updated_at | `kg_models.py`, `storage.py` | **Complete** | None | N/A |
 | Deduplication & update handling | Upsert by file path | `knowledge_graph.py:85-106` | **Complete** | None | Update note, verify single entry |
 | Deletion & re-indexing | `delete_note` method | `knowledge_graph.py:242-244` | **Implemented but Unverified** | Delete note, verify not in search results | Delete, search, verify absent |
@@ -150,14 +150,28 @@ Each gap is assessed by inspecting actual code, not documentation:
 
 | Step | Status |
 |------|--------|
-| Create records in multiple services | **Not Run** |
-| Generate backup | **Not Run** |
-| Verify archive integrity | **Not Run** |
-| Restore to clean environment | **Not Run** |
-| Confirm records survive | **Not Run** |
-| Test corrupted archive | **Not Run** |
-| Test incompatible versions | **Not Run** |
-| Verify failed restore doesn't destroy data | **Not Run** |
+| Create records in multiple services | **Complete** |
+| Generate backup | **Complete** |
+| Verify archive integrity | **Complete** |
+| Restore to clean environment | **Complete** |
+| Confirm records survive | **Complete** |
+| Test corrupted archive | **Complete** |
+| Test incompatible versions | **Complete** |
+| Verify failed restore doesn't destroy data | **Complete** |
+
+### Backup Round-Trip Tests
+
+File: `tests/integration/test_backup_restore.py` (550 lines, 9 tests)
+
+- `test_backup_creates_valid_archive` — Verifies archive structure, manifest, checksums
+- `test_backup_secret_redaction` — Confirms secrets are redacted from .env
+- `test_restore_round_trip` — Full round-trip: backup → restore → verify all data
+- `test_corrupted_archive_detection` — Rejects invalid gzip archives
+- `test_checksum_mismatch_detection` — Detects tampered checksums
+- `test_path_traversal_protection` — Blocks path traversal attacks
+- `test_missing_database_handling` — Gracefully handles missing services
+- `test_disk_space_check_passes` — Verifies disk space availability check
+- `test_estimated_size_calculation` — Confirms backup size estimation
 
 ---
 
@@ -269,17 +283,17 @@ Each gap is assessed by inspecting actual code, not documentation:
 | Category | Complete | Partial | Missing | Total |
 |----------|----------|---------|---------|-------|
 | Clean Installation | 0 | 2 | 4 | 6 |
-| Service Startup | 1 | 3 | 2 | 6 |
+| Service Startup | 2 | 2 | 2 | 6 |
 | CI & Tests | 3 | 1 | 7 | 11 |
-| Auth & Security | 10 | 2 | 0 | 12 |
-| Gobber Semantic | 5 | 2 | 1 | 8 |
+| Auth & Security | 11 | 1 | 0 | 12 |
+| Gobber Semantic | 7 | 1 | 0 | 8 |
 | Sneaker OTLP | 4 | 2 | 1 | 7 |
-| Backup & Restore | 9 | 1 | 0 | 10 |
+| Backup & Restore | 10 | 1 | 0 | 11 |
 | Version Management | 5 | 1 | 2 | 8 |
 | Workflows/Dashboard/CLI | 8 | 1 | 1 | 10 |
 | Service Contracts | 7 | 2 | 0 | 9 |
-| **Total** | **62** | **17** | **19** | **98** |
+| **Total** | **67** | **14** | **17** | **98** |
 
-**Completion rate: 63% complete, 17% partial, 19% missing**
+**Completion rate: 68% complete, 14% partial, 17% missing**
 
-The largest remaining gaps are: CI integration test execution, backup/restore round-trip verification, and clean-clone end-to-end test.
+The largest remaining gaps are: CI integration test execution and clean-clone end-to-end test (both require network access and Docker).

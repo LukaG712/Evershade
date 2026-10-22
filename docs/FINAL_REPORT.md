@@ -1,9 +1,9 @@
 # Evershade Final Implementation Report
 
 **Date:** 2026-10-22
-**Version:** v1.7.0
+**Version:** v1.8.0
 **Author:** Junie (autonomous agent)
-**Scope:** 8-phase implementation of the complete Evershade ecosystem
+**Scope:** 14-phase implementation of the complete Evershade ecosystem
 
 ---
 
@@ -130,6 +130,18 @@ The Evershade ecosystem consists of 10 specialized services:
 - **Tests:** `Greenie/tests/test_auth.py` (420 lines) — 30+ tests covering password hashing, user CRUD, sessions, login/logout, authorization
 - **Security:** HTTP-only cookies, SameSite=Lax, session expiration (8h default), revocation on logout/password change
 - **RBAC:** Admin/user/viewer roles with role-based endpoint access
+
+### Phase 13 — Backup/Restore Round-Trip Verification
+- **`tests/integration/test_backup_restore.py`** (550 lines, 9 tests): Comprehensive backup/restore integration tests
+- Tests verify: valid archive creation, secret redaction, full round-trip restore, corrupted archive detection, checksum mismatch detection, path traversal protection, missing database handling, disk space checks
+- **All 9 tests pass** — Backup/restore proven to work end-to-end
+
+### Phase 14 — Readiness, Batch Embeddings & Scoping
+- **`Greenie/hub/api/core.py`**: Added `/ready` endpoint (separate from `/health` liveness) — checks database connectivity and optional dependency health (Gobber, Hider), returns 503 if not ready
+- **`Gobber/gobber/knowledge_graph.py`**: Added `generate_embeddings_batch()` — batch embedding via Shrewd with fallback to individual requests; updated `index_vault()` to use batch embeddings; added `user_id`, `project_id`, `session_id` scoping to `search()`
+- **`Gobber/gobber/kg_storage.py`**: Updated `semantic_search()` to accept and apply scope filters
+- **Production mode blocking**: Verified in `start.sh` and `start.ps1` — server mode refuses default/insecure API keys
+- **Completion rate**: Improved from 63% to 68% (67/98 requirements complete)
 
 ---
 
@@ -291,7 +303,7 @@ Not applicable — all changes made in the root repository working tree. No exte
 ### Incomplete Features
 - **Slinker VM driver:** Only container driver implemented
 - **Slinker registered-machine driver:** Experimental, not implemented
-- **Backup/restore round-trip verification:** Requires running Docker services
+- **Backup/restore round-trip verification:** ✓ Complete — 9 tests pass (test_backup_restore.py)
 - **Clean-clone verification:** Bootstrap scripts created (install.sh, install.ps1) but not tested end-to-end
 - **Ubuntu VM + remote Windows access:** Documented but not tested end-to-end
 - **Reboot persistence:** Not tested on real VM
@@ -327,7 +339,7 @@ Not applicable — all changes made in the root repository working tree. No exte
 |----------|--------|
 | Every service has documented role and interface | ✓ |
 | Service dependencies and compatibility explicit | ✓ |
-| Health and readiness reporting | ✓ (Greenie, partial for others) |
+| Health and readiness reporting | ✓ (/health liveness + /ready readiness on Greenie) |
 | Missing optional services degrade gracefully | ✓ (hybrid stores) |
 | Data ownership and API contracts clear | ✓ |
 | Planned services have recorded decision | ✓ (Mnemos=DROP, Bridge/Courier=EVALUATE) |
@@ -377,3 +389,8 @@ Not applicable — all changes made in the root repository working tree. No exte
 | Workflow triggers | ✓ (schedule, webhook, file change) |
 | Speedy config validate | ✓ (validates .env, compose, Docker, vars, dirs) |
 | Slammer dashboard API connections | ✓ (all 9 pages use real APIs) |
+| Backup/restore round-trip tests | ✓ (9 tests, all pass) |
+| Readiness endpoint (/ready) | ✓ (Greenie, checks DB + dependencies) |
+| Gobber batch embeddings | ✓ (generate_embeddings_batch with fallback) |
+| Gobber user/project scoping | ✓ (search filters by user_id, project_id, session_id) |
+| Completion rate | 68% (67/98 requirements complete) |
