@@ -10,7 +10,7 @@ import pytest
 import requests
 from dataclasses import dataclass, field, asdict
 from typing import Any, Optional
-from conftest import SERVICES, API_KEYS
+from tests.conftest import SERVICES, API_KEYS
 
 
 @dataclass

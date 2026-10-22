@@ -5,7 +5,7 @@ Tests for prompt injection, SSRF, auth bypass, and other security concerns.
 
 import pytest
 import requests
-from conftest import SERVICES, API_KEYS
+from tests.conftest import SERVICES, API_KEYS
 
 
 class TestPromptInjection:

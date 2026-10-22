@@ -7,7 +7,7 @@ timeouts, and data corruption scenarios.
 import time
 import pytest
 import requests
-from conftest import SERVICES, API_KEYS
+from tests.conftest import SERVICES, API_KEYS
 
 
 class TestServiceCrash:

@@ -6,7 +6,7 @@ They require all services to be running (via Docker Compose).
 
 import pytest
 import requests
-from conftest import SERVICES, API_KEYS
+from tests.conftest import SERVICES, API_KEYS
 
 
 class TestHealthChecks:
