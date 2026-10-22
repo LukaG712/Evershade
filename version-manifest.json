@@ -1,5 +1,5 @@
 {
-  "version": "1.13.0",
+  "version": "1.14.0",
   "description": "Evershade ecosystem version manifest — defines compatible service versions",
   "updated": "2026-10-22",
   "migration_version": 1,
@@ -19,7 +19,7 @@
   "services": {
     "Greenie": {
       "version": "1.8.0",
-      "commit": "98f518b",
+      "commit": "860adf6",
       "repository": "https://github.com/LukaG712/Greenie",
       "required": true,
       "port": 8080,
@@ -30,7 +30,7 @@
     },
     "Slinker": {
       "version": "1.2.0",
-      "commit": "d13f6a3",
+      "commit": "366e659",
       "repository": "https://github.com/LukaG712/Slinker",
       "required": true,
       "port": 8000,
@@ -41,7 +41,7 @@
     },
     "Trapper": {
       "version": "1.1.0",
-      "commit": "a3e9e28",
+      "commit": "a332072",
       "repository": "https://github.com/LukaG712/Trapper",
       "required": true,
       "port": 3000,
@@ -51,7 +51,7 @@
     },
     "Gobber": {
       "version": "1.1.0",
-      "commit": "10da7fd",
+      "commit": "6249dd6",
       "repository": "https://github.com/LukaG712/Gobber",
       "required": true,
       "port": 8085,
@@ -62,7 +62,7 @@
     },
     "Sneaker": {
       "version": "1.2.0",
-      "commit": "77a33da",
+      "commit": "5a8b1f5",
       "repository": "https://github.com/LukaG712/Sneaker",
       "required": false,
       "port": 8086,
@@ -73,7 +73,7 @@
     },
     "Hider": {
       "version": "1.1.0",
-      "commit": "1a54430",
+      "commit": "54a6fd8",
       "repository": "https://github.com/LukaG712/Hider",
       "required": false,
       "port": 8087,
@@ -83,7 +83,7 @@
     },
     "Poltergeist": {
       "version": "1.2.0",
-      "commit": "8659ce7",
+      "commit": "843940d",
       "repository": "https://github.com/LukaG712/Poltergeist",
       "required": false,
       "port": 8088,
@@ -94,7 +94,7 @@
     },
     "Shrewd": {
       "version": "1.2.0",
-      "commit": "fb0113e",
+      "commit": "fd84cc7",
       "repository": "https://github.com/LukaG712/Shrewd",
       "required": false,
       "port": 8089,
@@ -105,7 +105,7 @@
     },
     "Slammer": {
       "version": "1.4.0",
-      "commit": "881c6f1",
+      "commit": "e38b6b0",
       "repository": "https://github.com/LukaG712/Slammer",
       "required": false,
       "port": 5173,
@@ -116,7 +116,7 @@
     },
     "Speedy": {
       "version": "1.2.0",
-      "commit": "d484d35",
+      "commit": "b22078a",
       "repository": "https://github.com/LukaG712/Speedy",
       "required": false,
       "port": null,
