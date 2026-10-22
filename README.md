@@ -177,7 +177,7 @@ curl -X POST http://localhost:8080/api/pipeline \
 ┌─────────────────────────────────────────────────────────────┐
 │                   EXTERNAL ACCESS                           │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │  🌐 Browser (:8080/:5173)   ⚡ Speedy CLI           │    │
+│  │  🌐 Browser (:8080/:5173)   ⚡ Speedy CLI          │    │
 │  └──────────────────────┬──────────────────────────────┘    │
 │                         ▼                                   │
 │  ┌─────────────────────────────────────────────────────┐    │
@@ -200,10 +200,10 @@ curl -X POST http://localhost:8080/api/pipeline \
 │  💾 Gobber (:8085)   Storage · Knowledge graph             │
 │  🔐 Hider (:8087)    Secrets · AES-256-GCM                 │
 │  📢 Poltergeist(:8088) Notifications · Multi-channel       │
-│  👁️  Sneaker (:8086) Observability · OTLP                 │
+│  👁️  Sneaker (:8086) Observability · OTLP                  │
 │                                                             │
-│  ── DATA LAYER ──                                          │
-│  SQLite · Redis · Obsidian Vault · Git Repos               │
+│  ── DATA LAYER ──                                           │
+│  SQLite · Redis · Obsidian Vault · Git Repos                │
 └─────────────────────────────────────────────────────────────┘
 ```
 
