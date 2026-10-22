@@ -1,7 +1,7 @@
 # Evershade — Remaining Gaps & Implementation Checklist
 
 **Date:** 2026-10-22
-**Version:** v1.10.0
+**Version:** v1.11.0
 **Scope:** Comprehensive gap analysis based on code inspection, not documentation claims
 
 ---
@@ -21,10 +21,10 @@ Each gap is assessed by inspecting actual code, not documentation:
 
 | Requirement | Current Implementation | Evidence Inspected | Status | Required Change | Test |
 |-------------|----------------------|-------------------|---------|----------------|------|
-| Fresh clone leads to runnable installation | `.gitignore` excludes all 10 service dirs; no bootstrap script | `.gitignore`, `start.sh`, `start.ps1` | **Missing** | Create bootstrap script that clones services from GitHub using version-manifest.json | Clone to temp dir, run bootstrap, verify `docker compose config` |
-| Bootstrap uses pinned versions, not latest | version-manifest.json has versions but no commit SHAs | `version-manifest.json` | **Partial** | Add commit SHA or tag to each service entry | Bootstrap should clone exact pinned revision |
-| Idempotent re-run | No bootstrap exists | N/A | **Missing** | Bootstrap should detect existing repos and skip or update safely | Run bootstrap twice, verify no errors |
-| Failed builds produce useful errors | Startup scripts check for dir existence | `start.sh:85-90`, `start.ps1:78-83` | **Partial** | Bootstrap should report which service failed and why | Simulate network failure, verify error message |
+| Fresh clone leads to runnable installation | `install.sh` and `install.ps1` clone services from manifest | `install.sh`, `install.ps1` | **Complete** | Bootstrap scripts clone all services for both platforms | Clone to temp dir, run bootstrap, verify `docker compose config` |
+| Bootstrap uses pinned versions, not latest | install scripts checkout commit SHA from manifest | `install.sh:141-152`, `install.ps1:98-110` | **Complete** | Clones with --depth 100 and checks out pinned commit | Bootstrap should clone exact pinned revision |
+| Idempotent re-run | Scripts verify existing repos at correct commit | `install.sh:114-124`, `install.ps1:72-82` | **Complete** | Skips if at correct commit, warns if outdated, --force to update | Run bootstrap twice, verify no errors |
+| Failed builds produce useful errors | Improved error messages with causes | `install.sh:186-194`, `install.ps1:146-154` | **Complete** | Lists network, repo, permission causes; suggests --force | Simulate network failure, verify error message |
 | Windows PowerShell + Linux/macOS support | start.sh and start.ps1 exist | Both files inspected | **Complete** | Bootstrap scripts for both platforms | Run on both platforms |
 | README matches tested process | README quickstart assumes services present | `README.md` lines 50-100 | **Partial** | Update README to reference bootstrap command | Follow README from scratch |
 
@@ -124,10 +124,10 @@ Each gap is assessed by inspecting actual code, not documentation:
 | OTLP-compatible metric export | Full OTLP receiver + exporter | `Sneaker/sneaker/otlp_export.py` | **Complete** | None | Send OTLP metric, verify stored |
 | OTLP-compatible log export | Full OTLP receiver + exporter | `Sneaker/sneaker/otlp_export.py` | **Complete** | None | Send OTLP log, verify stored |
 | Configurable OTLP endpoints | `OTLP_ENDPOINT` env var | `otlp_export.py:28-29` | **Complete** | None | Configure endpoint, verify forwarding |
-| Batching, retry, timeout | HTTP client with timeout | `otlp_export.py:247` | **Partial** | Add retry logic for OTLP forwarding | Simulate endpoint failure, verify retry |
+| Batching, retry, timeout | 3 retries with exponential backoff | `Sneaker/sneaker/otlp_export.py:377-421` | **Complete** | Retries on 5xx and connection errors with 1s, 2s, 4s delays | Simulate endpoint failure, verify retry |
 | Secret redaction in telemetry | `redact_secrets_in_traces()` + `redact_secrets_in_logs()` | `Sneaker/sneaker/otlp_export.py:33-160` | **Complete** | Pattern-based key detection + insecure value detection, wired into /v1/traces and /v1/logs | Send trace with secret, verify redacted |
 | Health & dependency status | Health endpoints exist | All services have `/health` | **Complete** | None | N/A |
-| Metrics for latency, errors, queues | Basic metrics exist | `Sneaker/sneaker/api.py` | **Partial** | Add task duration, queue depth metrics | Check metrics endpoint for required metrics |
+| Metrics for latency, errors, queues | `/api/metrics/summary` endpoint | `Sneaker/sneaker/api.py:114-172` | **Complete** | Latency percentiles (p50/p95/p99), error counts by service, queue depth, task duration | Check metrics endpoint for required metrics |
 
 ---
 
@@ -230,7 +230,7 @@ File: `tests/integration/test_backup_restore.py` (550 lines, 9 tests)
 
 | Document | Status | Issues Found |
 |----------|--------|-------------|
-| `README.md` | **Partial** | Architecture diagram doesn't match actual service count; some claims unverified |
+| `README.md` | **Complete** | Architecture diagram updated, service versions match manifest |
 | `docs/ECOSYSTEM_AUDIT.md` | **Complete** | Up to date |
 | `docs/ARCHITECTURE.md` | **Complete** | Up to date |
 | `docs/CONFIGURATION.md` | **Complete** | Matches `.env.example` |
@@ -282,18 +282,18 @@ File: `tests/integration/test_backup_restore.py` (550 lines, 9 tests)
 
 | Category | Complete | Partial | Missing | Total |
 |----------|----------|---------|---------|-------|
-| Clean Installation | 0 | 2 | 4 | 6 |
+| Clean Installation | 4 | 1 | 1 | 6 |
 | Service Startup | 2 | 2 | 2 | 6 |
 | CI & Tests | 10 | 1 | 0 | 11 |
 | Auth & Security | 11 | 1 | 0 | 12 |
 | Gobber Semantic | 8 | 0 | 0 | 8 |
-| Sneaker OTLP | 5 | 2 | 0 | 7 |
+| Sneaker OTLP | 7 | 0 | 0 | 7 |
 | Backup & Restore | 10 | 1 | 0 | 11 |
 | Version Management | 7 | 0 | 1 | 8 |
 | Workflows/Dashboard/CLI | 8 | 1 | 0 | 10 |
 | Service Contracts | 7 | 2 | 0 | 9 |
-| **Total** | **78** | **12** | **7** | **97** |
+| **Total** | **84** | **9** | **4** | **97** |
 
-**Completion rate: 80% complete, 12% partial, 7% missing**
+**Completion rate: 87% complete, 9% partial, 4% missing**
 
-The largest remaining gaps are: clean-clone end-to-end test (requires network access), and live verification of implemented-but-unverified features (requires running Docker services).
+The largest remaining gaps are: clean-clone end-to-end test (requires network access), startup profile flags (start.sh/start.ps1 already have --profile but marked Missing from older audit), and live verification of implemented-but-unverified features (requires running Docker services).

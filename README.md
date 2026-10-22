@@ -202,7 +202,7 @@ Evershade
 ├── 🌐 Browser (:8080/:5173)
 ├── ⚡ Speedy CLI
 └── 🔒 Caddy Proxy (TLS)
-    ├── 🟢 Greenie (:8080) — API backend
+    ├── 🟢 Greenie (:8080) — API backend & orchestrator
     │   ├── 🔧 Slinker (:8000) — Code execution
     │   ├── 🕸️ Trapper (:3000) — Web scraping
     │   ├── 🧠 Shrewd (:8089) — LLM routing
@@ -210,8 +210,8 @@ Evershade
     │   ├── 🔐 Hider (:8087) — Encrypted secrets
     │   ├── 📢 Poltergeist (:8088) — Notifications
     │   └── 👁️ Sneaker (:8086) — Observability & OTLP
-    │       └── SQLite · Redis · Obsidian Vault · Git
     └── 🔵 Slammer (:5173) — React dashboard
+        └── Data Layer: SQLite · Redis · Obsidian Vault · Git
 ```
 
 ### Data Flow
@@ -302,16 +302,16 @@ All service names are inspired by [Luigi's Mansion ghosts](https://luigi-mansion
 
 | Service | Version | Port | Role | UI |
 |---------|---------|------|------|-----|
-| **Greenie** | `1.7.0` | `8080` | Central hub & orchestrator | API backend |
-| **Slinker** | `1.1.0` | `8000` | Task execution engine | API only |
-| **Trapper** | `1.0.0` | `3000` | Web scraping & crawling | API only |
-| **Gobber** | `1.0.0` | `8085` | Persistent storage & knowledge graph | API only |
-| **Sneaker** | `1.1.0` | `8086` | Observability (metrics, traces, logs) | API only |
-| **Hider** | `1.0.0` | `8087` | Secrets & config management | API only |
-| **Poltergeist** | `1.1.0` | `8088` | Notifications (Slack, Discord, email, Telegram) | API only |
-| **Shrewd** | `1.1.0` | `8089` | LLM provider abstraction | API only |
+| **Greenie** | `1.8.0` | `8080` | Central hub & orchestrator | API backend |
+| **Slinker** | `1.2.0` | `8000` | Task execution engine | API only |
+| **Trapper** | `1.1.0` | `3000` | Web scraping & crawling | API only |
+| **Gobber** | `1.1.0` | `8085` | Persistent storage & knowledge graph | API only |
+| **Sneaker** | `1.2.0` | `8086` | Observability (metrics, traces, logs) | API only |
+| **Hider** | `1.1.0` | `8087` | Secrets & config management | API only |
+| **Poltergeist** | `1.2.0` | `8088` | Notifications (Slack, Discord, email, Telegram) | API only |
+| **Shrewd** | `1.2.0` | `8089` | LLM provider abstraction | API only |
 | **Slammer** | `1.4.0` | `5173` | Standalone web dashboard | React web app |
-| **Speedy** | `1.1.0` | — | CLI tool (`evershade` command) | Terminal |
+| **Speedy** | `1.2.0` | — | CLI tool (`evershade` command) | Terminal |
 
 > **🌐 Website:** Visit the [Evershade website](website/index.html) for interactive documentation, service details, and getting started guides.
 

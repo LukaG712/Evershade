@@ -1,9 +1,9 @@
 # Evershade Final Implementation Report
 
 **Date:** 2026-10-22
-**Version:** v1.10.0
+**Version:** v1.11.0
 **Author:** Junie (autonomous agent)
-**Scope:** 16-phase implementation of the complete Evershade ecosystem
+**Scope:** 17-phase implementation of the complete Evershade ecosystem
 
 ---
 
@@ -159,6 +159,16 @@ The Evershade ecosystem consists of 10 specialized services:
 - **Test configuration**: Updated `tests/conftest.py` — added Slammer service URL and new test modules to integration marker
 - **Version manifest**: Bumped to v1.10.0 with complete Docker image references
 - **Completion rate**: Improved from 79% to 80% (78/97 requirements complete)
+
+### Phase 17 — Bootstrap Pinning, OTLP Retry, Metrics Summary & Documentation
+
+- **Install scripts pinned to commits**: `install.sh` and `install.ps1` now read commit SHAs from `version-manifest.json`, clone with `--depth 100`, and checkout the exact pinned commit; existing repos are verified against the pinned commit with clear "outdated" warnings
+- **Idempotent re-run**: Scripts skip repos at the correct commit, warn if outdated, and provide `--force` to update; improved error messages list causes (network, repo not found, permissions) and suggest `--force`
+- **OTLP retry with backoff**: `Sneaker/sneaker/otlp_export.py` — `export_to_otlp_endpoint()` now retries up to 3 times with exponential backoff (1s, 2s, 4s) on 5xx server errors and connection errors; non-retryable errors (4xx) fail immediately
+- **Metrics summary endpoint**: `Sneaker/sneaker/api.py` — New `/api/metrics/summary` endpoint returns latency percentiles (p50/p95/p99), error counts by service, queue depth (pending traces/metrics/logs), and task duration statistics
+- **README updates**: Architecture diagram corrected (data layer moved from Sneaker to shared), all 10 service versions updated to match `version-manifest.json`
+- **Documentation**: Updated `REMAINING_GAPS.md` (87% completion, was 80%) and `FINAL_REPORT.md`
+- **Completion rate**: Improved from 80% to 87% (84/97 requirements complete)
 
 ---
 
@@ -414,4 +424,10 @@ Not applicable — all changes made in the root repository working tree. No exte
 | Speedy CLI integration tests | ✓ (16 tests: help, status, doctor, config, backup, agents, logs, install, start/stop) |
 | Docker image references | ✓ (Redis, Ollama, Caddy in version-manifest.json) |
 | Manifest image validation | ✓ (validate_manifest.py checks format and cross-references) |
-| Completion rate | 80% (78/97 requirements complete) |
+| Bootstrap pinned to commits | ✓ (install.sh, install.ps1 checkout commit SHA) |
+| Idempotent bootstrap re-run | ✓ (skips correct commit, warns if outdated) |
+| OTLP retry with backoff | ✓ (3 retries, exponential backoff 1s/2s/4s) |
+| Metrics summary endpoint | ✓ (latency percentiles, errors, queue depth) |
+| README architecture diagram | ✓ (corrected data layer, all 10 services) |
+| README service versions | ✓ (match version-manifest.json) |
+| Completion rate | 87% (84/97 requirements complete) |

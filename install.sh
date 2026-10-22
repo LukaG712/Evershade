@@ -69,8 +69,8 @@ if [ ! -f version-manifest.json ]; then
 fi
 echo -e "${GREEN}✓${NC} version-manifest.json found"
 
-# Extract service list based on profile
-get_services() {
+# Extract service info based on profile
+get_service_info() {
     local profile="$1"
     python3 -c "
 import json
@@ -79,45 +79,54 @@ with open('version-manifest.json') as f:
 profile_services = manifest.get('profiles', {}).get('$profile', [])
 for svc in profile_services:
     if svc not in ('redis', 'ollama', 'caddy'):  # Skip infrastructure
-        print(svc)
+        info = manifest.get('services', {}).get(svc, {})
+        repo = info.get('repository', 'https://github.com/LukaG712/' + svc)
+        commit = info.get('commit', '')
+        print(f'{svc}|{repo}|{commit}')
 "
 }
 
-SERVICES=$(get_services "$PROFILE")
-if [ -z "$SERVICES" ]; then
+SERVICES_INFO=$(get_service_info "$PROFILE")
+if [ -z "$SERVICES_INFO" ]; then
     echo -e "${RED}ERROR: Unknown profile '$PROFILE'. Available: minimal, standard, full${NC}"
     exit 1
 fi
 
+SERVICE_COUNT=$(echo "$SERVICES_INFO" | wc -l)
 echo -e "${GREEN}✓${NC} Profile: ${BLUE}$PROFILE${NC}"
-echo -e "${GREEN}✓${NC} Services to install: $(echo $SERVICES | wc -w)"
+echo -e "${GREEN}✓${NC} Services to install: $SERVICE_COUNT"
 echo ""
 
 # Clone each service
 FAILED=()
 SKIPPED=()
 CLONED=()
+OUTDATED=()
 
-for SERVICE in $SERVICES; do
-    REPO_URL=$(python3 -c "
-import json
-with open('version-manifest.json') as f:
-    manifest = json.load(f)
-svc = manifest.get('services', {}).get('$SERVICE', {})
-print(svc.get('repository', 'https://github.com/LukaG712/$SERVICE'))
-")
-    
+while IFS='|' read -r SERVICE REPO_URL COMMIT; do
     # Check if directory already exists
     if [ -d "$SERVICE" ]; then
         if [ "$FORCE" = true ]; then
             echo -e "${YELLOW}⚠${NC} Removing existing $SERVICE directory (forced)..."
             rm -rf "$SERVICE"
         else
-            # Check if it's a valid git repo
+            # Check if it's a valid git repo and at the correct commit
             if [ -d "$SERVICE/.git" ]; then
-                echo -e "${YELLOW}⚠${NC} $SERVICE already exists (git repo) — skipping. Use --force to reclone."
-                SKIPPED+=("$SERVICE")
-                continue
+                CURRENT_COMMIT=$(cd "$SERVICE" && git rev-parse --short=7 HEAD 2>/dev/null || echo "unknown")
+                if [ -n "$COMMIT" ] && [ "$CURRENT_COMMIT" = "$COMMIT" ]; then
+                    echo -e "${GREEN}✓${NC} $SERVICE already at correct commit ($COMMIT) — skipping"
+                    SKIPPED+=("$SERVICE")
+                    continue
+                elif [ -n "$COMMIT" ]; then
+                    echo -e "${YELLOW}⚠${NC} $SERVICE exists at commit $CURRENT_COMMIT (expected $COMMIT) — skipping. Use --force to update."
+                    OUTDATED+=("$SERVICE")
+                    SKIPPED+=("$SERVICE")
+                    continue
+                else
+                    echo -e "${YELLOW}⚠${NC} $SERVICE already exists (git repo) — skipping. Use --force to reclone."
+                    SKIPPED+=("$SERVICE")
+                    continue
+                fi
             else
                 echo -e "${YELLOW}⚠${NC} $SERVICE directory exists but is not a git repo — skipping. Use --force to replace."
                 SKIPPED+=("$SERVICE")
@@ -127,15 +136,39 @@ print(svc.get('repository', 'https://github.com/LukaG712/$SERVICE'))
     fi
 
     echo -e "${BLUE}→${NC} Cloning $SERVICE from $REPO_URL ..."
-    
-    if git clone --depth 1 "$REPO_URL" "$SERVICE" 2>&1; then
-        echo -e "${GREEN}✓${NC} $SERVICE cloned successfully"
+
+    CLONE_SUCCESS=false
+    if [ -n "$COMMIT" ]; then
+        # Clone and checkout the specific commit
+        if git clone --depth 100 "$REPO_URL" "$SERVICE" 2>&1; then
+            if (cd "$SERVICE" && git checkout "$COMMIT" 2>&1); then
+                echo -e "${GREEN}✓${NC} $SERVICE cloned and checked out at commit $COMMIT"
+                CLONE_SUCCESS=true
+            else
+                echo -e "${RED}✗${NC} Failed to checkout commit $COMMIT for $SERVICE"
+                echo -e "${YELLOW}    The pinned commit may not exist or the repo may have changed.${NC}"
+                echo -e "${YELLOW}    Falling back to latest commit.${NC}"
+                CLONE_SUCCESS=true  # Still cloned, just not at pinned commit
+            fi
+        else
+            echo -e "${RED}✗${NC} Failed to clone $SERVICE"
+        fi
+    else
+        # No pinned commit, clone latest
+        if git clone --depth 1 "$REPO_URL" "$SERVICE" 2>&1; then
+            echo -e "${GREEN}✓${NC} $SERVICE cloned successfully (no pinned commit)"
+            CLONE_SUCCESS=true
+        else
+            echo -e "${RED}✗${NC} Failed to clone $SERVICE"
+        fi
+    fi
+
+    if [ "$CLONE_SUCCESS" = true ]; then
         CLONED+=("$SERVICE")
     else
-        echo -e "${RED}✗${NC} Failed to clone $SERVICE"
         FAILED+=("$SERVICE")
     fi
-done
+done <<< "$SERVICES_INFO"
 
 echo ""
 echo -e "${BLUE}══════════════════════════════════════════════════════════════${NC}"
@@ -145,10 +178,19 @@ if [ ${#SKIPPED[@]} -gt 0 ]; then
     echo -e "${YELLOW}⚠${NC} Skipped: ${SKIPPED[*]}"
 fi
 
+if [ ${#OUTDATED[@]} -gt 0 ]; then
+    echo -e "${YELLOW}⚠${NC} Outdated (commit mismatch): ${OUTDATED[*]}"
+    echo -e "${YELLOW}    Use --force to update to the pinned version.${NC}"
+fi
+
 if [ ${#FAILED[@]} -gt 0 ]; then
     echo -e "${RED}✗${NC} Failed: ${FAILED[*]}"
     echo ""
-    echo -e "${RED}Installation incomplete. Fix the failed services and re-run.${NC}"
+    echo -e "${RED}Installation incomplete. Possible causes:${NC}"
+    echo -e "  - Network connectivity issues"
+    echo -e "  - Repository not found or private"
+    echo -e "  - Insufficient permissions"
+    echo -e "${YELLOW}Try re-running with --force to retry failed services.${NC}"
     exit 1
 fi
 

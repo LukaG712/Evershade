@@ -54,9 +54,12 @@ Write-Host ""
 $failed = @()
 $skipped = @()
 $cloned = @()
+$outdated = @()
 
 foreach ($service in $services) {
-    $repoUrl = $manifest.services.$service.repository
+    $serviceInfo = $manifest.services.$service
+    $repoUrl = $serviceInfo.repository
+    $commit = $serviceInfo.commit
     if (-not $repoUrl) {
         $repoUrl = "https://github.com/LukaG712/$service"
     }
@@ -67,9 +70,21 @@ foreach ($service in $services) {
             Write-Host "[WARN] Removing existing $service directory (forced)..." -ForegroundColor Yellow
             Remove-Item -Recurse -Force $service
         } elseif (Test-Path "$service/.git") {
-            Write-Host "[WARN] $service already exists (git repo) — skipping. Use -Force to reclone." -ForegroundColor Yellow
-            $skipped += $service
-            continue
+            $currentCommit = & git -C $service rev-parse --short=7 HEAD 2>$null
+            if ($commit -and $currentCommit -eq $commit) {
+                Write-Host "[OK] $service already at correct commit ($commit) — skipping" -ForegroundColor Green
+                $skipped += $service
+                continue
+            } elseif ($commit) {
+                Write-Host "[WARN] $service exists at commit $currentCommit (expected $commit) — skipping. Use -Force to update." -ForegroundColor Yellow
+                $outdated += $service
+                $skipped += $service
+                continue
+            } else {
+                Write-Host "[WARN] $service already exists (git repo) — skipping. Use -Force to reclone." -ForegroundColor Yellow
+                $skipped += $service
+                continue
+            }
         } else {
             Write-Host "[WARN] $service directory exists but is not a git repo — skipping. Use -Force to replace." -ForegroundColor Yellow
             $skipped += $service
@@ -78,13 +93,39 @@ foreach ($service in $services) {
     }
 
     Write-Host "[ARROW] Cloning $service from $repoUrl ..." -ForegroundColor Cyan
-    
-    try {
-        git clone --depth 1 $repoUrl $service 2>&1 | Out-Null
-        Write-Host "[OK] $service cloned successfully" -ForegroundColor Green
+
+    $cloneSuccess = $false
+    if ($commit) {
+        # Clone with deeper history and checkout the specific commit
+        try {
+            git clone --depth 100 $repoUrl $service 2>&1 | Out-Null
+            $checkoutResult = & git -C $service checkout $commit 2>&1
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "[OK] $service cloned and checked out at commit $commit" -ForegroundColor Green
+                $cloneSuccess = $true
+            } else {
+                Write-Host "[XX] Failed to checkout commit $commit for $service" -ForegroundColor Red
+                Write-Host "      The pinned commit may not exist or the repo may have changed." -ForegroundColor Yellow
+                Write-Host "      Falling back to latest commit." -ForegroundColor Yellow
+                $cloneSuccess = $true  # Still cloned, just not at pinned commit
+            }
+        } catch {
+            Write-Host "[XX] Failed to clone $service : $_" -ForegroundColor Red
+        }
+    } else {
+        # No pinned commit, clone latest
+        try {
+            git clone --depth 1 $repoUrl $service 2>&1 | Out-Null
+            Write-Host "[OK] $service cloned successfully (no pinned commit)" -ForegroundColor Green
+            $cloneSuccess = $true
+        } catch {
+            Write-Host "[XX] Failed to clone $service : $_" -ForegroundColor Red
+        }
+    }
+
+    if ($cloneSuccess) {
         $cloned += $service
-    } catch {
-        Write-Host "[XX] Failed to clone $service : $_" -ForegroundColor Red
+    } else {
         $failed += $service
     }
 }
@@ -97,10 +138,19 @@ if ($skipped.Count -gt 0) {
     Write-Host "[WARN] Skipped: $($skipped -join ', ')" -ForegroundColor Yellow
 }
 
+if ($outdated.Count -gt 0) {
+    Write-Host "[WARN] Outdated (commit mismatch): $($outdated -join ', ')" -ForegroundColor Yellow
+    Write-Host "      Use -Force to update to the pinned version." -ForegroundColor Yellow
+}
+
 if ($failed.Count -gt 0) {
     Write-Host "[XX] Failed: $($failed -join ', ')" -ForegroundColor Red
     Write-Host ""
-    Write-Host "Installation incomplete. Fix the failed services and re-run." -ForegroundColor Red
+    Write-Host "Installation incomplete. Possible causes:" -ForegroundColor Red
+    Write-Host "  - Network connectivity issues" -ForegroundColor White
+    Write-Host "  - Repository not found or private" -ForegroundColor White
+    Write-Host "  - Insufficient permissions" -ForegroundColor White
+    Write-Host "Try re-running with -Force to retry failed services." -ForegroundColor Yellow
     exit 1
 }
 
