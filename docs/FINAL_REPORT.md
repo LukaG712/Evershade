@@ -115,6 +115,13 @@ The Evershade ecosystem consists of 10 specialized services:
 - **TESTING.md:** Updated with CI job details (lint, unit, integration), manifest validation
 - **version-manifest.json:** Updated to v1.8.0 with migration tracking and Speedy CLI note
 
+### Phase 11 — Service Contracts & Graceful Degradation
+- **Retry utility:** `Greenie/hub/retry.py` — exponential backoff with jitter for transient network errors
+- **Retry in clients:** Applied to `gobber_client.py` (async), `slinker_provider.py` (sync), `trapper_provider.py` (sync)
+- **Retry tests:** `Greenie/tests/test_retry.py` — 17 tests covering backoff calculation, sync/async retry, configs
+- **Service capabilities:** `/api/capabilities` endpoint added to all 8 services (Greenie, Slinker, Trapper, Gobber, Shrewd, Hider, Poltergeist, Sneaker)
+- **Capability reporting:** Each service reports features, versions, and API compatibility for client discovery
+
 ---
 
 | Decision | Rationale |
@@ -341,6 +348,8 @@ Not applicable — all changes made in the root repository working tree. No exte
 | Migration tracking | ✓ (migration_version in manifest) |
 | RELEASES.md updated | ✓ (version 1.8.0, migration tracking) |
 | TESTING.md updated | ✓ (CI jobs, manifest validation) |
+| Retry with backoff | ✓ (Greenie/hub/retry.py, all service clients) |
+| Service capabilities endpoints | ✓ (all 8 services: Greenie, Slinker, Trapper, Gobber, Shrewd, Hider, Poltergeist, Sneaker) |
 | Clean-clone installation verified | ⚠ (bootstrap scripts created, not tested) |
 | Ubuntu VM + remote access verified | ✗ (blocked) |
 | Reboot persistence verified | ✗ (blocked) |

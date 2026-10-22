@@ -202,12 +202,12 @@ Each gap is assessed by inspecting actual code, not documentation:
 |-------------|----------------------|-------------------|---------|----------------|------|
 | Explicit API schemas | FastAPI auto-generates OpenAPI | All services use FastAPI | **Complete** | None | N/A |
 | Consistent auth headers | Bearer token on all services | `docker-compose.yml` env vars | **Complete** | None | N/A |
-| Timeouts & bounded retries | HTTP client timeouts | `gobber_client.py`, `otlp_export.py` | **Partial** | Add retry with backoff to all service calls | Kill service, verify retry behavior |
+| Timeouts & bounded retries | Retry with backoff in all clients | `Greenie/hub/retry.py`, `gobber_client.py`, `slinker_provider.py`, `trapper_provider.py` | **Complete** | Exponential backoff with jitter for transient errors | Kill service, verify retry behavior |
 | Idempotency for retries | Idempotency middleware in Greenie | `Greenie/hub/api/idempotency.py` | **Complete** | X-Idempotency-Key header for workflow creation, agent execution, backup | Retry same request, verify single effect |
 | Structured error responses | FastAPI default | All services | **Complete** | None | N/A |
 | Request correlation IDs | Tracing module | `Greenie/hub/tracing.py` | **Implemented but Unverified** | Verify X-Request-ID propagation | Make request, check all logs for ID |
 | Health/readiness contracts | `/health` on all services | `docker-compose.yml` healthchecks | **Complete** | None | N/A |
-| Service capability reporting | Greenie has /api/capabilities | `Greenie/hub/api/capabilities.py` | **Partial** | Greenie complete; other services should add similar endpoints | Check endpoint, verify features listed |
+| Service capability reporting | All services have /api/capabilities | `Greenie/hub/api/capabilities.py`, `Slinker/junie_adapter/service.py`, `Trapper/src/api/server.ts`, `Gobber/gobber/api.py`, `Shrewd/shrewd/api.py`, `Hider/hider/api.py`, `Poltergeist/poltergeist/api.py`, `Sneaker/sneaker/api.py` | **Complete** | Every service reports features, versions, and API compatibility | Check endpoint, verify features listed |
 | Optional dependency behavior | Hybrid stores with fallback | `Greenie/hub/gobber_client.py` | **Implemented but Unverified** | Test each optional service absence | Disable Sneaker, verify core works |
 
 ---
@@ -277,9 +277,9 @@ Each gap is assessed by inspecting actual code, not documentation:
 | Backup & Restore | 9 | 1 | 0 | 10 |
 | Version Management | 5 | 1 | 2 | 8 |
 | Workflows/Dashboard/CLI | 8 | 1 | 1 | 10 |
-| Service Contracts | 5 | 3 | 2 | 9 |
-| **Total** | **56** | **19** | **23** | **98** |
+| Service Contracts | 7 | 2 | 0 | 9 |
+| **Total** | **58** | **17** | **23** | **98** |
 
-**Completion rate: 57% complete, 19% partial, 24% missing**
+**Completion rate: 59% complete, 17% partial, 24% missing**
 
 The largest remaining gaps are: user authentication (browser sessions), CI integration test execution, backup/restore round-trip verification, and clean-clone end-to-end test.
