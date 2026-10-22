@@ -5,26 +5,59 @@
 
 **A self-hosted AI agent platform built as a collection of specialized microservices.**
 
+[![Version](https://img.shields.io/badge/Version-1.12.0-brightgreen.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-Required-blue.svg)](https://docker.com)
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-React%20Dashboard-blue.svg)](https://www.typescriptlang.org)
+[![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen.svg)]()
 
 ---
 
 ## Table of Contents
 
+- [Why Evershade](#why-evershade) — Key features and capabilities
 - [Quick Start](#quick-start) — Get up and running in 3 minutes
 - [Your First Agent](#your-first-agent) — Step-by-step tutorial
 - [Architecture](#architecture) — How everything fits together
 - [Services](#services) — The 10 microservices at a glance
+- [Mission Control](#mission-control) — Orchestrated AI missions with milestones
+- [Agent Harness](#agent-harness) — Spec mode, droids, skills, and hooks
+- [Workstations](#workstations) — Isolated agent environments
 - [Web Interfaces](#web-interfaces) — Dashboards and UIs
 - [API Documentation](#api-documentation) — Developer endpoints
 - [Configuration](#configuration) — Environment variables and settings
 - [Deployment](#deployment) — Production and remote access
 - [Security](#security) — Security model and best practices
 - [Testing](#testing) — Test suite and quality gates
+- [Backup & Restore](#backup--restore) — Data protection
+- [Troubleshooting](#troubleshooting) — Common issues and fixes
 - [Contributing](#contributing) — How to help
+- [Roadmap](#roadmap) — Development timeline and future plans
 - [Naming Theme](#naming-theme) — The Luigi's Mansion connection
 - [License](#license)
+
+---
+
+## Why Evershade
+
+> *"The Dark Moon has shattered, Luigi! We need to find it and restore peace to Evershade Valley, posthaste!"*
+> ~ **Prof. E. Gadd**, on why we built this
+
+| Feature | Description |
+|---------|-------------|
+| **Modular Microservices** | 10 independent services, each with a single responsibility. Mix and match via Docker Compose profiles. |
+| **AI Agent Orchestration** | Create, manage, and run AI agents with pipelines, workflows, and workstations — all from one dashboard. |
+| **Mission Control** | Factory-inspired mission system with milestones, automated planning, code review, and fix-revalidate cycles. |
+| **Agent Harness** | Spec mode for research-first development, custom droids (specialized subagents), reusable skills, and event-driven hooks. |
+| **Multi-Provider LLM** | Route requests to OpenAI, Anthropic, Google, or Ollama with cost tracking and privacy classification. |
+| **Web Scraping & Crawling** | Playwright-powered scraping, deep crawling, and site mapping with Redis-backed job queues. |
+| **Encrypted Secrets** | AES-256-GCM encryption for secrets at rest with versioned configuration management. |
+| **Full Observability** | Metrics, distributed traces, log aggregation, and alerting with deduplication and cooldown. |
+| **OTLP Integration** | OpenTelemetry Protocol support for traces, metrics, and logs — integrate with any OTLP collector. |
+| **CSRF Protection** | Double-submit cookie pattern with HMAC-signed tokens for web UI security. |
+| **Semantic Search** | Vector embeddings and semantic search via Gobber — scan Obsidian vaults and search knowledge bases. |
+| **Isolated Workstations** | Container-based isolated agent environments with network policies and live terminal access. |
 
 ---
 
@@ -53,10 +86,12 @@ The dashboard will be available at **http://localhost:8080**.
 
 | Profile | Services | Command |
 |---------|----------|---------|
-| **Minimal** | Core only | `docker compose --profile minimal up -d` |
-| **Standard** | All services | `docker compose --profile standard up -d` |
-| **Full** | + Dashboard | `docker compose --profile full up -d` |
-| **+ Ollama** | Local LLM | `docker compose --profile standard --profile ollama up -d` |
+| **Minimal** | Core only (4 services) | `docker compose --profile minimal up -d` |
+| **Standard** | All services (8 services) | `docker compose --profile standard up -d` |
+| **Full** | + Slammer Dashboard | `docker compose --profile full up -d` |
+| **+ Ollama** | Local LLM support | `docker compose --profile standard --profile ollama up -d` |
+| **+ Proxy** | Caddy reverse proxy with TLS | `docker compose --profile standard --profile proxy up -d` |
+| **Dev** | Development mode | `docker compose --profile dev up -d` |
 
 ### Startup Scripts
 
@@ -138,153 +173,105 @@ curl -X POST http://localhost:8080/api/pipeline \
 
 ## Architecture
 
-### System Overview
-
-```mermaid
-graph TB
-    subgraph External["External Access"]
-        Browser["🌐 Your Browser<br/>localhost:8080/5173"]
-        Caddy["🔒 Caddy Proxy<br/>Port 443 · TLS"]
-    end
-
-    subgraph Interfaces["User Interfaces"]
-        Greenie["🟢 Greenie<br/>Port 8080<br/>Web Dashboard + API"]
-        Slammer["🔵 Slammer<br/>Port 5173<br/>React Dashboard"]
-        Speedy["⚡ Speedy<br/>CLI Tool"]
-    end
-
-    subgraph DockerNetwork["Internal Docker Network · Bearer Token Auth"]
-        subgraph Services["Microservices"]
-            Slinker["🔧 Slinker<br/>Port 8000<br/>Code Execution"]
-            Trapper["🕸️ Trapper<br/>Port 3000<br/>Web Scraping"]
-            Gobber["💾 Gobber<br/>Port 8085<br/>Storage &amp; Memory"]
-            Hider["🔐 Hider<br/>Port 8087<br/>Secrets &amp; Config"]
-            Poltergeist["📢 Poltergeist<br/>Port 8088<br/>Notifications"]
-            Shrewd["🧠 Shrewd<br/>Port 8089<br/>LLM Routing"]
-            Sneaker["👁️ Sneaker<br/>Port 8086<br/>Observability"]
-        end
-
-        subgraph DataLayer["Data Layer"]
-            SQLite["SQLite Databases"]
-            Redis["Redis Cache"]
-            Obsidian["Obsidian Vault"]
-            Git["Git Repos"]
-        end
-    end
-
-    Browser --> Caddy
-    Caddy --> Greenie
-    Caddy --> Slammer
-    Speedy --> Greenie
-
-    Greenie --> Slinker
-    Greenie --> Trapper
-    Greenie --> Shrewd
-    Greenie --> Gobber
-    Greenie --> Hider
-    Greenie --> Poltergeist
-    Greenie --> Sneaker
-
-    Slinker --> Gobber
-    Trapper --> Gobber
-
-    Gobber --> SQLite
-    Trapper --> Redis
-    Slinker --> Git
-    Gobber --> Obsidian
-
-    style Greenie fill:#4CAF50,stroke:#2E7D32,color:#fff
-    style Slammer fill:#2196F3,stroke:#1565C0,color:#fff
-    style Speedy fill:#FF9800,stroke:#E65100,color:#fff
-    style Caddy fill:#9C27B0,stroke:#6A1B9A,color:#fff
-    style Slinker fill:#795548,stroke:#4E342E,color:#fff
-    style Trapper fill:#607D8B,stroke:#37474F,color:#fff
-    style Gobber fill:#3F51B5,stroke:#283593,color:#fff
-    style Hider fill:#F44336,stroke:#C62828,color:#fff
-    style Poltergeist fill:#E91E63,stroke:#AD1457,color:#fff
-    style Shrewd fill:#009688,stroke:#00695C,color:#fff
-    style Sneaker fill:#FF5722,stroke:#D84315,color:#fff
 ```
-
-### Data Flow Diagram
-
-```mermaid
-flowchart TD
-    User["User Request"] --> Greenie["🟢 Greenie<br/>Route &amp; Orchestrate"]
-
-    Greenie --> LLM{"Need LLM?"}
-    Greenie --> Code{"Need code?"}
-    Greenie --> Web{"Need web data?"}
-    Greenie --> Storage{"Need storage?"}
-    Greenie --> Secrets{"Need secrets?"}
-    Greenie --> Notify{"Notify user?"}
-    Greenie --> Monitor{"Monitor?"}
-
-    LLM -->|Yes| Shrewd["🧠 Shrewd"]
-    Shrewd --> Providers["OpenAI / Anthropic / Ollama"]
-
-    Code -->|Yes| Slinker["🔧 Slinker"]
-    Slinker --> Junie["Junie CLI"]
-    Junie --> Git["Git Worktree"]
-
-    Web -->|Yes| Trapper["🕸️ Trapper"]
-    Trapper --> Playwright["Playwright"]
-    Playwright --> Structured["Structured Data"]
-
-    Storage -->|Yes| Gobber["💾 Gobber"]
-    Gobber --> DB["SQLite / Obsidian"]
-
-    Secrets -->|Yes| Hider["🔐 Hider"]
-    Hider --> Vault["Encrypted Vault"]
-
-    Notify -->|Yes| Poltergeist["📢 Poltergeist"]
-    Poltergeist --> Channels["Slack / Discord / Email"]
-
-    Monitor -->|Yes| Sneaker["👁️ Sneaker"]
-    Sneaker --> Metrics["Metrics / Traces / Logs"]
-
-    Providers --> Response["Response returned to user"]
-    Git --> Response
-    Structured --> Response
-    DB --> Response
-    Vault --> Response
-    Channels --> Response
-    Metrics --> Response
-
-    style Greenie fill:#4CAF50,stroke:#2E7D32,color:#fff
-    style Shrewd fill:#009688,stroke:#00695C,color:#fff
-    style Slinker fill:#795548,stroke:#4E342E,color:#fff
-    style Trapper fill:#607D8B,stroke:#37474F,color:#fff
-    style Gobber fill:#3F51B5,stroke:#283593,color:#fff
-    style Hider fill:#F44336,stroke:#C62828,color:#fff
-    style Poltergeist fill:#E91E63,stroke:#AD1457,color:#fff
-    style Sneaker fill:#FF5722,stroke:#D84315,color:#fff
-```
-
-### Service Dependencies
-
-```mermaid
-graph LR
-    Greenie["🟢 Greenie<br/>Hub"] --> Slinker["🔧 Slinker<br/>Task Execution"]
-    Greenie --> Trapper["🕸️ Trapper<br/>Web Scraping"]
-    Greenie --> Shrewd["🧠 Shrewd<br/>LLM Routing"]
-    Greenie --> Gobber["💾 Gobber<br/>Storage"]
-    Greenie --> Hider["🔐 Hider<br/>Secrets"]
-    Greenie --> Poltergeist["📢 Poltergeist<br/>Notifications"]
-    Greenie --> Sneaker["👁️ Sneaker<br/>Observability"]
-
-    Slinker --> SlinkerGobber["Gobber<br/>Store Results"]
-    Slinker --> SlinkerShrewd["Shrewd<br/>Code Generation"]
-
-    Trapper --> TrapperGobber["Gobber<br/>Cache Data"]
-
-    Slammer["🔵 Slammer<br/>Dashboard"] --> SlammerGreenie["Greenie<br/>API Client"]
-
-    Speedy["⚡ Speedy<br/>CLI"] --> SpeedyGreenie["Greenie<br/>API Client"]
-
-    style Greenie fill:#4CAF50,stroke:#2E7D32,color:#fff
-    style Slammer fill:#2196F3,stroke:#1565C0,color:#fff
-    style Speedy fill:#FF9800,stroke:#E65100,color:#fff
+┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                                             │
+│                            EXTERNAL ACCESS LAYER                                                            │
+│                                                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐    │
+│  │                                                                                                     │    │
+│  │  ┌──────────────────────────────────────────────────────────────────────────────────────────────┐  │    │
+│  │  │                        YOUR BROWSER / CLI                                                    │  │    │
+│  │  │                                                                                              │  │    │
+│  │  │   🌐 Browser (localhost:8080 / :5173)          ⚡ Speedy CLI (evershade command)             │  │    │
+│  │  │                                                                                              │  │    │
+│  │  └──────────────────────────────────────────────────────────────────────────────────────────────┘  │    │
+│  │                                                                                                     │    │
+│  │                                      │                                                              │    │
+│  │                                      ▼                                                              │    │    │
+│  │  ┌──────────────────────────────────────────────────────────────────────────────────────────────┐  │    │
+│  │  │                        🔒 CADDY PROXY (Optional)                                             │  │    │
+│  │  │                        Port 443 · Automatic TLS                                              │  │    │
+│  │  └──────────────────────────────────────────────────────────────────────────────────────────────┘  │    │
+│  │                                                                                                     │    │
+│  └─────────────────────────────────────────────────────────────────────────────────────────────────────┘    │
+│                                                                                                             │
+└─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+                              │                               │
+                              ▼                               ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                                             │
+│                         USER INTERFACE LAYER                                                                │
+│                                                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐    │
+│  │                                                                                                     │    │
+│  │  🟢 GREENIE (Port 8080)              🔵 SLAMMER (Port 5173)                                        │    │
+│  │  Central API Backend                 React Dashboard                                                │    │
+│  │  · 320+ API endpoints                · Unified management UI                                        │    │
+│  │  · Agent/chat/pipeline mgmt          · Real-time SSE logs                                           │    │
+│  │  · Mission Control                   · Mission dashboard                                            │    │
+│  │  · Workflow engine                   · Metrics & logs view                                          │    │
+│  │  · MCP server                        · Workstation access                                           │    │
+│  │                                                                                                     │    │
+│  └─────────────────────────────────────────────────────────────────────────────────────────────────────┘    │
+│                                                                                                             │
+└─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼  (Bearer Token Auth · Docker Internal Network)
+┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                                             │
+│                      MICROSERVICE LAYER  (All Python + FastAPI)                                             │
+│                                                                                                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                 │
+│  │              │  │              │  │              │  │              │  │              │                 │
+│  │ 🔧 SLINKER   │  │ 🕸️ TRAPPER   │  │ 🧠 SHREWD    │  │ 💾 GOBBER    │  │ 🔐 HIDER     │                 │
+│  │ Port 8000    │  │ Port 3000    │  │ Port 8089    │  │ Port 8085    │  │ Port 8087    │                 │
+│  │              │  │              │  │              │  │              │  │              │                 │
+│  │ Code Exec    │  │ Web Scraping │  │ LLM Routing  │  │ Storage &    │  │ Secrets &    │                 │
+│  │ Git Worktrees│  │ Playwright   │  │ Multi-prov.  │  │ Knowledge    │  │ Config       │                 │
+│  │ Junie CLI    │  │ Deep Crawl   │  │ Cost Track   │  │ Graph        │  │ AES-256-GCM  │                 │
+│  │              │  │ Site Map     │  │ Privacy Class│  │ Embeddings   │  │ Versioned    │                 │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘                 │
+│         │                 │                 │                 │                 │                         │
+│         │                 │                 ▼                 │                 │                         │
+│         │                 │        ┌────────────────┐         │                 │                         │
+│         │                 │        │  EXTERNAL LLM  │         │                 │                         │
+│         │                 │        │  PROVIDERS     │         │                 │                         │
+│         │                 │        │  OpenAI        │         │                 │                         │
+│         │                 │        │  Anthropic     │         │                 │                         │
+│         │                 │        │  Google AI     │         │                 │                         │
+│         │                 │        │  Ollama (local)│         │                 │                         │
+│         │                 │        └────────────────┘         │                 │                         │
+│         │                 │                                   │                 │                         │
+│         └────────┬────────┼───────────────────────────────────┼─────────────────┘                     │
+│                  │        │                                   │                                         │
+│                  ▼        ▼                                   ▼                                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                                              │    │
+│  │              │  │              │  │              │                                              │    │
+│  │ 📢 POLTERGEIST│  │ 👁️ SNEAKER   │  │  DATA LAYER   │                                              │    │
+│  │ Port 8088    │  │ Port 8086    │  │              │                                              │    │
+│  │              │  │              │  │ SQLite DBs   │                                              │    │
+│  │ Notifications│  │ Observability│  │ Redis Cache  │                                              │    │
+│  │ Slack        │  │ Metrics      │  │ Obsidian     │                                              │    │
+│  │ Discord      │  │ Traces       │  │ Vault        │                                              │    │
+│  │ Email        │  │ Logs         │  │ Git Repos    │                                              │    │
+│  │ Telegram     │  │ OTLP Export  │  │              │                                              │    │
+│  │ Alerting     │  │ Alerting     │  │              │                                              │    │
+│  └──────────────┘  └──────────────┘  └──────────────┘                                              │    │
+│                                                                                                             │
+│  ─── DATA FLOW ───                                                                                         │
+│                                                                                                             │
+│  Greenie ──► Slinker ──► Gobber  (store execution results)                                                  │
+│  Greenie ──► Trapper  ──► Gobber  (cache scraped data)                                                      │
+│  Greenie ──► Trapper  ──► Redis   (job queue)                                                              │
+│  Greenie ──► Shrewd    ──► External LLM providers                                                           │
+│  Greenie ──► Gobber    ──► SQLite / Obsidian / Embeddings                                                   │
+│  Greenie ──► Hider     ──► Encrypted secrets vault                                                          │
+│  Greenie ──► Poltergeist ──► Slack / Discord / Email / Telegram                                             │
+│  Greenie ──► Sneaker   ──► Metrics / Traces / Logs / OTLP                                                  │
+│  Slinker ──► Shrewd    (code generation via LLM)                                                            │
+│                                                                                                             │
+└─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### How They Work Together
@@ -299,6 +286,21 @@ graph LR
 8. **Poltergeist** sends notifications to Slack, Discord, email, Telegram
 9. **Sneaker** collects metrics and traces for observability
 10. Results flow back through Greenie to your dashboard
+
+### Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Backend** | Python, FastAPI, SQLite (WAL mode) |
+| **Frontend** | React, TypeScript, Tailwind CSS (Slammer) |
+| **Containerization** | Docker Compose |
+| **Reverse Proxy** | Caddy (automatic TLS) |
+| **Cache & Queues** | Redis 8 |
+| **Web Scraping** | Playwright |
+| **Notifications** | Slack, Discord, Email, Telegram |
+| **LLM Providers** | OpenAI, Anthropic, Google AI, Ollama (local) |
+| **Observability** | OpenTelemetry (OTLP), custom metrics & traces |
+| **Encryption** | AES-256-GCM for secrets at rest |
 
 ### Cross-Service Pipelines
 
@@ -344,28 +346,31 @@ All service names are inspired by [Luigi's Mansion ghosts](https://luigi-mansion
 
 ### Service Overview
 
-| Service | Port | Role | UI |
-|---------|------|------|-----|
-| **Greenie** | `8080` | Central hub & orchestrator | Web dashboard + API |
-| **Slinker** | `8000` | Task execution engine | API only |
-| **Trapper** | `3000` | Web scraping & crawling | API only |
-| **Gobber** | `8085` | Persistent storage & knowledge graph | API only |
-| **Sneaker** | `8086` | Observability (metrics, traces, logs) | API only |
-| **Hider** | `8087` | Secrets & config management | API only |
-| **Poltergeist** | `8088` | Notifications (Slack, Discord, email, Telegram) | API only |
-| **Shrewd** | `8089` | LLM provider abstraction | API only |
-| **Slammer** | `5173` | Standalone web dashboard | React web app |
-| **Speedy** | — | CLI tool (`evershade` command) | Terminal |
+| Service | Version | Port | Role | UI |
+|---------|---------|------|------|-----|
+| **Greenie** | `1.7.0` | `8080` | Central hub & orchestrator | API backend |
+| **Slinker** | `1.1.0` | `8000` | Task execution engine | API only |
+| **Trapper** | `1.0.0` | `3000` | Web scraping & crawling | API only |
+| **Gobber** | `1.0.0` | `8085` | Persistent storage & knowledge graph | API only |
+| **Sneaker** | `1.1.0` | `8086` | Observability (metrics, traces, logs) | API only |
+| **Hider** | `1.0.0` | `8087` | Secrets & config management | API only |
+| **Poltergeist** | `1.1.0` | `8088` | Notifications (Slack, Discord, email, Telegram) | API only |
+| **Shrewd** | `1.1.0` | `8089` | LLM provider abstraction | API only |
+| **Slammer** | `1.4.0` | `5173` | Standalone web dashboard | React web app |
+| **Speedy** | `1.1.0` | — | CLI tool (`evershade` command) | Terminal |
+
+> **🌐 Website:** Visit the [Evershade website](website/index.html) for interactive documentation, service details, and getting started guides.
 
 ### Service Details
 
-#### Greenie — Central Hub & Dashboard
+#### Greenie — Central Hub & API Backend
 
-The brain of the operation. Greenie is a full-featured API server with a built-in web dashboard. It manages AI agents, chat sessions, pipelines, analytics, and provides a unified view of the entire platform.
+The brain of the operation. Greenie is a full-featured API server that manages AI agents, chat sessions, pipelines, analytics, missions, workflows, and workstations. It serves as the central orchestrator for all Evershade services.
 
 - **320+ API endpoints** with Swagger/ReDoc docs
 - **SQLite** with feature-store persistence
-- Greenie is the only service with a web frontend; everything you interact with visually runs through Greenie
+- Mission Control, Agent Harness, and workflow engine
+- MCP server and plugin support
 
 **Repo:** [LukaG712/Greenie](https://github.com/LukaG712/Greenie)
 
@@ -409,9 +414,11 @@ The memory and brain of the ecosystem. Gobber provides persistent storage for we
 
 #### Sneaker — Observability
 
-The eyes on your system. Sneaker collects metrics, traces, and logs from all services, providing unified observability.
+The eyes on your system. Sneaker collects metrics, traces, and logs from all services, providing unified observability with alerting and OTLP integration.
 
 - **Metrics**, distributed traces, and log aggregation
+- **OTLP export** — integrate with any OpenTelemetry collector
+- **Alerting** with deduplication, cooldown, and Poltergeist delivery
 - System health monitoring across all services
 
 **Repo:** [LukaG712/Sneaker](https://github.com/LukaG712/Sneaker)
@@ -453,10 +460,11 @@ The brain behind the models. Shrewd provides a unified interface for OpenAI, Ant
 
 #### Slammer — Web Dashboard
 
-The command center. Slammer is a React-based standalone web dashboard for managing agents, runs, pipelines, and analytics across all Evershade services.
+The command center. Slammer is the single unified React-based web dashboard for managing agents, runs, pipelines, missions, workflows, workstations, metrics, logs, and plugin/MCP management across all Evershade services.
 
 - **Stack:** React, TypeScript, Tailwind CSS
-- Standalone alternative to Greenie's built-in dashboard
+- Mission dashboard with milestone progress and validation results
+- Real-time SSE log streaming
 
 **Repo:** [LukaG712/Slammer](https://github.com/LukaG712/Slammer)
 
@@ -464,27 +472,150 @@ The command center. Slammer is a React-based standalone web dashboard for managi
 
 #### Speedy — CLI Tool
 
-The terminal companion. Speedy provides an `evershade` command for managing services, agents, tasks, and configuration from the command line.
+The terminal companion. Speedy provides an `evershade` command for managing everything from the command line — services, agents, tasks, diagnostics, and backups.
 
 - **Install:** `pip install speedy-cli`
-- **Command:** `evershade`
+- **Commands:** `install`, `start`, `stop`, `logs`, `doctor`, `backup`, `restore`
 
 **Repo:** [LukaG712/Speedy](https://github.com/LukaG712/Speedy)
 
 ---
 
-## Web Interfaces
+## Mission Control
 
-All visual interfaces are served by Greenie:
+> *"Now that all the ghosts of Evershade Valley are under my control..."*
+> ~ **King Boo**, Luigi's Mansion: Dark Moon
+
+Evershade's Mission Control system provides factory-inspired orchestration for complex AI-driven development workflows. Missions break down large tasks into milestones, features, and automated validation cycles.
+
+### Key Capabilities
+
+| Feature | Description |
+|---------|-------------|
+| **Mission Lifecycle** | Create, plan, execute, validate, complete, cancel, pause, and resume missions |
+| **Automated Planning** | LLM-based planning via Shrewd with repository intelligence and heuristic fallback |
+| **Milestones & Features** | Break missions into milestones with parallel worker execution |
+| **Code Review** | Automated deterministic checks (test, lint, type) and diff-based security review |
+| **Approval Gates** | Human-in-the-loop approval for sensitive operations with three autonomy levels |
+| **Fix-Revalidate** | Automatically create fix features from validation failures with configurable retries |
+| **SSE Streaming** | Real-time mission execution logs via Server-Sent Events |
+| **Analytics** | Success/failure rates, duration tracking, model usage, and validation summaries |
+| **Checkpoint Recovery** | Persist mission state and recover from failures |
+| **Secret Redaction** | Pattern-based redaction of API keys, tokens, and passwords in logs |
+
+### Mission Workflow
+
+```
+  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+  │ Create       │────►│ LLM Planning │────►│ Execute      │────►│ Validate     │
+  │ Mission      │     │              │     │ Features     │     │ Results      │
+  └──────────────┘     └──────────────┘     └──────────────┘     └──────┬───────┘
+                                                                        │
+                                                              ┌─────────▼─────────┐
+                                                              │   All Pass?       │
+                                                              └───┬───────────┬───┘
+                                                                   │ Yes       │ No
+                                                            ┌──────▼──────┐ ┌───▼──────────────┐
+                                                            │ Complete    │ │ Fix-Revalidate   │
+                                                            │ Mission     │ │ └────────┬───────┘
+                                                            └─────────────┘          │
+                                                                                     │
+                                                                            ┌────────▼───────┐
+                                                                            │ Execute        │
+                                                                            │ Features       │
+                                                                            └────────────────┘
+```
+
+### API Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `POST /api/missions` | Create a new mission |
+| `GET /api/missions` | List all missions |
+| `GET /api/missions/{id}` | Get mission details |
+| `POST /api/missions/{id}/plan` | Trigger LLM planning |
+| `POST /api/missions/{id}/execute` | Start execution |
+| `POST /api/missions/{id}/validate` | Run validation |
+| `POST /api/missions/{id}/fix-revalidate` | Auto-fix failures |
+| `GET /api/missions/{id}/logs/stream` | SSE log stream |
+| `GET /api/missions/analytics` | Mission analytics |
+
+---
+
+## Agent Harness
+
+The Agent Harness provides reusable workflows, specialized subagents, and event-driven automation for advanced agent development.
+
+### Spec Mode
+
+Research-first development: create specs, analyze repositories, approve plans, then convert to missions.
+
+| Endpoint | Description |
+|----------|-------------|
+| `POST /api/specs` | Create a new spec |
+| `POST /api/specs/{id}/analyze` | Run repository analysis |
+| `POST /api/specs/{id}/approve` | Approve and convert to mission |
+
+### Custom Droids
+
+Specialized subagents with their own prompts, models, and tool policies. Built-in droids: **worker**, **explorer**, **reviewer**, **validator**.
+
+### Skills System
+
+Reusable `SKILL.md` workflows with trigger-based auto-discovery. Skills are matched to tasks and can be invoked manually.
+
+### Hooks System
+
+Event-driven lifecycle hooks for mission events: `PreToolUse`, `PostToolUse`, `MissionStart`, `MissionEnd`, `MilestoneComplete`, `ValidationFail`. Supports script and webhook hooks.
+
+### Environments
+
+Reusable sandbox definitions with repository, dependencies, setup commands, and health checks.
+
+---
+
+## Workstations
+
+> *"This place is crawling with ghosts, Luigi!"*
+> ~ **Prof. E. Gadd**, on the mansion's defenses
+
+Workstations provide isolated container-based environments for agent execution with full lifecycle management.
+
+### Features
+
+| Feature | Description |
+|---------|-------------|
+| **Container Driver** | Isolated agent environments with network policies |
+| **Lifecycle Management** | Create, start, stop, and destroy workstations |
+| **Network Policies** | Default-deny network access for security |
+| **Live Terminal** | WebSocket-based terminal access for human interaction |
+| **Desktop Access** | Optional desktop interface for visual tasks |
+| **Integration** | Works with Slinker and workflow engine |
+
+### API Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `POST /api/workstations` | Create a new workstation |
+| `GET /api/workstations` | List all workstations |
+| `POST /api/workstations/{id}/start` | Start a workstation |
+| `POST /api/workstations/{id}/stop` | Stop a workstation |
+| `DELETE /api/workstations/{id}` | Destroy a workstation |
+| `WS /api/workstations/{id}/terminal` | Live terminal WebSocket |
+
+---
+
+## Web Interfaces
 
 | Interface | URL | Description |
 |-----------|-----|-------------|
-| **Chat UI** | `http://localhost:8080/` | Agent chat, skills, memory, routines |
-| **Dashboard** | `http://localhost:8080/dashboard/` | Agents, runs, pipelines, analytics, settings |
-| **Tasks App** | `http://localhost:8080/app/` | Simple task list |
-| **API Docs** | `http://localhost:8080/docs` | Swagger UI for all endpoints |
+| **Slammer Dashboard** | `http://localhost:5173` | Single unified dashboard — agents, runs, missions, workflows, workstations, metrics, logs |
+| **Greenie API Docs** | `http://localhost:8080/docs` | Swagger UI for all Greenie endpoints |
+| **Greenie ReDoc** | `http://localhost:8080/redoc` | Alternative API documentation |
+| **Slinker API Docs** | `http://localhost:8000/docs` | Swagger UI for Slinker endpoints |
+| **Trapper API Docs** | `http://localhost:3000/docs` | Swagger UI for Trapper endpoints |
 
-> **Note:** Slinker and Trapper are API-only services with no web frontend. All management happens through Greenie's dashboard.
+> **Note:** Greenie operates as an API-only backend. Slammer is the single unified dashboard for all visual management. Slinker and Trapper are API-only services.
 
 ---
 
@@ -618,6 +749,88 @@ python scripts/verify_release.py --release release/ --secret "your-signing-key"
 
 ---
 
+## Backup & Restore
+
+> *"Luigi, we gotta save all our progress before the ghosts strike again!"*
+> ~ **Prof. E. Gadd**, on data safety
+
+Evershade provides built-in backup and restore functionality via the Speedy CLI.
+
+```bash
+# Create a full backup
+evershade backup --output ./evershade-backup.tar.gz
+
+# Restore from a backup
+evershade restore --input ./evershade-backup.tar.gz
+
+# Backup specific services
+evershade backup --services Greenie,Gobber,Hider --output ./partial-backup.tar.gz
+```
+
+### What's Backed Up
+
+| Component | Data |
+|-----------|------|
+| **Greenie** | Agents, sessions, pipelines, workflows, missions |
+| **Gobber** | SQLite databases, Obsidian vault, embeddings |
+| **Hider** | Encrypted secrets and configurations |
+| **Sneaker** | Metrics, traces, and logs |
+| **Poltergeist** | Notification history |
+| **Redis** | Cache and job queue data |
+
+For detailed backup strategies, see [docs/BACKUP_RESTORE.md](docs/BACKUP_RESTORE.md).
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+| Problem | Solution |
+|---------|----------|
+| **Services won't start** | Run `evershade doctor` to diagnose issues |
+| **Port already in use** | Change the port in `.env` or stop the conflicting service |
+| **API key authentication failed** | Ensure all `EVERSHADE_*_API_KEY` values match between services |
+| **Greenie can't reach Slinker/Trapper** | Verify Docker network: `docker network ls \| grep evershade` |
+| **Ollama not responding** | Check `EVERSHADE_OLLAMA_URL` — use `http://host.docker.internal:11434` on Docker |
+| **Redis connection refused** | Ensure Redis container is running: `docker compose ps redis` |
+| **CSRF token missing** | Ensure cookies are enabled; check `CSRF_SECRET_KEY` is set |
+| **Encryption key error** | Set `EVERSHADE_ENCRYPTION_KEY` to a 32-byte hex string |
+
+### Diagnostic Commands
+
+```bash
+# Check service health
+evershade doctor
+
+# View service logs
+docker compose logs -f Greenie
+docker compose logs -f Slinker
+docker compose logs -f Trapper
+
+# Check network connectivity
+docker compose exec Greenie ping Slinker
+docker compose exec Greenie ping Trapper
+
+# Verify API keys
+curl -H "Authorization: Bearer $EVERSHADE_GREENIE_API_KEY" http://localhost:8080/health
+```
+
+### Health Check Endpoints
+
+| Service | Health Endpoint |
+|---------|----------------|
+| **Greenie** | `GET http://localhost:8080/health` |
+| **Slinker** | `GET http://localhost:8000/health` |
+| **Trapper** | `GET http://localhost:3000/health` |
+| **Gobber** | `GET http://localhost:8085/health` |
+| **Sneaker** | `GET http://localhost:8086/health` |
+| **Hider** | `GET http://localhost:8087/health` |
+| **Poltergeist** | `GET http://localhost:8088/health` |
+| **Shrewd** | `GET http://localhost:8089/health` |
+
+---
+
 ## Contributing
 
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on reporting bugs, suggesting features, and submitting pull requests.
@@ -658,9 +871,46 @@ Each sub-project is an independent Git repository with its own CI pipeline. The 
 
 ---
 
-## Future Expansion
+## Roadmap
 
-The ecosystem is designed to grow. Planned service decisions after audit:
+> *"Everything was swell, until someone split the Dark Moon..."*
+> ~ **The Dark Moon Song**, on how it all began
+
+### Development Timeline
+
+```
+Phase  ─ Name ────────────────── Period ───────── Status
+─────  ──────────────────────────────────────────────────────
+  1   │ Foundations                Jan 2026       ✓ Complete
+  2   │ Security & Persistence     Feb 2026       ✓ Complete
+  3   │ Real Implementation        Mar 2026       ✓ Complete
+  4   │ Workflow Engine            Apr 2026       ✓ Complete
+  5   │ Agent Workstations         May 2026       ✓ Complete
+  6   │ Quality & Release          Jun 2026       ✓ Complete
+  7   │ UI and Extensibility       Jul 2026       ✓ Complete
+  8   │ Emergency Stop & More      Aug 2026       ✓ Complete
+  9   │ Mission Control            Sep 2026       ✓ Complete
+ 10   │ Security & OTLP            Oct 2026       ✓ Complete
+ 11   │ Agent Harness              Nov 2026       ✓ Complete
+```
+
+### Completed Phases
+
+| Phase | Name | Key Deliverables |
+|-------|------|------------------|
+| **1** | Foundations | Ecosystem audit, architecture docs, Docker Compose profiles |
+| **2** | Security & Persistence | AES-256-GCM encryption, Bearer token auth, SSRF protection |
+| **3** | Real Implementation | LLM providers, notification delivery, Slammer dashboard |
+| **4** | Workflow Engine | Persistent workflows, triggers, approval gates, audit trail |
+| **5** | Agent Workstations | Container driver, lifecycle management, network policies |
+| **6** | Quality & Release | Integration tests, security tests, benchmarks, release signing |
+| **7** | UI and Extensibility | Slammer as single dashboard, MCP/plugin support |
+| **8** | Emergency Stop & More | Global kill switch, activity timeline, credential rotation |
+| **9** | Mission Control | Mission lifecycle, planning, validation, fix-revalidate cycle |
+| **10** | Security & OTLP | CSRF protection, vector embeddings, OTLP export |
+| **11** | Agent Harness | Spec mode, custom droids, skills system, hooks, environments |
+
+### Planned Service Decisions
 
 | Service | Role | Decision | Rationale |
 |---------|------|----------|-----------|
@@ -674,8 +924,8 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [ROADMAP.md](ROADMAP.md) fo
 
 ## Naming Theme
 
-> *"Everything was swell, until someone split the Dark Moon..."*
-> ~ **The Dark Moon Song**, on how it all began
+> *"Oh boy..."*
+> ~ **Luigi**, probably reacting to all these ghost names
 
 All services are named after ghosts from the **Luigi's Mansion** series. The root repository is named **Evershade** after *Evershade Valley*, the setting of Luigi's Mansion: Dark Moon.
 
