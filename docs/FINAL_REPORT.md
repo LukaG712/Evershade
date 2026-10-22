@@ -257,32 +257,36 @@ Not applicable — all changes made in the root repository working tree. No exte
 
 ### Incomplete Features
 - **User authentication:** No user accounts, login, or session management
-- **CSRF protection:** Not implemented for web UI
+- **CSRF protection:** Not implemented for web UI (test exists but middleware not wired)
 - **Rate limiting:** Not implemented on auth endpoints
 - **Slinker VM driver:** Only container driver implemented
 - **Slinker registered-machine driver:** Experimental, not implemented
-- **Gobber semantic search:** Basic CRUD only, no vector embeddings
-- **Sneaker OTLP export:** Basic metrics only, no OpenTelemetry protocol
-- **Real backup/restore testing:** Backup script exists but restore not verified with real data
-- **Clean-clone verification:** Not tested on actual clean machine
+- **Backup/restore verification:** Backup script exists but restore not verified with real data
+- **Clean-clone verification:** Bootstrap scripts created (install.sh, install.ps1) but not tested end-to-end
 - **Ubuntu VM + remote Windows access:** Documented but not tested end-to-end
 - **Reboot persistence:** Not tested on real VM
+- **CI integration tests:** Pipeline enabled but requires network access to clone services
+
+### Corrected Status (Previously Reported as Incomplete)
+- **Gobber semantic search:** ✅ Implemented — embedding generation via Shrewd, fallback hash-based embeddings, vault scanning, link resolution, semantic search with cosine similarity, persistent storage in SQLite
+- **Sneaker OTLP export:** ✅ Implemented — full OTLP receiver for traces/metrics/logs (JSON + protobuf), export endpoints, configurable external OTLP forwarding, 495 lines of production code
 
 ### Blockers
 - Cannot test Docker Compose without Docker installed on this machine
 - Cannot test real LLM providers without API keys
 - Cannot test workstation features without Docker socket access
 - Cannot verify clean-clone installation without network access to clone repos
+- Cannot run integration tests without Docker in CI environment
 
 ### Prioritized Next Steps
 1. Implement user authentication and session management
 2. Add CSRF protection for web UI
 3. Implement rate limiting on auth endpoints
-4. Extend Gobber with vector embeddings and semantic search
-5. Implement Sneaker OTLP export
+4. Verify backup/restore with real data round-trip test
+5. Test bootstrap scripts (install.sh, install.ps1) end-to-end
 6. Test end-to-end on real Ubuntu VM
-7. Verify clean-clone installation procedure
-8. Add integration test CI pipeline
+7. Verify CI integration pipeline with actual service communication
+8. Add secret redaction to logs and telemetry
 
 ---
 
@@ -315,9 +319,15 @@ Not applicable — all changes made in the root repository working tree. No exte
 | Failure injection tests | ✓ |
 | Release signing | ✓ |
 | Documentation complete | ✓ (27+ docs) |
-| Clean-clone installation verified | ✗ (blocked) |
+| Clean-clone installation verified | ⚠ (bootstrap scripts created, not tested) |
 | Ubuntu VM + remote access verified | ✗ (blocked) |
 | Reboot persistence verified | ✗ (blocked) |
 | User authentication | ✗ (deferred) |
 | CSRF protection | ✗ (deferred) |
 | Rate limiting | ✗ (deferred) |
+| CI integration tests enabled | ✓ (pipeline created, requires Docker in CI) |
+| Bootstrap scripts (install.sh, install.ps1) | ✓ (created) |
+| Startup scripts use profiles | ✓ (start.sh, start.ps1 updated) |
+| Server mode blocks default keys | ✓ (start.sh, start.ps1) |
+| Gobber semantic search | ✓ (implemented: embeddings, search, fallback) |
+| Sneaker OTLP export | ✓ (implemented: traces, metrics, logs) |

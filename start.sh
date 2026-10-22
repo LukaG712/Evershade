@@ -1,26 +1,64 @@
 #!/bin/bash
-# Unified Workflow — Startup Script (Linux/macOS)
-# Validates configuration, checks dependencies, and starts all services.
+# Evershade — Startup Script (Linux/macOS)
+# Validates configuration, checks dependencies, and starts services.
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-echo "Starting services..."
-
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
+
+PROFILE="standard"
+MODE="${EVERSHADE_MODE:-desktop}"
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --profile)
+            PROFILE="$2"
+            shift 2
+            ;;
+        --mode)
+            MODE="$2"
+            shift 2
+            ;;
+        --help|-h)
+            echo "Usage: ./start.sh [OPTIONS]"
+            echo ""
+            echo "Options:"
+            echo "  --profile NAME   Compose profile: minimal, standard, full (default: standard)"
+            echo "  --mode MODE      Deployment mode: desktop, server (default: desktop)"
+            echo "  --help, -h       Show this help message"
+            echo ""
+            echo "Profiles:"
+            echo "  minimal   Core services only (Greenie, Slinker, Trapper, Gobber)"
+            echo "  standard  All services except dashboard (default)"
+            echo "  full      Everything including Slammer dashboard"
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}Unknown option: $1${NC}"
+            exit 1
+            ;;
+    esac
+done
+
+echo -e "${BLUE}╔══════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${BLUE}║  Starting Evershade (profile: $PROFILE, mode: $MODE)                    ║${NC}"
+echo -e "${BLUE}╚══════════════════════════════════════════════════════════════╝${NC}"
+echo ""
 
 # Check Docker
 if ! command -v docker &> /dev/null; then
     echo -e "${RED}ERROR: Docker is not installed. Please install Docker first.${NC}"
     exit 1
 fi
-
 echo -e "${GREEN}✓${NC} Docker is available"
 
 # Check Docker Compose
@@ -28,7 +66,6 @@ if ! docker compose version &> /dev/null; then
     echo -e "${RED}ERROR: Docker Compose is not available.${NC}"
     exit 1
 fi
-
 echo -e "${GREEN}✓${NC} Docker Compose is available"
 
 # Create .env from .env.example if it doesn't exist
@@ -37,67 +74,107 @@ if [ ! -f .env ]; then
         echo -e "${YELLOW}⚠${NC} .env not found. Copying from .env.example..."
         cp .env.example .env
         echo -e "${YELLOW}⚠${NC} Please edit .env with your API keys before starting."
-        echo -e "${YELLOW}⚠${NC} Press Ctrl+C to edit, or Enter to continue with defaults..."
-        read -r
     else
         echo -e "${RED}ERROR: Neither .env nor .env.example found.${NC}"
         exit 1
     fi
 fi
-
 echo -e "${GREEN}✓${NC} .env file found"
 
-# Validate API keys are not using defaults
-declare -A defaultKeys=(
-    ["HUB_API_KEY"]="Greenie-dev-key-change-me"
-    ["Slinker_API_KEY"]="Slinker-dev-key-change-me"
-    ["Trapper_API_KEY"]="Trapper-dev-key-change-me"
-    ["GOBBER_API_KEY"]="Gobber-dev-key-change-me"
-    ["SNEAKER_API_KEY"]="Sneaker-dev-key-change-me"
-    ["HIDER_API_KEY"]="Hider-dev-key-change-me"
-    ["POLTERGEIST_API_KEY"]="Poltergeist-dev-key-change-me"
-    ["SHREWD_API_KEY"]="Shrewd-dev-key-change-me"
-    ["ENCRYPTION_KEY"]="change-me-in-production"
-)
+# Load .env for validation
+set -a
+source .env
+set +a
 
-hasDefaultKeys=false
-for key in "${!defaultKeys[@]}"; do
-    defaultValue="${defaultKeys[$key]}"
-    envValue=$(grep "^${key}=" .env 2>/dev/null | cut -d'=' -f2-)
-    if [ "$envValue" = "$defaultValue" ]; then
-        echo -e "${RED}✗${NC} WARNING: ${key} is using the default value '${defaultValue}'"
-        hasDefaultKeys=true
-    fi
-done
-
-if [ "$hasDefaultKeys" = true ]; then
-    echo ""
-    echo -e "${RED}[!] SECURITY RISK: Default API keys detected. These should be changed for production use.${NC}"
-    echo -e "${YELLOW}[!] Generate secure keys: openssl rand -hex 32${NC}"
-    echo ""
-    echo -e "${YELLOW}[!] Press Ctrl+C to fix .env, or Enter to continue with defaults (NOT recommended)...${NC}"
-    read -r
-fi
-
-echo -e "${GREEN}✓${NC} API key validation complete"
-
-# Check required directories
-for dir in Greenie Slinker Trapper Gobber Sneaker Hider Poltergeist Shrewd Slammer; do
-    if [ ! -d "$dir" ]; then
-        echo -e "${RED}ERROR: Directory '$dir' not found.${NC}"
+# Validate API keys are not using defaults in server mode
+if [ "$MODE" = "server" ] || [ "${EVERSHADE_MODE}" = "server" ]; then
+    echo -e "${YELLOW}⚠${NC} Server mode detected — validating security configuration..."
+    
+    defaultKeys=(
+        "EVERSHADE_GREENIE_API_KEY=change-me-greenie"
+        "EVERSHADE_SLINKER_API_KEY=change-me-slinker"
+        "EVERSHADE_TRAPPER_API_KEY=change-me-trapper"
+        "EVERSHADE_GOBBER_API_KEY=change-me-gobber"
+        "EVERSHADE_ENCRYPTION_KEY=change-me-encryption-key"
+    )
+    
+    insecure=false
+    for entry in "${defaultKeys[@]}"; do
+        key="${entry%%=*}"
+        defaultValue="${entry#*=}"
+        actualValue="${!key:-}"
+        if [ "$actualValue" = "$defaultValue" ] || [ -z "$actualValue" ]; then
+            echo -e "${RED}✗${NC} INSECURE: ${key} is using the default or empty value"
+            insecure=true
+        fi
+    done
+    
+    if [ "$insecure" = true ]; then
+        echo ""
+        echo -e "${RED}ERROR: Server mode refuses to start with default or insecure credentials.${NC}"
+        echo -e "${YELLOW}Fix .env with secure keys, then retry.${NC}"
+        echo -e "${YELLOW}Generate keys: openssl rand -hex 32${NC}"
         exit 1
     fi
+    echo -e "${GREEN}✓${NC} Security validation passed for server mode"
+else
+    # Desktop mode: warn about defaults but allow
+    hasDefaultKeys=false
+    for entry in "EVERSHADE_GREENIE_API_KEY=change-me-greenie" "EVERSHADE_ENCRYPTION_KEY=change-me-encryption-key"; do
+        key="${entry%%=*}"
+        defaultValue="${entry#*=}"
+        actualValue="${!key:-}"
+        if [ "$actualValue" = "$defaultValue" ]; then
+            echo -e "${YELLOW}⚠${NC} ${key} is using the default value (ok for desktop mode)"
+            hasDefaultKeys=true
+        fi
+    done
+    if [ "$hasDefaultKeys" = true ]; then
+        echo -e "${YELLOW}⚠${NC} Default keys detected — fine for local development, insecure for production${NC}"
+    fi
+fi
+
+# Check required service directories based on profile
+get_required_dirs() {
+    python3 -c "
+import json
+with open('version-manifest.json') as f:
+    manifest = json.load(f)
+profile_services = manifest.get('profiles', {}).get('$PROFILE', [])
+for svc in profile_services:
+    if svc not in ('redis', 'ollama', 'caddy'):
+        print(svc)
+" 2>/dev/null || echo "Greenie Slinker Trapper Gobber"
+}
+
+REQUIRED_DIRS=$(get_required_dirs)
+missing_dirs=false
+for dir in $REQUIRED_DIRS; do
+    if [ ! -d "$dir" ]; then
+        echo -e "${RED}ERROR: Directory '$dir' not found.${NC}"
+        echo -e "${YELLOW}Run ./install.sh --profile $PROFILE to install missing services.${NC}"
+        missing_dirs=true
+    fi
 done
 
-echo -e "${GREEN}✓${NC} All service directories found"
+if [ "$missing_dirs" = true ]; then
+    exit 1
+fi
+echo -e "${GREEN}✓${NC} Required service directories found"
 
 # Validate docker-compose.yml
 if [ ! -f docker-compose.yml ]; then
     echo -e "${RED}ERROR: docker-compose.yml not found.${NC}"
     exit 1
 fi
-
 echo -e "${GREEN}✓${NC} docker-compose.yml found"
+
+# Validate docker-compose configuration
+if ! docker compose --profile "$PROFILE" config --quiet 2>/dev/null; then
+    echo -e "${RED}ERROR: Invalid docker-compose configuration for profile '$PROFILE'.${NC}"
+    exit 1
+fi
+echo -e "${GREEN}✓${NC} Docker Compose configuration valid"
 
 # Check if Junie CLI is available (for code agents)
 if command -v junie &> /dev/null; then
@@ -108,10 +185,10 @@ fi
 
 # Start services
 echo ""
-echo "Starting all services..."
+echo -e "${BLUE}Starting services with profile: ${GREEN}$PROFILE${NC}"
 echo ""
 
-docker compose up -d
+docker compose --profile "$PROFILE" up -d
 
 echo ""
 echo -e "${GREEN}✓${NC} Services started!"

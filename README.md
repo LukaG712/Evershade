@@ -75,12 +75,22 @@
 
 ```bash
 git clone https://github.com/LukaG712/Evershade.git && cd Evershade
+
+# Install service repositories (required — services are in separate repos)
+./install.sh --profile minimal    # Linux/macOS
+# .\install.ps1 -Profile minimal  # Windows PowerShell
+
 cp .env.example .env
 # Edit .env with your API keys (see [Configuration](#configuration))
-docker compose --profile minimal up -d
+
+# Start services
+./start.sh --profile minimal      # Linux/macOS
+# .\start.ps1 -Profile minimal    # Windows PowerShell
 ```
 
-The dashboard will be available at **http://localhost:8080**.
+The API will be available at **http://localhost:8080**.
+
+> **Note:** The service repositories (Greenie, Slinker, etc.) are maintained separately and must be cloned by the install script. A fresh `git clone` of Evershade alone will not have the service code.
 
 ### Installation Profiles
 
@@ -97,13 +107,19 @@ The dashboard will be available at **http://localhost:8080**.
 
 ```bash
 # Linux/macOS
-./start.sh    # Start all services
-./stop.sh     # Stop all services
+./install.sh --profile standard   # Clone service repositories
+./start.sh --profile standard     # Start services with profile
+./stop.sh                         # Stop all services
 
 # Windows PowerShell
-.\start.ps1   # Start all services
-.\stop.ps1    # Stop all services
+.\install.ps1 -Profile standard   # Clone service repositories
+.\start.ps1 -Profile standard     # Start services with profile
+.\stop.ps1                        # Stop all services
 ```
+
+**Profiles:** `minimal` (core only), `standard` (all services), `full` (+ dashboard).
+
+**Modes:** Add `--mode server` for production deployment (requires secure API keys).
 
 ---
 
@@ -115,9 +131,17 @@ This tutorial walks you through setting up Evershade and running your first AI a
 
 ```bash
 git clone https://github.com/LukaG712/Evershade.git && cd Evershade
+
+# Install service repositories
+./install.sh --profile minimal    # Linux/macOS
+# .\install.ps1 -Profile minimal  # Windows PowerShell
+
 cp .env.example .env
 # Edit .env — at minimum, set unique API keys
-docker compose --profile minimal up -d
+
+# Start services
+./start.sh --profile minimal      # Linux/macOS
+# .\start.ps1 -Profile minimal    # Windows PowerShell
 ```
 
 ### Step 2: Access the Dashboard
