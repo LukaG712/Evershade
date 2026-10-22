@@ -2,6 +2,136 @@
 
 All notable changes to the Evershade ecosystem will be documented in this file.
 
+## [1.12.0] - 2026-10-22
+
+### Added — Agent Harness (Phase 11)
+
+Factory-inspired agent harness capabilities for reusable workflows, specialized subagents, and event-driven automation.
+
+- **Spec Mode**: Read-only research phase before implementation. Create specs, run repository analysis, approve/reject plans, and convert approved specs to missions. (`hub/mission/spec_mode.py`)
+- **Custom Droids**: Specialized subagents defined in Markdown with own prompts, models, and tool policies. Built-in droids: worker, explorer, reviewer, validator. Discovery from project and personal directories. (`hub/mission/droids.py`)
+- **Skills System**: Reusable SKILL.md workflows with trigger-based auto-discovery. Skills can be matched to tasks and invoked manually. (`hub/mission/skills.py`)
+- **Hooks System**: Event-driven lifecycle hooks for mission events (PreToolUse, PostToolUse, MissionStart, MissionEnd, MilestoneComplete, ValidationFail). Support for script and webhook hooks. (`hub/mission/hooks.py`)
+- **Environments**: Reusable sandbox definitions with repository, dependencies, setup commands, and health checks. (`hub/mission/environments.py`)
+- **API Endpoints**: 30+ new REST endpoints for specs, droids, skills, hooks, and environments. (`hub/api/agent_harness.py`)
+- **30 unit tests** covering all five components
+
+## [1.11.0] - 2026-10-22
+
+### Added
+
+**CSRF Protection, Gobber Embeddings API, and Sneaker OTLP Export (Phase 10)**
+- `Greenie/hub/api/csrf.py`: CSRF protection middleware — token generation with HMAC signing, validation with expiry, double-submit cookie pattern, configurable excluded paths, and middleware integration
+- `Greenie/hub/api/csrf.py`: CSRF token endpoints — `GET /api/csrf/token` for token generation, `GET /api/csrf/verify` for pre-flight checks
+- `Gobber/gobber/api.py`: Vector embedding API endpoints — `POST /api/embeddings/generate` for single text embedding, `POST /api/embeddings/search` for semantic search, `GET /api/embeddings/stats` for statistics, `POST /api/embeddings/batch` for batch embedding generation
+- `Sneaker/sneaker/otlp_export.py`: OTLP (OpenTelemetry Protocol) export support — receives traces/metrics/logs via OTLP JSON format, parses and stores them, forwards to external OTLP collector if configured, exports data in OTLP JSON format
+- `Sneaker/sneaker/api.py`: Integrated OTLP routes — `POST /v1/traces`, `POST /v1/metrics`, `POST /v1/logs`, `GET /api/otlp/stats`, `GET /api/otlp/export/*`
+- `tests/unit/test_csrf.py`: 25 unit tests for CSRF token generation, validation, extraction, skip logic, and configuration
+- `Sneaker/tests/test_otlp_export.py`: 12 unit tests for OTLP parsing (traces, metrics, logs), configuration, and store registration
+- `Gobber/tests/test_embeddings.py`: 8 unit tests for embedding generation, search, stats, and batch endpoints
+
+### Changed
+
+- Greenie version bumped to 1.11.0
+
+### Breaking Changes
+
+- None
+
+### Configuration
+
+New environment variables:
+- `CSRF_SECRET_KEY` — Secret key for CSRF token signing (required in production)
+- `CSRF_ENABLED` — Enable/disable CSRF protection (default: true)
+- `CSRF_TOKEN_EXPIRY` — CSRF token expiry in seconds (default: 3600)
+- `CSRF_EXCLUDED_PATHS` — Comma-separated paths to exclude from CSRF (default: /health,/api/metrics)
+- `OTLP_ENDPOINT` — OTLP collector endpoint for Sneaker forwarding (optional)
+- `OTLP_INSECURE` — Use insecure connection for OTLP forwarding (default: true)
+
+---
+
+## [1.10.0] - 2026-10-22
+
+### Added
+
+**End-to-End Smoke Test, Cross-Service Integration, and Final Hardening (Phase 9)**
+- `tests/integration/test_smoke.py`: End-to-end smoke test — 8 tests covering full mission lifecycle (create → plan → execute → validate → complete), validation failure handling, cancel/resume, pause/resume, stats, repo intelligence, checkpoint recovery, and completion report
+- `tests/integration/test_mission_cross_service.py`: Cross-service mission integration tests — 13 tests covering API health, lifecycle via API, planning, validation, analytics, and logs
+- `Slammer/src/components/Missions.tsx`: Fixed unused `formatDuration` helper — now used by `missionDuration()` to display mission duration in the detail view info cards
+
+### Changed
+
+- Greenie version bumped to 1.10.0
+
+### Breaking Changes
+
+- None
+
+---
+
+## [1.9.0] - 2026-10-22
+
+### Added
+
+**Mission Analytics, SSE Streaming, and Fix-Revalidate Cycle (Phase 8)**
+- `Greenie/hub/mission/analytics.py`: Mission-specific analytics — success/failure rates, average durations per lifecycle stage, model usage tracking, validation findings summary, autonomy distribution, and mission timelines
+- `Greenie/hub/mission/sse.py`: Server-Sent Events (SSE) streaming for real-time mission execution logs
+- `Greenie/hub/mission/storage.py`: Execution log storage — `mission_logs` table with save, retrieve, filter, pagination, and since-timestamp queries
+- `Greenie/hub/mission/controller.py`: Fix-revalidate cycle — `create_fix_features()` and `start_fix_revalidate()` to automatically create worker features from validation failures, with configurable max retries
+- `Greenie/hub/mission/controller.py`: Execution logging at all lifecycle points (create, plan, execute, validate, cancel, pause, resume, approval)
+- `Greenie/hub/api/missions.py`: New API endpoints — logs (`GET /logs`, `GET /logs/stream` SSE), analytics (`GET /analytics`, `GET /timeline`, `GET /validation-summary`), diffs (`GET /diff`), fix-revalidate (`POST /fix-revalidate`)
+- `tests/unit/test_mission_analytics.py`: 17 unit tests for analytics functions
+- `tests/unit/test_mission_logs.py`: 10 unit tests for log storage and SSE streaming
+- `tests/unit/test_fix_revalidate.py`: 13 unit tests for fix-revalidate cycle and mission logging
+
+## [1.8.0] - 2026-10-22
+
+### Added
+
+**Factory-Inspired Mission Control System (Phases 1–7)**
+- `Greenie/hub/mission/models.py`: Mission, MissionMilestone, MissionFeature, ValidationContract, ValidationResult, MissionCheckpoint dataclasses with enums (MissionStatus, MilestoneStatus, FeatureStatus, ValidationSeverity, AutonomyLevel)
+- `Greenie/hub/mission/storage.py`: SQLite persistence with WAL mode for missions, checkpoints, and validation results
+- `Greenie/hub/mission/controller.py`: Full mission lifecycle controller — create, plan, execute, validate, complete, cancel, pause, resume, checkpoint recovery, and approval gates
+- `Greenie/hub/mission/automation.py`: Event-driven automation engine — GitHub webhook handler (issues, PRs, CI failures), HMAC signature verification, schedule-based triggers with cron parsing, idempotency with TTL expiration, rate limiting, and action registry
+- `Greenie/hub/mission/secret_redaction.py`: Secret redaction for logs and model context — pattern-based redaction of API keys, tokens, passwords, GitHub tokens, AWS keys, and email addresses; logging filter; env var and dict redaction
+- `Greenie/hub/mission/planner.py`: LLM-based planning via Shrewd with heuristic fallback and repo context integration
+- `Greenie/hub/mission/repo_intelligence.py`: Repository analysis — structure, frameworks, build/test commands, dependencies, conventions
+- `Greenie/hub/mission/auto_review.py`: Automated code review — deterministic checks (test, lint, type), diff-based security/correctness review, structured findings
+- `Greenie/hub/api/missions.py`: 18 REST endpoints — CRUD, planning, execution, validation, control, approval gates, and statistics
+- Extended `Greenie/hub/workflow/models.py`: New StepType values (PLANNER, WORKER, VALIDATOR, MILESTONE); role, model_override, milestone_id fields
+- Extended `Greenie/hub/workflow/executor.py`: Parallel step execution for independent workers within a milestone; opt-in via `parallel_workers` flag
+- `Slammer/src/components/Missions.tsx`: Full-featured React mission dashboard — list view, create form, detail view with milestone progress, validation results, execution logs, and action buttons
+- `Slammer/src/App.tsx`: Added Missions page to navigation
+- `tests/unit/test_mission_models.py`: 23 unit tests for model serialization
+- `tests/unit/test_automation.py`: 20 unit tests for webhook handling, idempotency, rate limiting, schedule triggers, and action registry
+- `tests/unit/test_secret_redaction.py`: 15 unit tests for secret redaction patterns
+- `tests/integration/test_missions.py`: 33 integration tests covering full lifecycle, approval gates, and checkpoint recovery
+- `Slammer/src/components/__tests__/Missions.test.tsx`: 13 component tests for the Missions dashboard
+
+**Approval Gates**
+- Missions can pause and wait for human approval before sensitive operations
+- Three autonomy levels: supervised (all operations require approval), restricted autonomous (only sensitive operations), full autonomous (no approval gates)
+- `request_approval()`, `approve_mission()`, `reject_mission()` controller methods
+- API endpoints: `POST /api/missions/{id}/request-approval`, `/approve`, `/reject`
+
+### Changed
+
+- `Greenie/hub/mission/storage.py`: `get_mission_stats()` now returns `validating`, `cancelled`, and `paused` counts (matches Slammer dashboard expectations)
+- `Greenie/hub/mission/__init__.py`: Added sub-module documentation comments
+- Greenie version bumped to 1.8.0
+
+### Breaking Changes
+
+- None
+
+### Configuration
+
+New environment variables:
+- `GREENIE_MISSION_DB_PATH` — Mission control database path (default: data/missions.db)
+- `GITHUB_WEBHOOK_SECRET` — GitHub webhook HMAC verification secret (set via `automation.set_webhook_secret()`)
+
+---
+
 ## [1.7.0] - 2026-10-22
 
 ### Added

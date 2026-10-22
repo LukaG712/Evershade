@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services — Evershade</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html" class="logo">Evershade</a>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html" class="active">Services</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="getting-started.html">Getting Started</a></li>
+        <li><a href="roadmap.html">Roadmap</a></li>
+        <li><a href="contributing.html">Contributing</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>All Services</h2>
+      <p>Evershade consists of 10 independent microservices, each with a single responsibility. All service names are inspired by <strong>Luigi's Mansion ghosts</strong>.</p>
+    </section>
+
+    <!-- Greenie -->
+    <div class="service-detail">
+      <h2>Greenie — Central Hub & API Backend</h2>
+      <p class="origin">Luigi's Mansion origin: Greenie — small green ghosts from Luigi's Mansion: Dark Moon (Evershade Valley).</p>
+      <p>The brain of the operation. Greenie is a full-featured API server that manages AI agents, chat sessions, pipelines, analytics, and provides a unified view of the entire platform. It operates as an API-only backend.</p>
+      <table>
+        <tr><th>Feature</th><th>Details</th></tr>
+        <tr><td>Port</td><td>8080</td></tr>
+        <tr><td>API</td><td>320+ endpoints with Swagger/ReDoc docs</td></tr>
+        <tr><td>Storage</td><td>SQLite with feature-store persistence</td></tr>
+        <tr><td>Role</td><td>Orchestrator, agent manager, analytics hub</td></tr>
+        <tr><td>Features</td><td>Emergency stop, activity timeline, credential rotation, MCP, plugins, workflow engine, workstations, hybrid stores</td></tr>
+      </table>
+      <a class="repo-link" href="https://github.com/LukaG712/Greenie" target="_blank">→ GitHub: LukaG712/Greenie</a>
+    </div>
+
+    <!-- Slinker -->
+    <div class="service-detail">
+      <h2>Slinker — Execution Engine</h2>
+      <p class="origin">Luigi's Mansion origin: Slinker — stealthy ghost enemies from Luigi's Mansion 3 that slink along walls and floors.</p>
+      <p>The worker behind the scenes. Slinker takes tasks from Greenie and executes them in isolated Git worktrees using the Junie CLI. It handles code generation, file modifications, refactoring, and any task that requires running AI agents against a codebase.</p>
+      <table>
+        <tr><th>Feature</th><th>Details</th></tr>
+        <tr><td>Port</td><td>8000</td></tr>
+        <tr><td>UI</td><td>API only (no web frontend)</td></tr>
+        <tr><td>Isolation</td><td>Git worktrees per task</td></tr>
+        <tr><td>Runner</td><td>Junie CLI integration (pluggable, extensible)</td></tr>
+        <tr><td>Role</td><td>Task execution, code agent runner</td></tr>
+      </table>
+      <a class="repo-link" href="https://github.com/LukaG712/Slinker" target="_blank">→ GitHub: LukaG712/Slinker</a>
+    </div>
+
+    <!-- Trapper -->
+    <div class="service-detail">
+      <h2>Trapper — Web Scraping & Crawling</h2>
+      <p class="origin">Luigi's Mansion origin: Trapper — ghost enemies from Luigi's Mansion 3 that trap and capture.</p>
+      <p>The eyes on the web. Trapper uses Playwright to scrape, crawl, search, and map websites, turning raw HTML into clean, structured, LLM-ready data. It supports single-page scraping, deep crawling, site mapping, and background job queues via Redis.</p>
+      <table>
+        <tr><th>Feature</th><th>Details</th></tr>
+        <tr><td>Port</td><td>3000</td></tr>
+        <tr><td>UI</td><td>API only (no web frontend)</td></tr>
+        <tr><td>Browser</td><td>Playwright headless</td></tr>
+        <tr><td>Queue</td><td>Redis-backed job queue</td></tr>
+        <tr><td>Role</td><td>Web scraping, crawling, content extraction</td></tr>
+      </table>
+      <a class="repo-link" href="https://github.com/LukaG712/Trapper" target="_blank">→ GitHub: LukaG712/Trapper</a>
+    </div>
+
+    <!-- Gobber -->
+    <div class="service-detail">
+      <h2>Gobber — Persistent Storage & Knowledge Graph</h2>
+      <p class="origin">Luigi's Mansion origin: Gobber — blob-like ghosts from Luigi's Mansion: Dark Moon that absorb and store everything.</p>
+      <p>The memory and brain of the ecosystem. Gobber provides persistent storage for webhooks, analytics, RBAC, cache, and feature flags — solving the in-memory data loss problem when services restart. It also integrates <strong>Obsidian vault as a second brain</strong> — scanning your notes, generating embeddings, and enabling semantic search.</p>
+      <table>
+        <tr><th>Feature</th><th>Details</th></tr>
+        <tr><td>Port</td><td>8085</td></tr>
+        <tr><td>Storage</td><td>SQLite with WAL mode</td></tr>
+        <tr><td>Features</td><td>Webhooks, analytics, RBAC, cache, feature flags, knowledge graph</td></tr>
+        <tr><td>Obsidian</td><td>Vault scanning, semantic search, graph traversal</td></tr>
+        <tr><td>Role</td><td>Centralized data layer & semantic memory</td></tr>
+      </table>
+      <a class="repo-link" href="https://github.com/LukaG712/Gobber" target="_blank">→ GitHub: LukaG712/Gobber</a>
+    </div>
+
+    <!-- Sneaker -->
+    <div class="service-detail">
+      <h2>Sneaker — Observability</h2>
+      <p class="origin">Luigi's Mansion origin: Sneaker — quiet ghosts from Luigi's Mansion: Dark Moon that sneak up silently.</p>
+      <p>The eyes on your system. Sneaker collects metrics, traces, and logs from all services, providing unified observability. Includes an alerting system with deduplication, cooldown, and Poltergeist delivery.</p>
+      <table>
+        <tr><th>Feature</th><th>Details</th></tr>
+        <tr><td>Port</td><td>8086</td></tr>
+        <tr><td>Features</td><td>Metrics, distributed traces, log aggregation, alerting</td></tr>
+        <tr><td>Role</td><td>System health monitoring</td></tr>
+      </table>
+      <a class="repo-link" href="https://github.com/LukaG712/Sneaker" target="_blank">→ GitHub: LukaG712/Sneaker</a>
+    </div>
+
+    <!-- Hider -->
+    <div class="service-detail">
+      <h2>Hider — Secrets & Config</h2>
+      <p class="origin">Luigi's Mansion origin: Hider — ghosts from Luigi's Mansion: Dark Moon that hide in plain sight.</p>
+      <p>The vault for sensitive data. Hider provides encrypted storage for API keys, passwords, and centralized configuration management using AES-256-GCM encryption with SQLite persistence.</p>
+      <table>
+        <tr><th>Feature</th><th>Details</th></tr>
+        <tr><td>Port</td><td>8087</td></tr>
+        <tr><td>Encryption</td><td>AES-256-GCM</td></tr>
+        <tr><td>Storage</td><td>SQLite</td></tr>
+        <tr><td>Features</td><td>Encrypted secrets, versioned config</td></tr>
+        <tr><td>Role</td><td>Secret and configuration management</td></tr>
+      </table>
+      <a class="repo-link" href="https://github.com/LukaG712/Hider" target="_blank">→ GitHub: LukaG712/Hider</a>
+    </div>
+
+    <!-- Poltergeist -->
+    <div class="service-detail">
+      <h2>Poltergeist — Notifications</h2>
+      <p class="origin">Luigi's Mansion origin: Poltergeist — the ancient ghosts from Luigi's Mansion: Dark Moon that cause disturbances and ruckuses.</p>
+      <p>The messenger of the ecosystem. Poltergeist sends notifications to Slack, Discord, email, and Telegram with templated messages and async delivery. Includes SQLite persistence for notification history.</p>
+      <table>
+        <tr><th>Feature</th><th>Details</th></tr>
+        <tr><td>Port</td><td>8088</td></tr>
+        <tr><td>Channels</td><td>Slack, Discord, email, Telegram, webhooks</td></tr>
+        <tr><td>Storage</td><td>SQLite persistence</td></tr>
+        <tr><td>Role</td><td>Unified notification hub</td></tr>
+      </table>
+      <a class="repo-link" href="https://github.com/LukaG712/Poltergeist" target="_blank">→ GitHub: LukaG712/Poltergeist</a>
+    </div>
+
+    <!-- Shrewd -->
+    <div class="service-detail">
+      <h2>Shrewd — LLM Abstraction</h2>
+      <p class="origin">Luigi's Mansion origin: Shrewd — one of the Three Sisters (Possessors) from Luigi's Mansion: Dark Moon, known for being cunning and intelligent.</p>
+      <p>The brain behind the models. Shrewd provides a unified interface for OpenAI, Anthropic, Google, and Ollama — letting you swap models and manage costs with privacy classification.</p>
+      <table>
+        <tr><th>Feature</th><th>Details</th></tr>
+        <tr><td>Port</td><td>8089</td></tr>
+        <tr><td>Providers</td><td>OpenAI, Anthropic, Google, Ollama</td></tr>
+        <tr><td>Features</td><td>Model routing, cost tracking, privacy classification</td></tr>
+        <tr><td>Role</td><td>LLM provider abstraction</td></tr>
+      </table>
+      <a class="repo-link" href="https://github.com/LukaG712/Shrewd" target="_blank">→ GitHub: LukaG712/Shrewd</a>
+    </div>
+
+    <!-- Slammer -->
+    <div class="service-detail">
+      <h2>Slammer — Web Dashboard</h2>
+      <p class="origin">Luigi's Mansion origin: Slammer — blue ghosts from Luigi's Mansion: Dark Moon that slam the ground with force.</p>
+      <p>The command center. Slammer is a React-based standalone web dashboard for managing agents, runs, pipelines, and analytics across all Evershade services. It is the single unified dashboard — Greenie operates as API-only backend.</p>
+      <table>
+        <tr><th>Feature</th><th>Details</th></tr>
+        <tr><td>Port</td><td>5173</td></tr>
+        <tr><td>Stack</td><td>React, TypeScript, Tailwind CSS</td></tr>
+        <tr><td>Features</td><td>Services, agents, runs, workflows, workstations, metrics, logs, plugins/MCP management</td></tr>
+        <tr><td>Role</td><td>Standalone web dashboard</td></tr>
+      </table>
+      <a class="repo-link" href="https://github.com/LukaG712/Slammer" target="_blank">→ GitHub: LukaG712/Slammer</a>
+    </div>
+
+    <!-- Speedy -->
+    <div class="service-detail">
+      <h2>Speedy — CLI Tool</h2>
+      <p class="origin">Luigi's Mansion origin: Speedy Spirit — fast ghosts from Luigi's Mansion that zoom around at high speed.</p>
+      <p>The terminal companion. Speedy provides an <code>evershade</code> command for managing services, agents, tasks, and configuration from the command line.</p>
+      <table>
+        <tr><th>Feature</th><th>Details</th></tr>
+        <tr><td>Install</td><td><code>pip install speedy-cli</code></td></tr>
+        <tr><td>Command</td><td><code>evershade</code></td></tr>
+        <tr><td>Features</td><td>Install, start, stop, logs, doctor, backup/restore</td></tr>
+        <tr><td>Role</td><td>Command-line interface</td></tr>
+      </table>
+      <a class="repo-link" href="https://github.com/LukaG712/Speedy" target="_blank">→ GitHub: LukaG712/Speedy</a>
+    </div>
+
+    <!-- Naming Theme -->
+    <section>
+      <h2>Naming Theme</h2>
+      <p>All services are named after ghosts from the <strong>Luigi's Mansion</strong> series. The root repository is named <strong>Evershade</strong> after <em>Evershade Valley</em>, the setting of Luigi's Mansion: Dark Moon.</p>
+      <table class="info-table">
+        <tr><th>Service</th><th>Ghost Origin</th><th>Game</th></tr>
+        <tr><td>Greenie</td><td>Small green ghosts</td><td>Luigi's Mansion: Dark Moon</td></tr>
+        <tr><td>Slinker</td><td>Wall-crawling stealth ghosts</td><td>Luigi's Mansion 3</td></tr>
+        <tr><td>Trapper</td><td>Trap-setting ghosts</td><td>Luigi's Mansion 3</td></tr>
+        <tr><td>Gobber</td><td>Blob-like absorbing ghost</td><td>Luigi's Mansion: Dark Moon</td></tr>
+        <tr><td>Sneaker</td><td>Quiet sneaking ghost</td><td>Luigi's Mansion: Dark Moon</td></tr>
+        <tr><td>Hider</td><td>Hiding ghost</td><td>Luigi's Mansion: Dark Moon</td></tr>
+        <tr><td>Poltergeist</td><td>Ancient disturbance ghost</td><td>Luigi's Mansion: Dark Moon</td></tr>
+        <tr><td>Shrewd</td><td>Possessor (Three Sisters)</td><td>Luigi's Mansion: Dark Moon</td></tr>
+        <tr><td>Slammer</td><td>Heavy-hitting ground slammer</td><td>Luigi's Mansion: Dark Moon</td></tr>
+        <tr><td>Speedy</td><td>Fast zooming ghost</td><td>Luigi's Mansion: Dark Moon</td></tr>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <p>Evershade v1.7.0 — Licensed under <a href="https://opensource.org/licenses/MIT">MIT</a></p>
+    <p>
+      <a href="https://github.com/LukaG712/Evershade">GitHub</a> ·
+      <a href="index.html">Home</a> ·
+      <a href="services.html">Services</a> ·
+      <a href="architecture.html">Architecture</a> ·
+      <a href="getting-started.html">Getting Started</a> ·
+      <a href="roadmap.html">Roadmap</a> ·
+      <a href="contributing.html">Contributing</a>
+    </p>
+    <p class="disclaimer">This project is a fan-made, independent software project. It is not affiliated with, endorsed by, or in any way connected to Nintendo, Next Level Games, or any of their subsidiaries.</p>
+  </footer>
+</body>
+</html>

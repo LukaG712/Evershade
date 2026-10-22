@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Getting Started — Evershade</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html" class="logo">Evershade</a>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="getting-started.html" class="active">Getting Started</a></li>
+        <li><a href="roadmap.html">Roadmap</a></li>
+        <li><a href="contributing.html">Contributing</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>Prerequisites</h2>
+      <ul>
+        <li><strong>Docker</strong> and <strong>Docker Compose</strong></li>
+        <li><a href="https://junie.jetbrains.com" target="_blank"><strong>Junie CLI</strong></a> (for code agents) — optional</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>One-Command Start</h2>
+      <pre><code>git clone https://github.com/LukaG712/Evershade.git && cd Evershade
+cp .env.example .env
+# Edit .env with your API keys (see Configuration section below)
+docker compose --profile minimal up -d</code></pre>
+      <p>The dashboard will be available at <strong>http://localhost:8080</strong>.</p>
+    </section>
+
+    <section>
+      <h2>Installation Profiles</h2>
+      <table class="info-table">
+        <tr><th>Profile</th><th>Services</th><th>Command</th></tr>
+        <tr><td><strong>Minimal</strong></td><td>Core only (Greenie, Slinker, Trapper, Gobber)</td><td><code>docker compose --profile minimal up -d</code></td></tr>
+        <tr><td><strong>Standard</strong></td><td>All services</td><td><code>docker compose --profile standard up -d</code></td></tr>
+        <tr><td><strong>Full</strong></td><td>+ Slammer Dashboard</td><td><code>docker compose --profile full up -d</code></td></tr>
+        <tr><td><strong>+ Ollama</strong></td><td>Local LLM support</td><td><code>docker compose --profile standard --profile ollama up -d</code></td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>Startup Scripts</h2>
+      <pre><code># Linux/macOS
+./start.sh    # Start all services
+./stop.sh     # Stop all services
+
+# Windows PowerShell
+.\start.ps1   # Start all services
+.\stop.ps1    # Stop all services</code></pre>
+    </section>
+
+    <section>
+      <h2>Configuration</h2>
+      <h3>API Keys (Required)</h3>
+      <p>Generate unique keys for each service. <strong>Never use the default values in production.</strong></p>
+      <pre><code># Generate a secure key
+openssl rand -hex 32</code></pre>
+      <p>All variables use the <code>EVERSHADE_&lt;SERVICE&gt;_&lt;SETTING&gt;</code> naming convention.</p>
+      <table class="info-table">
+        <tr><th>Variable</th><th>Description</th></tr>
+        <tr><td><code>EVERSHADE_GREENIE_API_KEY</code></td><td>Greenie API key</td></tr>
+        <tr><td><code>EVERSHADE_SLINKER_API_KEY</code></td><td>Slinker API key</td></tr>
+        <tr><td><code>EVERSHADE_TRAPPER_API_KEY</code></td><td>Trapper API key</td></tr>
+        <tr><td><code>EVERSHADE_GOBBER_API_KEY</code></td><td>Gobber API key</td></tr>
+        <tr><td><code>EVERSHADE_ENCRYPTION_KEY</code></td><td>Hider encryption key</td></tr>
+      </table>
+
+      <h3>Optional Configuration</h3>
+      <table class="info-table">
+        <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+        <tr><td><code>EVERSHADE_OPENAI_API_KEY</code></td><td>*(empty)*</td><td>OpenAI API key</td></tr>
+        <tr><td><code>EVERSHADE_OLLAMA_URL</code></td><td><code>http://host.docker.internal:11434</code></td><td>Ollama endpoint</td></tr>
+        <tr><td><code>EVERSHADE_OLLAMA_MODEL</code></td><td><code>gemma4:12b</code></td><td>Default Ollama model</td></tr>
+        <tr><td><code>EVERSHADE_WORKSPACE_PATH</code></td><td><code>./workspace</code></td><td>Workspace directory</td></tr>
+        <tr><td><code>EVERSHADE_MAX_CONCURRENT_WORKERS</code></td><td><code>1</code></td><td>Concurrent Slinker workers</td></tr>
+        <tr><td><code>EVERSHADE_ISOLATION_MODE</code></td><td><code>worktree</code></td><td>Isolation mode</td></tr>
+        <tr><td><code>EVERSHADE_OBSIDIAN_VAULT_PATH</code></td><td><code>./obsidian-vault</code></td><td>Obsidian vault path</td></tr>
+        <tr><td><code>EVERSHADE_LOG_LEVEL</code></td><td><code>INFO</code></td><td>Log verbosity</td></tr>
+      </table>
+
+      <h3>Deployment Mode</h3>
+      <table class="info-table">
+        <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+        <tr><td><code>EVERSHADE_MODE</code></td><td><code>desktop</code></td><td><code>desktop</code> = loopback, <code>server</code> = all interfaces</td></tr>
+        <tr><td><code>EVERSHADE_BIND_ADDRESS</code></td><td><code>127.0.0.1</code></td><td>Bind address for host ports</td></tr>
+        <tr><td><code>EVERSHADE_PUBLIC_URL</code></td><td><code>http://localhost:8080</code></td><td>Public base URL</td></tr>
+      </table>
+      <p>For server deployment (headless VM, access from another computer), see the <a href="architecture.html">Architecture</a> page.</p>
+    </section>
+
+    <section>
+      <h2>Web Interfaces</h2>
+      <table class="info-table">
+        <tr><th>Interface</th><th>URL</th><th>Description</th></tr>
+        <tr><td><strong>Chat UI</strong></td><td><code>http://localhost:8080/</code></td><td>Agent chat, skills, memory, routines</td></tr>
+        <tr><td><strong>Dashboard</strong></td><td><code>http://localhost:8080/dashboard/</code></td><td>Agents, runs, pipelines, analytics, settings</td></tr>
+        <tr><td><strong>Tasks App</strong></td><td><code>http://localhost:8080/app/</code></td><td>Simple task list</td></tr>
+        <tr><td><strong>API Docs</strong></td><td><code>http://localhost:8080/docs</code></td><td>Swagger UI for all endpoints</td></tr>
+        <tr><td><strong>Slammer Dashboard</strong></td><td><code>http://localhost:5173</code></td><td>Standalone unified dashboard</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>API Documentation</h2>
+      <p>Each service exposes auto-generated API docs:</p>
+      <table class="info-table">
+        <tr><th>Service</th><th>Swagger UI</th><th>ReDoc</th><th>OpenAPI JSON</th></tr>
+        <tr><td><strong>Greenie</strong></td><td><code>localhost:8080/docs</code></td><td><code>localhost:8080/redoc</code></td><td><code>localhost:8080/openapi.json</code></td></tr>
+        <tr><td><strong>Slinker</strong></td><td><code>localhost:8000/docs</code></td><td><code>localhost:8000/redoc</code></td><td><code>localhost:8000/openapi.json</code></td></tr>
+        <tr><td><strong>Trapper</strong></td><td><code>localhost:3000/docs</code></td><td><code>localhost:3000/redoc</code></td><td><code>localhost:3000/openapi.json</code></td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>Tutorial: Your First Agent</h2>
+
+      <h3>Step 1: Install and Start</h3>
+      <pre><code>git clone https://github.com/LukaG712/Evershade.git && cd Evershade
+cp .env.example .env
+# Edit .env — at minimum, set unique API keys
+docker compose --profile minimal up -d</code></pre>
+
+      <h3>Step 2: Access the Dashboard</h3>
+      <p>Open <strong>http://localhost:8080</strong> in your browser. You'll see the Greenie dashboard with:</p>
+      <ul>
+        <li><strong>Chat</strong> — Talk to AI agents</li>
+        <li><strong>Dashboard</strong> — Manage agents, runs, pipelines</li>
+        <li><strong>API Docs</strong> — Swagger UI at <code>/docs</code></li>
+      </ul>
+
+      <h3>Step 3: Create Your First Agent</h3>
+      <ol>
+        <li>Go to <strong>Dashboard → Agents</strong></li>
+        <li>Click <strong>Create Agent</strong></li>
+        <li>Fill in:
+          <ul>
+            <li><strong>Name</strong>: <code>researcher</code></li>
+            <li><strong>Runner</strong>: <code>junie</code></li>
+            <li><strong>Guidelines</strong>: <code>Always cite your sources.</code></li>
+          </ul>
+        </li>
+        <li>Click <strong>Save</strong></li>
+      </ol>
+
+      <h3>Step 4: Run a Task</h3>
+      <ol>
+        <li>Go to <strong>Chat</strong></li>
+        <li>Select your <code>researcher</code> agent</li>
+        <li>Type: <em>Summarize the key points of climate change</em></li>
+        <li>Watch the agent work in real-time</li>
+      </ol>
+
+      <h3>Step 5: Try a Pipeline</h3>
+      <p>Create a cross-service pipeline via the API:</p>
+      <pre><code>curl -X POST http://localhost:8080/api/pipeline \
+  -H "Authorization: Bearer $EVERSHADE_GREENIE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "steps": [
+      { "service": "Trapper", "action": "scrape", "url": "https://news.ycombinator.com" },
+      { "service": "Greenie", "action": "chat", "agent": "researcher", "prompt": "Summarize the top 5 stories" }
+    ]
+  }'</code></pre>
+
+      <h3>Step 6: Explore More</h3>
+      <ul>
+        <li><strong>Workflows</strong> — Automate recurring tasks with schedules and triggers</li>
+        <li><strong>Slammer Dashboard</strong> — Standalone dashboard at <code>http://localhost:5173</code></li>
+        <li><strong>Speedy CLI</strong> — Manage everything from the terminal: <code>evershade agents list</code></li>
+        <li><strong>Notifications</strong> — Configure Slack/Discord alerts via Poltergeist</li>
+        <li><strong>LLM Providers</strong> — Connect OpenAI, Anthropic, or Ollama via Shrewd</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Security Notes</h2>
+      <ul>
+        <li>Server mode refuses to start with default API keys.</li>
+        <li>Resource limits are applied to all services.</li>
+        <li>Store your <code>.env</code> file securely and never commit it to version control.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Evershade v1.7.0 — Licensed under <a href="https://opensource.org/licenses/MIT">MIT</a></p>
+    <p>
+      <a href="https://github.com/LukaG712/Evershade">GitHub</a> ·
+      <a href="index.html">Home</a> ·
+      <a href="services.html">Services</a> ·
+      <a href="architecture.html">Architecture</a> ·
+      <a href="getting-started.html">Getting Started</a> ·
+      <a href="roadmap.html">Roadmap</a> ·
+      <a href="contributing.html">Contributing</a>
+    </p>
+    <p class="disclaimer">This project is a fan-made, independent software project. It is not affiliated with, endorsed by, or in any way connected to Nintendo, Next Level Games, or any of their subsidiaries.</p>
+  </footer>
+</body>
+</html>

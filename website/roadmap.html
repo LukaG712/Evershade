@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roadmap — Evershade</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html" class="logo">Evershade</a>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="getting-started.html">Getting Started</a></li>
+        <li><a href="roadmap.html" class="active">Roadmap</a></li>
+        <li><a href="contributing.html">Contributing</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>Roadmap</h2>
+      <p>Version 1.7.0 — Last Updated: 2026-10-22</p>
+    </section>
+
+    <div class="phase">
+      <h3>Phase 1 — Foundations</h3>
+      <ul>
+        <li class="done">Complete ecosystem audit</li>
+        <li class="done">Architecture documentation</li>
+        <li class="done">Version manifest</li>
+        <li class="done">Standardized configuration (.env.example)</li>
+        <li class="done">Docker Compose profiles and hardening</li>
+        <li class="done">Core documentation (SECURITY, DEPLOYMENT, CONFIGURATION, etc.)</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 2 — Security & Persistence</h3>
+      <ul>
+        <li class="done">Hider: Implement AES-256-GCM encryption for secrets</li>
+        <li class="done">Hider: SQLite persistence for secrets and configs</li>
+        <li class="done">Migrate all services to Bearer token auth</li>
+        <li class="done">Trapper: SSRF protection (private IP blocking, metadata endpoint blocking)</li>
+        <li class="done">Container hardening: read-only filesystem, capability dropping, tmpfs</li>
+        <li class="done">Remove hardcoded localhost references</li>
+        <li class="pending">Sneaker: SQLite persistence for metrics, traces, logs</li>
+        <li class="pending">Poltergeist: SQLite persistence for notifications</li>
+        <li class="pending">Emergency stop implementation in Greenie</li>
+        <li class="pending">CSRF protection for web UI sessions</li>
+        <li class="pending">Rate limiting on authentication endpoints</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 3 — Real Implementation</h3>
+      <ul>
+        <li class="done">Shrewd: Real LLM provider integration (OpenAI, Anthropic, Google, Ollama)</li>
+        <li class="done">Shrewd: Model routing with cost tracking and privacy classification</li>
+        <li class="done">Poltergeist: Real notification delivery (Slack, Discord, email, Telegram)</li>
+        <li class="done">Poltergeist: SQLite persistence for notifications</li>
+        <li class="done">Slammer: Real dashboard with Greenie API integration</li>
+        <li class="done">Speedy CLI: Full command set (install, start, stop, doctor, logs, backup, restore)</li>
+        <li class="done">Greenie → Gobber migration: Hybrid stores with Gobber-first, local fallback</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 4 — Workflow Engine</h3>
+      <ul>
+        <li class="done">Persistent workflow definitions</li>
+        <li class="done">Workflow triggers (schedule, webhook, file changes)</li>
+        <li class="done">Visual workflow builder in dashboard</li>
+        <li class="done">Approval gates with human-in-the-loop</li>
+        <li class="done">Workflow execution history and audit trail</li>
+        <li class="done">End-to-end workflow integration test</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 5 — Agent Workstations</h3>
+      <ul>
+        <li class="done">Container driver for isolated agent environments</li>
+        <li class="done">Workstation lifecycle management (create, start, stop, destroy)</li>
+        <li class="done">Network policy enforcement (default-deny)</li>
+        <li class="done">Human access: live terminal and desktop via gateway</li>
+        <li class="done">Integration with Slinker and workflow engine</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 6 — Quality & Release</h3>
+      <ul>
+        <li class="done">Ecosystem-wide integration tests</li>
+        <li class="done">Security tests (prompt injection, SSRF, auth bypass)</li>
+        <li class="done">Performance benchmarks and baselines</li>
+        <li class="done">Agent evaluation suite</li>
+        <li class="done">Failure injection tests</li>
+        <li class="done">Release signing and provenance</li>
+        <li class="done">Complete README with tutorial</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 7 — UI and Extensibility</h3>
+      <ul>
+        <li class="done">Resolve Greenie/Slammer relationship (Slammer as single dashboard)</li>
+        <li class="done">Integrate workflow builder</li>
+        <li class="done">Improve operational dashboards (Metrics, Logs pages)</li>
+        <li class="done">Add Workstations live terminal (WebSocket-based)</li>
+        <li class="done">Add MCP and plugin support (MCP server, plugin registry)</li>
+        <li class="done">Ensure every visible control connects to real functionality</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 8 — Quality and Release</h3>
+      <ul>
+        <li class="done">Emergency stop: Global kill switch (pause workflows, cancel jobs, notify)</li>
+        <li class="done">Activity Timeline: Cross-service event history with audit trail</li>
+        <li class="done">WORKSTATIONS.md: Complete workstation documentation</li>
+        <li class="done">Slinker runner interface: Pluggable runner abstraction (Junie default, extensible)</li>
+        <li class="done">Alerting system: Alert rules, deduplication, Poltergeist delivery</li>
+        <li class="done">Credential rotation: API key, encryption key, session secret rotation</li>
+        <li class="done">Final Implementation Report: Complete audit of all 8 phases</li>
+        <li class="done">Documentation: Updated ROADMAP, CHANGELOG, version-manifest, .env.example</li>
+      </ul>
+    </div>
+
+    <section>
+      <h3>Planned Service Decisions</h3>
+      <table class="info-table">
+        <tr><th>Service</th><th>Decision</th><th>Rationale</th></tr>
+        <tr><td><strong>Mnemos</strong></td><td><strong>DROP</strong></td><td>Gobber already covers semantic memory. Extend Gobber instead.</td></tr>
+        <tr><td><strong>Bridge</strong></td><td><strong>EVALUATE</strong></td><td>Only if new integration types beyond webhooks are needed.</td></tr>
+        <tr><td><strong>Courier</strong></td><td><strong>EVALUATE</strong></td><td>Only if persistent object storage beyond 50MB is required.</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h3>Future Service Name Ideas</h3>
+      <p>More ghost names from the series available for new services:</p>
+      <table class="info-table">
+        <tr><th>Name</th><th>Origin</th><th>Suggested Role</th></tr>
+        <tr><td><strong>Boo</strong></td><td>Classic — iconic ghost</td><td>Authentication / gateway service</td></tr>
+        <tr><td><strong>Oozers</strong></td><td>LM3 — ooze-like ghosts</td><td>File storage / blob service</td></tr>
+        <tr><td><strong>Hammer</strong></td><td>LM3 — hammer-wielding ghost</td><td>Deployment / infrastructure service</td></tr>
+        <tr><td><strong>Goob</strong></td><td>LM3 — basic ghost</td><td>Task queue / job scheduler</td></tr>
+        <tr><td><strong>Grouchy</strong></td><td>Dark Moon — spider boss</td><td>Security / firewall service</td></tr>
+        <tr><td><strong>Nana</strong></td><td>Dark Moon — portrait ghost</td><td>Document processing service</td></tr>
+        <tr><td><strong>Shivers</strong></td><td>Dark Moon — ice ghost</td><td>Cooling / rate limiting service</td></tr>
+        <tr><td><strong>Biff</strong></td><td>Dark Moon — bouncer ghost</td><td>API gateway / load balancer</td></tr>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <p>Evershade v1.7.0 — Licensed under <a href="https://opensource.org/licenses/MIT">MIT</a></p>
+    <p>
+      <a href="https://github.com/LukaG712/Evershade">GitHub</a> ·
+      <a href="index.html">Home</a> ·
+      <a href="services.html">Services</a> ·
+      <a href="architecture.html">Architecture</a> ·
+      <a href="getting-started.html">Getting Started</a> ·
+      <a href="roadmap.html">Roadmap</a> ·
+      <a href="contributing.html">Contributing</a>
+    </p>
+    <p class="disclaimer">This project is a fan-made, independent software project. It is not affiliated with, endorsed by, or in any way connected to Nintendo, Next Level Games, or any of their subsidiaries.</p>
+  </footer>
+</body>
+</html>

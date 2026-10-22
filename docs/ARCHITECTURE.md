@@ -190,6 +190,7 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 
 **Public Interface:**
 - REST API: `/api/*` (webhooks, analytics, flags, cache, roles, vault)
+- Embedding API: `/api/embeddings/*` (generate, search, batch, stats)
 - Health: `/health`
 
 ### Sneaker — Observability
@@ -206,7 +207,9 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 
 **Public Interface:**
 - REST API: `/api/*` (metrics, traces, logs, alerts)
-- OTLP endpoint: `/otlp/*` (planned)
+- OTLP endpoints: `POST /v1/traces`, `POST /v1/metrics`, `POST /v1/logs`
+- OTLP export: `GET /api/otlp/export/traces`, `/metrics`, `/logs`
+- OTLP stats: `GET /api/otlp/stats`
 - Health: `/health`
 
 ### Hider — Secrets & Configuration
@@ -493,7 +496,176 @@ When an optional service is unavailable:
 
 ---
 
-## 11. Naming Convention
+## 11. Mission Control System
+
+The mission control system is a Factory-inspired autonomous software engineering ecosystem built into Greenie. It extends the existing workflow engine with first-class mission entities, multi-agent orchestration, and independent validation.
+
+### Components
+
+| Module | Purpose |
+|--------|---------|
+| `hub/mission/models.py` | Data models: Mission, Milestone, Feature, ValidationContract, ValidationResult, Checkpoint |
+| `hub/mission/storage.py` | SQLite persistence with WAL mode |
+| `hub/mission/controller.py` | Lifecycle controller: create → plan → execute → validate → complete, with approval gates |
+| `hub/mission/automation.py` | Event-driven automation: GitHub webhooks, schedule triggers, idempotency, rate limiting |
+| `hub/mission/secret_redaction.py` | Secret redaction for logs and model context |
+| `hub/mission/planner.py` | LLM-based planning via Shrewd |
+| `hub/mission/repo_intelligence.py` | Repository analysis before missions |
+| `hub/mission/auto_review.py` | Automated code review with deterministic and static checks |
+| `hub/mission/analytics.py` | Mission analytics: success rates, durations, model usage, validation summaries |
+| `hub/mission/sse.py` | Server-Sent Events streaming for real-time execution logs |
+| `hub/api/missions.py` | 27 REST endpoints for mission CRUD, lifecycle, logs, analytics, and fix-revalidate |
+
+### Architecture
+
+```
+User → Slammer Dashboard → Greenie Mission API → Mission Controller
+                                              → Planning (Shrewd LLM)
+                                              → Execution (Slinker workers)
+                                              → Validation (Auto Review)
+                                              → Checkpoints (SQLite)
+```
+
+### Key Features
+
+- **Missions as first-class entities**: Each mission has milestones, features, validation contracts, and artifacts
+- **Three-role architecture**: Orchestrator (planning LLM), Workers (execution via Slinker), Validators (independent review)
+- **Parallel execution**: Worker steps within a milestone can run in parallel (opt-in via `parallel_workers` flag)
+- **Approval gates**: Missions can pause for human approval before sensitive operations
+- **Autonomy levels**: Supervised (all operations require approval), Restricted autonomous (only sensitive operations), Full autonomous (no approval gates)
+- **Checkpoint recovery**: Mission state persists across restarts with SQLite checkpoints
+- **Secret redaction**: API keys, tokens, and passwords are automatically redacted from logs and model context
+- **Automation engine**: GitHub webhooks (issues, PRs, CI failures), schedule-based triggers with cron parsing, idempotency, and rate limiting
+- **Mission analytics**: Success/failure rates, average durations per lifecycle stage, model usage tracking, validation findings summaries, and mission timelines
+- **SSE log streaming**: Real-time execution log delivery via Server-Sent Events for the Slammer dashboard
+- **Fix-revalidate cycle**: Automatic creation of fix features from validation failures, with configurable max retries
+- **Execution logging**: All lifecycle events (create, plan, execute, validate, cancel, pause, resume, approval) are persisted to SQLite
+
+### API Endpoints
+
+- `POST /api/missions` — Create a mission
+- `GET /api/missions` — List missions (filterable by status)
+- `GET /api/missions/{id}` — Mission detail with milestones, features, logs
+- `POST /api/missions/{id}/plan` — Apply a plan
+- `POST /api/missions/{id}/start` — Start execution
+- `POST /api/missions/{id}/cancel` — Cancel a mission
+- `POST /api/missions/{id}/resume` — Resume from checkpoint
+- `POST /api/missions/{id}/pause` — Pause a mission
+- `POST /api/missions/{id}/request-approval` — Request human approval
+- `POST /api/missions/{id}/approve` — Approve a pending request
+- `POST /api/missions/{id}/reject` — Reject a pending request
+- `GET /api/missions/{id}/validation` — Validation results
+- `GET /api/missions/{id}/logs` — Execution logs (paginated)
+- `GET /api/missions/{id}/logs/stream` — SSE log streaming (real-time)
+- `GET /api/missions/{id}/diff` — Changed files and diffs
+- `GET /api/missions/{id}/timeline` — Mission timeline with stage durations
+- `GET /api/missions/{id}/validation-summary` — Validation findings summary
+- `POST /api/missions/{id}/fix-revalidate` — Start fix-revalidate cycle
+- `GET /api/missions/analytics` — Aggregated mission analytics
+- `GET /api/missions/stats` — Mission statistics
+
+---
+
+## 12. Phase 10 — Security, Embeddings, and OTLP
+
+Phase 10 added CSRF protection, vector embedding API endpoints, and OTLP export support.
+
+### CSRF Protection (Greenie)
+
+- `hub/api/csrf.py`: CSRF middleware with HMAC-signed tokens, configurable expiry, excluded paths
+- Token generation via `GET /api/csrf/token`, verification via `GET /api/csrf/verify`
+- Safe methods (GET, HEAD, OPTIONS) and excluded paths (/health, /api/metrics) skip CSRF checks
+- Configurable via `CSRF_SECRET_KEY`, `CSRF_ENABLED`, `CSRF_TOKEN_EXPIRY`, `CSRF_EXCLUDED_PATHS`
+
+### Vector Embeddings API (Gobber)
+
+- `POST /api/embeddings/generate`: Generate embedding for single text
+- `POST /api/embeddings/search`: Semantic search using vector embeddings
+- `POST /api/embeddings/batch`: Batch embedding generation
+- `GET /api/embeddings/stats`: Embedding statistics
+- Uses Shrewd for embedding generation with hash-based fallback
+
+### OTLP Export (Sneaker)
+
+- `sneaker/otlp_export.py`: OTLP JSON protocol support for traces, metrics, and logs
+- `POST /v1/traces`, `POST /v1/metrics`, `POST /v1/logs`: Receive OTLP data
+- `GET /api/otlp/export/*`: Export data in OTLP JSON format
+- `GET /api/otlp/stats`: OTLP statistics
+- Optional forwarding to external OTLP collector via `OTLP_ENDPOINT`
+
+### Deferred Items
+
+The following Phase 10 items require external infrastructure and are deferred:
+- User authentication and session management
+- Real Junie CLI integration for code execution
+- Clean-clone installation verification
+- Ubuntu VM + remote access end-to-end test
+- Reboot persistence verification
+
+---
+
+## 13. Phase 11 — Agent Harness
+
+Phase 11 added Factory-inspired agent harness capabilities: Spec Mode, Custom Droids, Skills, Hooks, and Environments.
+
+### Spec Mode (`hub/mission/spec_mode.py`)
+
+Read-only research phase before implementation. The agent analyzes the repository, proposes a concrete implementation plan, and requires human approval before any code changes.
+
+- **Spec lifecycle**: Draft → Researching → Ready for Review → Approved/Rejected → Converted (to Mission)
+- **Persistent spec store**: Specs stored in SQLite with queryable history
+- **Research phase**: Uses repo_intelligence to analyze target repository and produce findings
+- **Approval gate**: Human must approve before execution begins
+- **Conversion**: Approved specs convert to Missions with validation contracts
+
+### Custom Droids (`hub/mission/droids.py`)
+
+Specialized subagents defined in Markdown with their own system prompt, model preference, and tool policy.
+
+- **Built-in droids**: `worker` (implementation), `explorer` (research), `reviewer` (code review), `validator` (validation)
+- **Discovery**: Project droids in `.evershade/droids/`, personal droids in `~/.evershade/droids/`
+- **Markdown format**: Frontmatter with name, description, model, allowed_tools, denied_tools
+- **Storage**: SQLite persistence for custom droids
+
+### Skills System (`hub/mission/skills.py`)
+
+Reusable SKILL.md workflows with trigger-based auto-discovery.
+
+- **Skill format**: Directory with SKILL.md entry point, optional supporting files
+- **Discovery**: Project skills in `.evershade/skills/`, personal skills in `~/.evershade/skills/`
+- **Matching**: Skills auto-matched to tasks based on trigger phrases
+- **Invocation**: Manual or model-invoked execution
+
+### Hooks System (`hub/mission/hooks.py`)
+
+Event-driven lifecycle hooks for mission events.
+
+- **Supported events**: PreToolUse, PostToolUse, SessionStart, SessionEnd, MissionStart, MissionEnd, MilestoneComplete, ValidationFail
+- **Hook types**: Script (local execution) and Webhook (HTTP POST)
+- **Blocking**: Pre-* hooks can block execution (exit code 2)
+- **Execution history**: Tracked in SQLite with success/failure status
+
+### Environments (`hub/mission/environments.py`)
+
+Reusable sandbox definitions for reproducible agent execution.
+
+- **Definition**: Repository, branch, dependencies, setup commands, build/test commands
+- **Health checks**: Validate environment readiness before execution
+- **Validation**: Check repository existence, Python version, custom health check commands
+
+### API Endpoints (`hub/api/agent_harness.py`)
+
+30+ new REST endpoints:
+
+- **Specs**: `POST/GET /api/specs`, `GET/DELETE /api/specs/{id}`, `POST /api/specs/{id}/research|approve|reject|convert`, `GET /api/specs/stats`
+- **Droids**: `POST/GET /api/droids`, `GET/DELETE /api/droids/{name}`, `POST /api/droids/{name}/invoke`
+- **Skills**: `POST/GET /api/skills`, `POST /api/skills/match`, `GET/DELETE /api/skills/{name}`, `POST /api/skills/{name}/invoke`
+- **Hooks**: `POST/GET /api/hooks`, `GET/DELETE /api/hooks/{id}`, `POST /api/hooks/{id}/test`, `GET /api/hooks/{id}/executions`
+- **Environments**: `POST/GET /api/environments`, `GET/DELETE /api/environments/{id}`, `POST /api/environments/{id}/validate`
+
+---
+
+## 14. Naming Convention
 
 All services follow the Luigi's Mansion ghost naming theme. Each service name is paired with a plain-language subtitle:
 

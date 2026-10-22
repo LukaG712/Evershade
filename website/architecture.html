@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture — Evershade</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html" class="logo">Evershade</a>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="architecture.html" class="active">Architecture</a></li>
+        <li><a href="getting-started.html">Getting Started</a></li>
+        <li><a href="roadmap.html">Roadmap</a></li>
+        <li><a href="contributing.html">Contributing</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>System Architecture</h2>
+      <p>Evershade is a collection of independent microservices communicating over an internal Docker network with Bearer token authentication.</p>
+      <div class="arch-diagram">┌─────────────────────────────────────────────────────────────────────┐
+│                        Your Browser                                 │
+│              http://localhost:8080 (Greenie)                        │
+│              http://localhost:5173 (Slammer Dashboard)              │
+└──────────────────────────────┬──────────────────────────────────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              │                │                │
+     ┌────────▼────────┐ ┌────▼─────┐  ┌──────▼──────┐
+     │   Greenie       │ │ Slammer  │  │   Speedy    │
+     │   (8080)        │ │ (5173)   │  │   CLI       │
+     │  API Backend    │ │ Dashboard│  │  Terminal   │
+     └───┬─────┬───────┘ └──────────┘  └─────────────┘
+         │     │
+    ┌────▼─────▼────┐
+    │  Service Mesh  │  ← Internal Docker network
+    │  (Bearer Auth) │
+    └───┬─────┬──────┘
+        │     │
+ ┌──────▼──┐ ┌▼──────────┐ ┌──────────┐ ┌──────────┐
+ │ Slinker │ │ Trapper    │ │  Gobber  │ │  Hider   │
+ │ (8000)  │ │ (3000)     │ │ (8085)   │ │ (8087)   │
+ │ Execute │ │ Scrape     │ │ Storage  │ │ Secrets  │
+ └─────────┘ └────────────┘ └──────────┘ └──────────┘
+
+ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
+ │ Polter-  │ │  Shrewd  │ │ Sneaker  │ │  Caddy   │
+ │ geist    │ │ (8089)   │ │ (8086)   │ │  Proxy   │
+ │ (8088)   │ │ LLM      │ │ Metrics  │ │ (443)    │
+ │ Notify   │ │ Routing  │ │ Traces   │ │ TLS      │
+ └──────────┘ └──────────┘ └──────────┘ └──────────┘</div>
+    </section>
+
+    <section>
+      <h2>How They Work Together</h2>
+      <ol class="steps-list">
+        <li><strong>You</strong> interact with Greenie's API or Slammer's web dashboard at <code>localhost:5173</code></li>
+        <li><strong>Greenie</strong> manages your agents, sessions, pipelines, workflows, and workstations</li>
+        <li>When a task needs code execution, Greenie sends it to <strong>Slinker</strong></li>
+        <li>When a task needs web data, Greenie sends it to <strong>Trapper</strong></li>
+        <li><strong>Shrewd</strong> routes LLM requests to OpenAI, Anthropic, Google, or Ollama</li>
+        <li><strong>Hider</strong> stores secrets encrypted at rest (AES-256-GCM)</li>
+        <li><strong>Gobber</strong> provides persistent storage, cache, and knowledge graph</li>
+        <li><strong>Poltergeist</strong> sends notifications to Slack, Discord, email, Telegram</li>
+        <li><strong>Sneaker</strong> collects metrics and traces for observability</li>
+        <li>Results flow back through Greenie to your dashboard</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Cross-Service Pipelines</h2>
+      <p>Chain services together in a single request:</p>
+      <pre><code>POST /api/pipeline
+{
+  "steps": [
+    { "service": "Trapper", "action": "scrape", "url": "https://example.com" },
+    { "service": "Greenie", "action": "chat", "agent": "researcher" },
+    { "service": "Slinker", "action": "execute", "prompt": "Create a summary document" }
+  ]
+}</code></pre>
+    </section>
+
+    <section>
+      <h2>Workflow Engine</h2>
+      <p>Automate multi-step workflows with triggers, approvals, and conditions:</p>
+      <pre><code>POST /api/workflows
+{
+  "name": "Research Pipeline",
+  "trigger": { "type": "schedule", "cron": "0 9 * * 1" },
+  "steps": [
+    { "type": "service", "service": "Trapper", "action": "scrape", "url": "https://news.example.com" },
+    { "type": "agent", "agent": "researcher", "prompt": "Summarize the latest news" },
+    { "type": "approval", "message": "Review the summary before sending" },
+    { "type": "notify", "channel": "slack", "recipient": "#research" }
+  ]
+}</code></pre>
+    </section>
+
+    <section>
+      <h2>Security Model</h2>
+      <ul>
+        <li><strong>Bearer token auth</strong> on all services (query params rejected)</li>
+        <li><strong>AES-256-GCM encryption</strong> for secrets at rest (Hider)</li>
+        <li><strong>SSRF protection</strong> blocks private IPs and cloud metadata (Trapper)</li>
+        <li><strong>Read-only containers</strong> with capability dropping</li>
+        <li><strong>Internal Docker network</strong> — only Greenie exposed on host</li>
+        <li><strong>Emergency stop</strong> — global kill switch (pause workflows, cancel jobs, notify)</li>
+        <li><strong>Credential rotation</strong> — API key, encryption key, session secret rotation</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Installation Profiles</h2>
+      <table class="info-table">
+        <tr><th>Profile</th><th>Services</th><th>Command</th></tr>
+        <tr><td><strong>Minimal</strong></td><td>Core only</td><td><code>docker compose --profile minimal up -d</code></td></tr>
+        <tr><td><strong>Standard</strong></td><td>All services</td><td><code>docker compose --profile standard up -d</code></td></tr>
+        <tr><td><strong>Full</strong></td><td>+ Dashboard</td><td><code>docker compose --profile full up -d</code></td></tr>
+        <tr><td><strong>+ Ollama</strong></td><td>Local LLM</td><td><code>docker compose --profile standard --profile ollama up -d</code></td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>Service Dependencies</h2>
+      <table class="info-table">
+        <tr><th>Service</th><th>Required By</th><th>Dependencies</th><th>Optional Dependencies</th></tr>
+        <tr><td>Greenie</td><td>Core</td><td>Slinker, Trapper, Gobber</td><td>Sneaker, Hider, Poltergeist, Shrewd</td></tr>
+        <tr><td>Slinker</td><td>Core</td><td>—</td><td>—</td></tr>
+        <tr><td>Trapper</td><td>Core</td><td>Redis</td><td>—</td></tr>
+        <tr><td>Gobber</td><td>Core</td><td>—</td><td>Shrewd</td></tr>
+        <tr><td>Sneaker</td><td>Optional</td><td>—</td><td>Poltergeist</td></tr>
+        <tr><td>Hider</td><td>Optional</td><td>—</td><td>—</td></tr>
+        <tr><td>Poltergeist</td><td>Optional</td><td>—</td><td>—</td></tr>
+        <tr><td>Shrewd</td><td>Optional</td><td>—</td><td>—</td></tr>
+        <tr><td>Slammer</td><td>Optional</td><td>Greenie</td><td>Sneaker</td></tr>
+        <tr><td>Speedy</td><td>Optional</td><td>—</td><td>—</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>Repository Structure</h2>
+      <pre><code>Evershade/ (root ~ orchestration)
+├── docker-compose.yml         ← Service orchestration
+├── start.sh / stop.sh         ← Startup scripts
+├── start.ps1 / stop.ps1       ← Windows scripts
+├── Greenie/                   → Separate repo (LukaG712/Greenie)
+├── Slinker/                   → Separate repo (LukaG712/Slinker)
+├── Trapper/                   → Separate repo (LukaG712/Trapper)
+├── Gobber/                    → Separate repo (LukaG712/Gobber)
+├── Sneaker/                   → Separate repo (LukaG712/Sneaker)
+├── Hider/                     → Separate repo (LukaG712/Hider)
+├── Poltergeist/               → Separate repo (LukaG712/Poltergeist)
+├── Shrewd/                    → Separate repo (LukaG712/Shrewd)
+├── Slammer/                   → Separate repo (LukaG712/Slammer)
+└── Speedy/                    → Separate repo (LukaG712/Speedy)</code></pre>
+      <p>Each sub-project is an independent Git repository with its own CI pipeline. The root repo tracks orchestration files and excludes the sub-project directories via <code>.gitignore</code>.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Evershade v1.7.0 — Licensed under <a href="https://opensource.org/licenses/MIT">MIT</a></p>
+    <p>
+      <a href="https://github.com/LukaG712/Evershade">GitHub</a> ·
+      <a href="index.html">Home</a> ·
+      <a href="services.html">Services</a> ·
+      <a href="architecture.html">Architecture</a> ·
+      <a href="getting-started.html">Getting Started</a> ·
+      <a href="roadmap.html">Roadmap</a> ·
+      <a href="contributing.html">Contributing</a>
+    </p>
+    <p class="disclaimer">This project is a fan-made, independent software project. It is not affiliated with, endorsed by, or in any way connected to Nintendo, Next Level Games, or any of their subsidiaries.</p>
+  </footer>
+</body>
+</html>

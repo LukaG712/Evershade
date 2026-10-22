@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contributing — Evershade</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html" class="logo">Evershade</a>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="getting-started.html">Getting Started</a></li>
+        <li><a href="roadmap.html">Roadmap</a></li>
+        <li><a href="contributing.html" class="active">Contributing</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>Contributing to Evershade</h2>
+      <p>Thank you for your interest in contributing to Evershade!</p>
+    </section>
+
+    <section>
+      <h2>Code of Conduct</h2>
+      <p>Be respectful, constructive, and inclusive. Harassment or abusive behavior will not be tolerated.</p>
+    </section>
+
+    <section>
+      <h2>How to Contribute</h2>
+
+      <h3>Reporting Bugs</h3>
+      <ol>
+        <li>Search existing issues to avoid duplicates</li>
+        <li>Use the bug report template</li>
+        <li>Include steps to reproduce, expected vs actual behavior, and environment details</li>
+        <li><strong>Do not</strong> include API keys, secrets, or sensitive data</li>
+      </ol>
+
+      <h3>Suggesting Features</h3>
+      <ol>
+        <li>Check <code>ROADMAP.md</code> and existing issues</li>
+        <li>Use the feature request template</li>
+        <li>Explain the problem, proposed solution, and alternatives considered</li>
+      </ol>
+
+      <h3>Pull Requests</h3>
+      <ol>
+        <li>Fork the repository</li>
+        <li>Create a feature branch from <code>main</code></li>
+        <li>Make your changes</li>
+        <li>Run tests: <code>pytest</code> (Python) or <code>npm test</code> (TypeScript)</li>
+        <li>Lint and format code</li>
+        <li>Update documentation if applicable</li>
+        <li>Use Conventional Commits: <code>feat:</code>, <code>fix:</code>, <code>docs:</code>, <code>refactor:</code>, etc.</li>
+        <li>Submit the pull request</li>
+      </ol>
+
+      <h3>PR Requirements</h3>
+      <ul>
+        <li>All tests pass</li>
+        <li>No linting or formatting errors</li>
+        <li>Documentation updated if behavior changes</li>
+        <li>No secrets or credentials committed</li>
+        <li>Clear description of changes and motivation</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Development Setup</h2>
+      <pre><code># Quick start
+git clone https://github.com/LukaG712/Evershade.git
+cd Evershade
+cp .env.example .env
+docker compose --profile dev up -d</code></pre>
+    </section>
+
+    <section>
+      <h2>Code Style</h2>
+      <ul>
+        <li><strong>Python:</strong> PEP 8, <code>ruff</code> for linting/formatting</li>
+        <li><strong>TypeScript:</strong> ESLint config, <code>prettier</code> for formatting</li>
+        <li><strong>Commits:</strong> Conventional Commits format</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Testing & Quality</h2>
+      <p>Evershade includes a comprehensive test suite covering integration, security, performance, and reliability:</p>
+      <table class="info-table">
+        <tr><th>Category</th><th>Description</th><th>Command</th></tr>
+        <tr><td><strong>Integration</strong></td><td>Cross-service communication</td><td><code>./tests/run-all-tests.sh integration</code></td></tr>
+        <tr><td><strong>Security</strong></td><td>Prompt injection, SSRF, auth bypass</td><td><code>./tests/run-all-tests.sh security</code></td></tr>
+        <tr><td><strong>Benchmarks</strong></td><td>Latency, throughput, concurrency</td><td><code>./tests/run-all-tests.sh benchmarks</code></td></tr>
+        <tr><td><strong>Evaluation</strong></td><td>Agent quality scoring</td><td><code>./tests/run-all-tests.sh evaluation</code></td></tr>
+        <tr><td><strong>Chaos</strong></td><td>Failure injection, resilience</td><td><code>./tests/run-all-tests.sh chaos</code></td></tr>
+        <tr><td><strong>All</strong></td><td>Run everything</td><td><code>./tests/run-all-tests.sh all</code></td></tr>
+      </table>
+      <pre><code># Start all services first
+docker compose --profile standard up -d
+
+# Run all tests
+cd tests
+pytest -v
+
+# Or use the runner script
+./run-all-tests.sh all
+
+# Run a specific category
+./run-all-tests.sh security</code></pre>
+    </section>
+
+    <section>
+      <h2>Security Issues</h2>
+      <p>Do <strong>not</strong> open public issues for security vulnerabilities. Report them privately to the repository maintainers.</p>
+    </section>
+
+    <section>
+      <h2>License</h2>
+      <p>By contributing, you agree that your contributions will be licensed under the project's license (<a href="https://opensource.org/licenses/MIT">MIT</a>).</p>
+    </section>
+
+    <section>
+      <h2>Repository Links</h2>
+      <table class="info-table">
+        <tr><th>Service</th><th>Repository</th></tr>
+        <tr><td><strong>Evershade (root)</strong></td><td><a href="https://github.com/LukaG712/Evershade" target="_blank">LukaG712/Evershade</a></td></tr>
+        <tr><td><strong>Greenie</strong></td><td><a href="https://github.com/LukaG712/Greenie" target="_blank">LukaG712/Greenie</a></td></tr>
+        <tr><td><strong>Slinker</strong></td><td><a href="https://github.com/LukaG712/Slinker" target="_blank">LukaG712/Slinker</a></td></tr>
+        <tr><td><strong>Trapper</strong></td><td><a href="https://github.com/LukaG712/Trapper" target="_blank">LukaG712/Trapper</a></td></tr>
+        <tr><td><strong>Gobber</strong></td><td><a href="https://github.com/LukaG712/Gobber" target="_blank">LukaG712/Gobber</a></td></tr>
+        <tr><td><strong>Sneaker</strong></td><td><a href="https://github.com/LukaG712/Sneaker" target="_blank">LukaG712/Sneaker</a></td></tr>
+        <tr><td><strong>Hider</strong></td><td><a href="https://github.com/LukaG712/Hider" target="_blank">LukaG712/Hider</a></td></tr>
+        <tr><td><strong>Poltergeist</strong></td><td><a href="https://github.com/LukaG712/Poltergeist" target="_blank">LukaG712/Poltergeist</a></td></tr>
+        <tr><td><strong>Shrewd</strong></td><td><a href="https://github.com/LukaG712/Shrewd" target="_blank">LukaG712/Shrewd</a></td></tr>
+        <tr><td><strong>Slammer</strong></td><td><a href="https://github.com/LukaG712/Slammer" target="_blank">LukaG712/Slammer</a></td></tr>
+        <tr><td><strong>Speedy</strong></td><td><a href="https://github.com/LukaG712/Speedy" target="_blank">LukaG712/Speedy</a></td></tr>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <p>Evershade v1.7.0 — Licensed under <a href="https://opensource.org/licenses/MIT">MIT</a></p>
+    <p>
+      <a href="https://github.com/LukaG712/Evershade">GitHub</a> ·
+      <a href="index.html">Home</a> ·
+      <a href="services.html">Services</a> ·
+      <a href="architecture.html">Architecture</a> ·
+      <a href="getting-started.html">Getting Started</a> ·
+      <a href="roadmap.html">Roadmap</a> ·
+      <a href="contributing.html">Contributing</a>
+    </p>
+    <p class="disclaimer">This project is a fan-made, independent software project. It is not affiliated with, endorsed by, or in any way connected to Nintendo, Next Level Games, or any of their subsidiaries.</p>
+  </footer>
+</body>
+</html>

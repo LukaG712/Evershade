@@ -101,6 +101,53 @@
 
 ---
 
+## Phase 9 — Mission Control System ✓
+
+- [x] Mission data models: Mission, Milestone, Feature, ValidationContract, ValidationResult, Checkpoint
+- [x] SQLite persistence: WAL mode for missions, checkpoints, and validation results
+- [x] Mission lifecycle controller: Create, plan, execute, validate, complete, cancel, pause, resume
+- [x] Extended workflow engine: New StepType values (PLANNER, WORKER, VALIDATOR, MILESTONE), parallel execution
+- [x] Planning and repository intelligence: LLM-based planning via Shrewd, repo analysis
+- [x] Automated code review: Deterministic checks (test, lint, type), diff-based security review
+- [x] Automation engine: GitHub webhooks, schedule triggers, idempotency, rate limiting
+- [x] Secret redaction: Pattern-based redaction for logs and model context
+- [x] Approval gates: Human approval for sensitive operations, three autonomy levels
+- [x] Slammer mission dashboard: List view, create form, detail view with milestone progress
+- [x] Mission analytics: Success/failure rates, duration tracking, validation summaries
+- [x] SSE log streaming: Real-time execution logs
+- [x] Fix-revalidate cycle: Automatic fix features from validation failures
+- [x] End-to-end smoke test: Full mission lifecycle test without external dependencies
+- [x] Cross-service integration tests: Mission API health, lifecycle, planning, validation, analytics
+- [x] 147 tests: Unit tests for models, automation, secret redaction, analytics, logs, fix-revalidate; integration tests for lifecycle, approval gates, smoke tests
+
+---
+
+## Phase 10 — Security, Embeddings, and OTLP ✓
+
+- [x] CSRF protection for web UI: Token generation, validation, middleware, excluded paths
+- [x] Rate limiting on auth endpoints: Already implemented in Phase 2 (core.py)
+- [x] Gobber vector embeddings and semantic search: API endpoints for generate, search, batch, stats
+- [x] Sneaker OTLP export: OTLP JSON endpoints for traces/metrics/logs, external forwarding
+- [x] 45 tests: 25 CSRF, 12 OTLP, 8 Gobber embeddings
+
+### Deferred (requires external infrastructure)
+
+- [ ] User authentication and session management (requires substantial infra)
+- [ ] Real Junie CLI integration for code execution (requires CLI installation)
+- [ ] Clean-clone installation verification (requires fresh environment)
+- [ ] Ubuntu VM + remote access end-to-end test (requires VM)
+- [ ] Reboot persistence verification (requires reboot)
+
+## Phase 11 — Agent Harness ✓
+
+- [x] Spec Mode: Read-only research phase before implementation, persistent spec store, approval gate
+- [x] Custom Droids: Specialized subagents with own prompts/models/tools, built-in droids (worker, explorer, reviewer, validator)
+- [x] Skills System: Reusable SKILL.md workflows, trigger-based auto-discovery, manual invocation
+- [x] Hooks System: Event-driven lifecycle hooks (PreToolUse, PostToolUse, MissionStart, etc.), script and webhook support
+- [x] Environments: Reusable sandbox definitions with health checks
+- [x] 30+ API endpoints for all five components
+- [x] 30 unit tests covering all components
+
 ## Planned Service Decisions
 
 | Service | Decision | Rationale |
