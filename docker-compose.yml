@@ -64,7 +64,6 @@ services:
     read_only: true
     tmpfs:
       - /tmp
-      - /data
 
 # ═══════════════════════════════════════════════════════════════════
 # Core Services (Required)
@@ -80,11 +79,11 @@ services:
       - "${EVERSHADE_BIND_ADDRESS:-127.0.0.1}:8080:8080"
     environment:
       # API Key (new naming + legacy alias)
-      - EVERSHADE_GREENIE_API_KEY=${EVERSHADE_GREENIE_API_KEY:${HUB_API_KEY:-Greenie-dev-key-change-me}}
-      - HUB_API_KEY=${EVERSHADE_GREENIE_API_KEY:${HUB_API_KEY:-Greenie-dev-key-change-me}}
+      - EVERSHADE_GREENIE_API_KEY=${EVERSHADE_GREENIE_API_KEY:-Greenie-dev-key-change-me}
+      - HUB_API_KEY=${EVERSHADE_GREENIE_API_KEY:-Greenie-dev-key-change-me}
       - HUB_PORT=8080
       - HUB_TIMEOUT=1800
-      - JUNIE_BIN=${EVERSHADE_JUNIE_BIN:${JUNIE_BIN:-junie}}
+      - JUNIE_BIN=${EVERSHADE_JUNIE_BIN:-junie}
       # Service URLs (internal network)
       - SLINKER_URL=http://Slinker:8000
       - TRAPPER_URL=http://Trapper-api:3000
@@ -94,20 +93,20 @@ services:
       - POLTERGEIST_URL=http://Poltergeist:8088
       - SHREWD_URL=http://Shrewd:8089
       # Service API Keys (new naming + legacy aliases)
-      - EVERSHADE_SLINKER_API_KEY=${EVERSHADE_SLINKER_API_KEY:${Slinker_API_KEY:-Slinker-dev-key-change-me}}
-      - SLINKER_API_KEY=${EVERSHADE_SLINKER_API_KEY:${Slinker_API_KEY:-Slinker-dev-key-change-me}}
-      - EVERSHADE_TRAPPER_API_KEY=${EVERSHADE_TRAPPER_API_KEY:${Trapper_API_KEY:-Trapper-dev-key-change-me}}
-      - TRAPPER_API_KEY=${EVERSHADE_TRAPPER_API_KEY:${Trapper_API_KEY:-Trapper-dev-key-change-me}}
-      - EVERSHADE_GOBBER_API_KEY=${EVERSHADE_GOBBER_API_KEY:${GOBBER_API_KEY:-Gobber-dev-key-change-me}}
-      - GOBBER_API_KEY=${EVERSHADE_GOBBER_API_KEY:${GOBBER_API_KEY:-Gobber-dev-key-change-me}}
-      - EVERSHADE_SNEAKER_API_KEY=${EVERSHADE_SNEAKER_API_KEY:${SNEAKER_API_KEY:-Sneaker-dev-key-change-me}}
-      - SNEAKER_API_KEY=${EVERSHADE_SNEAKER_API_KEY:${SNEAKER_API_KEY:-Sneaker-dev-key-change-me}}
-      - EVERSHADE_HIDER_API_KEY=${EVERSHADE_HIDER_API_KEY:${HIDER_API_KEY:-Hider-dev-key-change-me}}
-      - HIDER_API_KEY=${EVERSHADE_HIDER_API_KEY:${HIDER_API_KEY:-Hider-dev-key-change-me}}
-      - EVERSHADE_POLTERGEIST_API_KEY=${EVERSHADE_POLTERGEIST_API_KEY:${POLTERGEIST_API_KEY:-Poltergeist-dev-key-change-me}}
-      - POLTERGEIST_API_KEY=${EVERSHADE_POLTERGEIST_API_KEY:${POLTERGEIST_API_KEY:-Poltergeist-dev-key-change-me}}
-      - EVERSHADE_SHREWD_API_KEY=${EVERSHADE_SHREWD_API_KEY:${SHREWD_API_KEY:-Shrewd-dev-key-change-me}}
-      - SHREWD_API_KEY=${EVERSHADE_SHREWD_API_KEY:${SHREWD_API_KEY:-Shrewd-dev-key-change-me}}
+      - EVERSHADE_SLINKER_API_KEY=${EVERSHADE_SLINKER_API_KEY:-Slinker-dev-key-change-me}
+      - SLINKER_API_KEY=${EVERSHADE_SLINKER_API_KEY:-Slinker-dev-key-change-me}
+      - EVERSHADE_TRAPPER_API_KEY=${EVERSHADE_TRAPPER_API_KEY:-Trapper-dev-key-change-me}
+      - TRAPPER_API_KEY=${EVERSHADE_TRAPPER_API_KEY:-Trapper-dev-key-change-me}
+      - EVERSHADE_GOBBER_API_KEY=${EVERSHADE_GOBBER_API_KEY:-Gobber-dev-key-change-me}
+      - GOBBER_API_KEY=${EVERSHADE_GOBBER_API_KEY:-Gobber-dev-key-change-me}
+      - EVERSHADE_SNEAKER_API_KEY=${EVERSHADE_SNEAKER_API_KEY:-Sneaker-dev-key-change-me}
+      - SNEAKER_API_KEY=${EVERSHADE_SNEAKER_API_KEY:-Sneaker-dev-key-change-me}
+      - EVERSHADE_HIDER_API_KEY=${EVERSHADE_HIDER_API_KEY:-Hider-dev-key-change-me}
+      - HIDER_API_KEY=${EVERSHADE_HIDER_API_KEY:-Hider-dev-key-change-me}
+      - EVERSHADE_POLTERGEIST_API_KEY=${EVERSHADE_POLTERGEIST_API_KEY:-Poltergeist-dev-key-change-me}
+      - POLTERGEIST_API_KEY=${EVERSHADE_POLTERGEIST_API_KEY:-Poltergeist-dev-key-change-me}
+      - EVERSHADE_SHREWD_API_KEY=${EVERSHADE_SHREWD_API_KEY:-Shrewd-dev-key-change-me}
+      - SHREWD_API_KEY=${EVERSHADE_SHREWD_API_KEY:-Shrewd-dev-key-change-me}
       # Ollama
       - OLLAMA_URL=${EVERSHADE_OLLAMA_URL:-http://host.docker.internal:11434}
       # Redis
@@ -172,10 +171,10 @@ services:
         protocol: tcp
         mode: host
     environment:
-      - API_KEY=${EVERSHADE_SLINKER_API_KEY:${Slinker_API_KEY:-Slinker-dev-key-change-me}}
+      - API_KEY=${EVERSHADE_SLINKER_API_KEY:-Slinker-dev-key-change-me}
       - PORT=8000
       - JUNIE_TIMEOUT=1800
-      - JUNIE_BIN=${EVERSHADE_JUNIE_BIN:${JUNIE_BIN:-junie}}
+      - JUNIE_BIN=${EVERSHADE_JUNIE_BIN:-junie}
       - WORKSPACE_PATH=/workspace
       - MAX_CONCURRENT_WORKERS=${EVERSHADE_MAX_CONCURRENT_WORKERS:-1}
       - ISOLATION_MODE=${EVERSHADE_ISOLATION_MODE:-worktree}
@@ -220,7 +219,7 @@ services:
     environment:
       - PORT=3000
       - HOST=0.0.0.0
-      - API_KEY=${EVERSHADE_TRAPPER_API_KEY:${Trapper_API_KEY:-Trapper-dev-key-change-me}}
+      - API_KEY=${EVERSHADE_TRAPPER_API_KEY:-Trapper-dev-key-change-me}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - RATE_LIMIT_MAX=60
@@ -269,7 +268,7 @@ services:
     environment:
       - PORT=3000
       - HOST=0.0.0.0
-      - API_KEY=${EVERSHADE_TRAPPER_API_KEY:${Trapper_API_KEY:-Trapper-dev-key-change-me}}
+      - API_KEY=${EVERSHADE_TRAPPER_API_KEY:-Trapper-dev-key-change-me}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - SCRAPE_TIMEOUT=${EVERSHADE_SCRAPE_TIMEOUT:-30000}
@@ -307,12 +306,12 @@ services:
     networks:
       - internal
     environment:
-      - API_KEY=${EVERSHADE_GOBBER_API_KEY:${GOBBER_API_KEY:-Gobber-dev-key-change-me}}
+      - API_KEY=${EVERSHADE_GOBBER_API_KEY:-Gobber-dev-key-change-me}
       - DB_PATH=/app/data/gobber.db
       - REDIS_URL=redis://redis:6379/1
       - OBSIDIAN_VAULT_PATH=${EVERSHADE_OBSIDIAN_VAULT_PATH:-/app/vault}
       - SHREWD_URL=http://Shrewd:8089
-      - SHREWD_API_KEY=${EVERSHADE_SHREWD_API_KEY:${SHREWD_API_KEY:-Shrewd-dev-key-change-me}}
+      - SHREWD_API_KEY=${EVERSHADE_SHREWD_API_KEY:-Shrewd-dev-key-change-me}
       - LOG_LEVEL=${EVERSHADE_LOG_LEVEL:-INFO}
     volumes:
       - gobber_data:/app/data
@@ -351,7 +350,7 @@ services:
     networks:
       - internal
     environment:
-      - API_KEY=${EVERSHADE_SNEAKER_API_KEY:${SNEAKER_API_KEY:-Sneaker-dev-key-change-me}}
+      - API_KEY=${EVERSHADE_SNEAKER_API_KEY:-Sneaker-dev-key-change-me}
       - DB_PATH=/app/data/sneaker.db
       - LOG_LEVEL=${EVERSHADE_LOG_LEVEL:-INFO}
     volumes:
@@ -385,7 +384,7 @@ services:
     networks:
       - internal
     environment:
-      - API_KEY=${EVERSHADE_HIDER_API_KEY:${HIDER_API_KEY:-Hider-dev-key-change-me}}
+      - API_KEY=${EVERSHADE_HIDER_API_KEY:-Hider-dev-key-change-me}
       - ENCRYPTION_KEY=${EVERSHADE_ENCRYPTION_KEY:-change-me-in-production}
       - DB_PATH=/app/data/hider.db
       - LOG_LEVEL=${EVERSHADE_LOG_LEVEL:-INFO}
@@ -420,7 +419,7 @@ services:
     networks:
       - internal
     environment:
-      - API_KEY=${EVERSHADE_POLTERGEIST_API_KEY:${POLTERGEIST_API_KEY:-Poltergeist-dev-key-change-me}}
+      - API_KEY=${EVERSHADE_POLTERGEIST_API_KEY:-Poltergeist-dev-key-change-me}
       - DB_PATH=/app/data/poltergeist.db
       - LOG_LEVEL=${EVERSHADE_LOG_LEVEL:-INFO}
     volumes:
@@ -454,7 +453,7 @@ services:
     networks:
       - internal
     environment:
-      - API_KEY=${EVERSHADE_SHREWD_API_KEY:${SHREWD_API_KEY:-Shrewd-dev-key-change-me}}
+      - API_KEY=${EVERSHADE_SHREWD_API_KEY:-Shrewd-dev-key-change-me}
       - OPENAI_API_KEY=${EVERSHADE_OPENAI_API_KEY:-}
       - ANTHROPIC_API_KEY=${EVERSHADE_ANTHROPIC_API_KEY:-}
       - GOOGLE_API_KEY=${EVERSHADE_GOOGLE_API_KEY:-}
