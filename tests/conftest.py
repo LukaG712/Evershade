@@ -24,6 +24,8 @@ def pytest_collection_modifyitems(config, items):
         "test_benchmarks",
         "test_evaluation",
         "test_mission_cross_service",
+        "test_slammer_dashboard",
+        "test_speedy_cli",
     }
     # Tests within integration modules that DON'T need live services
     non_integration_tests = {
@@ -74,6 +76,7 @@ SERVICES = {
     "hider": os.getenv("EVERSHADE_HIDER_URL", "http://localhost:8004"),
     "poltergeist": os.getenv("EVERSHADE_POLTERGEIST_URL", "http://localhost:8005"),
     "shrewd": os.getenv("EVERSHADE_SHREWD_URL", "http://localhost:8006"),
+    "slammer": os.getenv("EVERSHADE_SLAMMER_URL", "http://localhost:5173"),
 }
 
 # API keys from environment or defaults

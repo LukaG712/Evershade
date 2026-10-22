@@ -1,9 +1,9 @@
 # Evershade Final Implementation Report
 
 **Date:** 2026-10-22
-**Version:** v1.9.0
+**Version:** v1.10.0
 **Author:** Junie (autonomous agent)
-**Scope:** 14-phase implementation of the complete Evershade ecosystem
+**Scope:** 16-phase implementation of the complete Evershade ecosystem
 
 ---
 
@@ -150,6 +150,15 @@ The Evershade ecosystem consists of 10 specialized services:
 - **Version manifest**: Added `commit` field with 7-char SHA for all 10 services; updated versions to v1.9.0; `validate_manifest.py` now validates commit SHA format
 - **All repos committed and pushed**: Greenie (98f518b), Slinker (d13f6a3), Trapper (a3e9e28), Gobber (10da7fd), Shrewd (fb0113e), Hider (1a54430), Poltergeist (8659ce7), Sneaker (77a33da), Slammer (881c6f1), Speedy (d484d35)
 - **Completion rate**: Improved from 68% to 79% (77/98 requirements complete)
+
+### Phase 16 — Integration Tests, Docker Images & Manifest Validation
+- **Slammer dashboard integration tests**: `tests/integration/test_slammer_dashboard.py` (177 lines, 14 tests) — health polling, agents page, runs page, workflows page, metrics page, logs page, and dashboard access tests
+- **Speedy CLI integration tests**: `tests/integration/test_speedy_cli.py` (220 lines, 16 tests) — help, status, doctor, config validate, backup, agents, logs, install, start/stop commands, and cross-platform verification
+- **Docker image references**: Added `docker_images` section to `version-manifest.json` with Redis, Ollama, and Caddy image tags; added Ollama and Caddy to `infrastructure` section
+- **Manifest validation**: Updated `scripts/validate_manifest.py` to validate Docker image format, infrastructure services, and cross-check between infrastructure and docker_images sections
+- **Test configuration**: Updated `tests/conftest.py` — added Slammer service URL and new test modules to integration marker
+- **Version manifest**: Bumped to v1.10.0 with complete Docker image references
+- **Completion rate**: Improved from 79% to 80% (78/97 requirements complete)
 
 ---
 
@@ -401,4 +410,8 @@ Not applicable — all changes made in the root repository working tree. No exte
 | Readiness endpoint (/ready) | ✓ (Greenie, checks DB + dependencies) |
 | Gobber batch embeddings | ✓ (generate_embeddings_batch with fallback) |
 | Gobber user/project scoping | ✓ (search filters by user_id, project_id, session_id) |
-| Completion rate | 79% (77/98 requirements complete) |
+| Slammer dashboard integration tests | ✓ (14 tests: health, agents, runs, workflows, metrics, logs, access) |
+| Speedy CLI integration tests | ✓ (16 tests: help, status, doctor, config, backup, agents, logs, install, start/stop) |
+| Docker image references | ✓ (Redis, Ollama, Caddy in version-manifest.json) |
+| Manifest image validation | ✓ (validate_manifest.py checks format and cross-references) |
+| Completion rate | 80% (78/97 requirements complete) |

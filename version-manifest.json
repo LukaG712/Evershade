@@ -1,5 +1,5 @@
 {
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "Evershade ecosystem version manifest — defines compatible service versions",
   "updated": "2026-10-22",
   "migration_version": 1,
@@ -130,7 +130,21 @@
     "redis": {
       "image": "redis:8-alpine",
       "required": true
+    },
+    "ollama": {
+      "image": "ollama/ollama:latest",
+      "required": false
+    },
+    "caddy": {
+      "image": "caddy:2-alpine",
+      "required": false
     }
+  },
+  "docker_images": {
+    "description": "Pre-built Docker images for infrastructure services. App services are built from source.",
+    "redis": "redis:8-alpine",
+    "ollama": "ollama/ollama:latest",
+    "caddy": "caddy:2-alpine"
   },
   "minimum_compose_version": "2.20",
   "profiles": {

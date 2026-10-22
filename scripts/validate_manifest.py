@@ -10,6 +10,8 @@ Checks:
 - Repository URL format
 - Profile consistency (all referenced services exist)
 - Dependency references (all dependencies are defined services)
+- Docker image references format
+- Infrastructure services consistency
 """
 
 import json
@@ -108,6 +110,41 @@ def validate_manifest(manifest: dict) -> list[str]:
         for svc in profile_services:
             if svc not in service_names and svc not in ("redis", "ollama", "caddy"):
                 errors.append(f"Profile '{profile_name}': references undefined service '{svc}'")
+
+    # Validate Docker image references
+    docker_images = manifest.get("docker_images", {})
+    if docker_images:
+        image_values = {k: v for k, v in docker_images.items() if k != "description"}
+        for name, image in image_values.items():
+            if not isinstance(image, str) or ":" not in image:
+                errors.append(f"Docker image '{name}': invalid format '{image}' (expected name:tag)")
+            if image.startswith("http"):
+                errors.append(f"Docker image '{name}': should be an image reference, not a URL")
+
+    # Validate infrastructure services
+    infrastructure = manifest.get("infrastructure", {})
+    for name, infra in infrastructure.items():
+        if not isinstance(infra, dict):
+            errors.append(f"Infrastructure '{name}': should be a dict with image and required fields")
+            continue
+        image = infra.get("image", "")
+        if image and ":" not in image:
+            errors.append(f"Infrastructure '{name}': image '{image}' missing tag")
+        if "required" not in infra:
+            warnings.append(f"Infrastructure '{name}': missing 'required' field")
+
+    # Cross-check: infrastructure images should match docker_images if both exist
+    if docker_images and infrastructure:
+        image_values = {k: v for k, v in docker_images.items() if k != "description"}
+        for name, infra in infrastructure.items():
+            if isinstance(infra, dict) and name in image_values:
+                infra_image = infra.get("image", "")
+                manifest_image = image_values[name]
+                if infra_image and manifest_image and infra_image != manifest_image:
+                    warnings.append(
+                        f"Infrastructure '{name}' image '{infra_image}' differs from "
+                        f"docker_images '{manifest_image}'"
+                    )
 
     return errors, warnings
 

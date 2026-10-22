@@ -1,7 +1,7 @@
 # Evershade — Remaining Gaps & Implementation Checklist
 
 **Date:** 2026-10-22
-**Version:** v1.8.0
+**Version:** v1.10.0
 **Scope:** Comprehensive gap analysis based on code inspection, not documentation claims
 
 ---
@@ -70,8 +70,8 @@ Each gap is assessed by inspecting actual code, not documentation:
 | Greenie → Trapper research | **Implemented but Unverified** | Test file exists |
 | Greenie → Sneaker telemetry | **Implemented but Unverified** | Test file exists |
 | Multi-step workflows with failures | **Implemented but Unverified** | `tests/integration/test_mission_cross_service.py` |
-| Slammer dashboard API calls | **Missing** | No UI integration tests found |
-| Speedy CLI against running installation | **Missing** | No CLI integration tests found |
+| Slammer dashboard API calls | **Complete** | `tests/integration/test_slammer_dashboard.py` (14 tests) |
+| Speedy CLI against running installation | **Complete** | `tests/integration/test_speedy_cli.py` (16 tests) |
 
 ---
 
@@ -184,7 +184,7 @@ File: `tests/integration/test_backup_restore.py` (550 lines, 9 tests)
 | API compatibility version | `api_version: "v1"` field | `version-manifest.json` | **Complete** | None | N/A |
 | Required vs optional dependencies | `required` field per service | `version-manifest.json` | **Complete** | None | N/A |
 | Migration compatibility | migration_version in manifest | `version-manifest.json` | **Complete** | Tracks database and config migrations | Upgrade, verify migrations run |
-| Image references | Not included | N/A | **Missing** | Add Docker image tags | Pull image, verify matches |
+| Image references | `docker_images` section in manifest | `version-manifest.json` | **Complete** | Redis, Ollama, Caddy images with tags | Manifest validates image format |
 | Manifest validation in CI | validate_manifest.py in CI lint job | `.github/workflows/ci.yml:59-61` | **Complete** | Schema, semver, ports, profiles, dependencies | Invalid manifest → CI failure |
 | Detect missing/duplicate services | validate_manifest.py checks | `scripts/validate_manifest.py` | **Complete** | Port uniqueness, profile consistency, dependency refs | Duplicate port → CI failure |
 | Release checksums | `scripts/release_sign.py` exists | Script exists | **Implemented but Unverified** | Run signing, verify checksums | Sign release, verify signature |
@@ -242,7 +242,7 @@ File: `tests/integration/test_backup_restore.py` (550 lines, 9 tests)
 | `docs/SERVICE_CATALOG.md` | **Complete** | Up to date |
 | `docs/FINAL_REPORT.md` | **Complete** | Updated with CSRF, rate limiting, idempotency, secret redaction, capabilities |
 | `ROADMAP.md` | **Complete** | Up to date |
-| `version-manifest.json` | **Partial** | Missing commit SHAs |
+| `version-manifest.json` | **Complete** | Commit SHAs, Docker images, infrastructure services |
 | `.env.example` | **Complete** | Matches docker-compose.yml |
 
 ---
@@ -289,11 +289,11 @@ File: `tests/integration/test_backup_restore.py` (550 lines, 9 tests)
 | Gobber Semantic | 8 | 0 | 0 | 8 |
 | Sneaker OTLP | 5 | 2 | 0 | 7 |
 | Backup & Restore | 10 | 1 | 0 | 11 |
-| Version Management | 6 | 0 | 2 | 8 |
-| Workflows/Dashboard/CLI | 8 | 1 | 1 | 10 |
+| Version Management | 7 | 0 | 1 | 8 |
+| Workflows/Dashboard/CLI | 8 | 1 | 0 | 10 |
 | Service Contracts | 7 | 2 | 0 | 9 |
-| **Total** | **77** | **12** | **9** | **98** |
+| **Total** | **78** | **12** | **7** | **97** |
 
-**Completion rate: 79% complete, 12% partial, 9% missing**
+**Completion rate: 80% complete, 12% partial, 7% missing**
 
-The largest remaining gaps are: clean-clone end-to-end test (requires network access), Docker image references in manifest, and live verification of implemented-but-unverified features (requires running Docker services).
+The largest remaining gaps are: clean-clone end-to-end test (requires network access), and live verification of implemented-but-unverified features (requires running Docker services).
