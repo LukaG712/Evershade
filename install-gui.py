@@ -257,7 +257,10 @@ class Installer:
         cmd = f"cd '{self.install_dir}' && bash install.sh --profile {self.profile}"
         if self.profile == "custom" and self.custom_services:
             cmd += f" --custom {','.join(self.custom_services)}"
-        if self.user and self.user != "root":
+        # Only delegate to the invoking user if they can access the install dir.
+        # If the install dir is under /root/, the non-root user cannot cd there,
+        # so run as root instead.
+        if self.user and self.user != "root" and not self.install_dir.startswith("/root/"):
             cmd = f'sudo -u {self.user} bash -c "{cmd}"'
 
         rc, _out, _err = run_command(cmd)
@@ -393,7 +396,8 @@ StartupNotify=true
 
         os.chmod(start_sh, 0o755)
         cmd = f"cd '{self.install_dir}' && bash start.sh --profile {self.profile}"
-        if self.user and self.user != "root":
+        # Only delegate to the invoking user if they can access the install dir.
+        if self.user and self.user != "root" and not self.install_dir.startswith("/root/"):
             cmd = f'sudo -u {self.user} bash -c "{cmd}"'
 
         rc, _out, err = run_command(cmd)
