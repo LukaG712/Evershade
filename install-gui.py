@@ -294,7 +294,7 @@ class Installer:
             key_map[var] = secrets.token_hex(32)
 
         # Read and replace
-        with open(env_path, "r") as f:
+        with open(env_path) as f:
             lines = f.readlines()
 
         new_lines = []
