@@ -160,18 +160,18 @@ def main():
     if warnings:
         print(f"\nWarnings ({len(warnings)}):")
         for w in warnings:
-            print(f"  ⚠ {w}")
+            print(f"  WARNING: {w}")
 
     if errors:
         print(f"\nErrors ({len(errors)}):")
         for e in errors:
-            print(f"  ✗ {e}")
+            print(f"  ERROR: {e}")
         print("\nManifest validation FAILED.")
         sys.exit(1)
     else:
         services = manifest.get("services", {})
         profiles = manifest.get("profiles", {})
-        print(f"\n✓ Manifest validation passed. ({len(services)} services, {len(profiles)} profiles)")
+        print(f"\nManifest validation passed. ({len(services)} services, {len(profiles)} profiles)")
         if warnings:
             print(f"  ({len(warnings)} warnings)")
 
