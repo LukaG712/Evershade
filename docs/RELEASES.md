@@ -1,4 +1,4 @@
-# Evershade Release Notes
+﻿# Evershade Release Notes
 
 **Version:** 1.8.0
 **Last Updated:** 2026-10-22
@@ -49,9 +49,9 @@
 - Environment variable naming standardized to `EVERSHADE_<SERVICE>_<SETTING>`
 - Legacy names still work but are deprecated
 - Docker Compose profiles introduced (use `--profile` flag)
-- Internal Docker network — only Greenie exposed on host by default
+- Internal Docker network – only Greenie exposed on host by default
 - Container hardening applied (capability dropping, no-new-privileges)
-- All services require `Authorization: Bearer` header — query parameter auth removed
+- All services require `Authorization: Bearer` header – query parameter auth removed
 - Hider requires `ENCRYPTION_KEY` environment variable for AES-256-GCM encryption
 
 ---

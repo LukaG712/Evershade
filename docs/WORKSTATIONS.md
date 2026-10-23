@@ -1,9 +1,9 @@
-# Agent Workstations
+﻿# Agent Workstations
 
 **Service:** Greenie (hub/workstation/)
 **Description:** Isolated, persistent, computer-like environments for AI agents.
 
-A workstation is an isolated Linux environment — its own filesystem, shell, installed tools, and optionally a browser and full desktop — assigned to an agent. The agent does real work there (builds, runs servers, executes tests, uses a browser) without touching the host, the user's files, other agents or the rest of the network.
+A workstation is an isolated Linux environment – its own filesystem, shell, installed tools, and optionally a browser and full desktop – assigned to an agent. The agent does real work there (builds, runs servers, executes tests, uses a browser) without touching the host, the user's files, other agents or the rest of the network.
 
 ---
 

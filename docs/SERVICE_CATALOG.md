@@ -1,4 +1,4 @@
-# Evershade Service Catalog
+﻿# Evershade Service Catalog
 
 **Version:** 1.7.0
 **Last Updated:** 2026-10-22
@@ -22,7 +22,7 @@
 
 ---
 
-## Greenie — Central Hub API
+## Greenie – Central Hub API
 
 **Repository:** [LukaG712/Greenie](https://github.com/LukaG712/Greenie)
 **Port:** 8080
@@ -73,7 +73,7 @@
 
 ---
 
-## Slinker — Code Execution Engine
+## Slinker – Code Execution Engine
 
 **Repository:** [LukaG712/Slinker](https://github.com/LukaG712/Slinker)
 **Port:** 8000
@@ -100,7 +100,7 @@
 
 ---
 
-## Trapper — Web Scraping & Crawling
+## Trapper – Web Scraping & Crawling
 
 **Repository:** [LukaG712/Trapper](https://github.com/LukaG712/Trapper)
 **Port:** 3000
@@ -125,7 +125,7 @@
 
 ---
 
-## Gobber — Persistent Storage & Knowledge Graph
+## Gobber – Persistent Storage & Knowledge Graph
 
 **Repository:** [LukaG712/Gobber](https://github.com/LukaG712/Gobber)
 **Port:** 8085
@@ -155,7 +155,7 @@
 
 ---
 
-## Sneaker — Observability
+## Sneaker – Observability
 
 **Repository:** [LukaG712/Sneaker](https://github.com/LukaG712/Sneaker)
 **Port:** 8086
@@ -183,7 +183,7 @@
 
 ---
 
-## Hider — Secrets & Configuration
+## Hider – Secrets & Configuration
 
 **Repository:** [LukaG712/Hider](https://github.com/LukaG712/Hider)
 **Port:** 8087
@@ -208,7 +208,7 @@
 
 ---
 
-## Poltergeist — Notifications
+## Poltergeist – Notifications
 
 **Repository:** [LukaG712/Poltergeist](https://github.com/LukaG712/Poltergeist)
 **Port:** 8088
@@ -230,7 +230,7 @@
 
 ---
 
-## Shrewd — LLM Abstraction
+## Shrewd – LLM Abstraction
 
 **Repository:** [LukaG712/Shrewd](https://github.com/LukaG712/Shrewd)
 **Port:** 8089
@@ -250,7 +250,7 @@
 
 ---
 
-## Slammer — Unified Web Dashboard
+## Slammer – Unified Web Dashboard
 
 **Repository:** [LukaG712/Slammer](https://github.com/LukaG712/Slammer)
 **Port:** 5173
@@ -279,7 +279,7 @@ Deployed behind Caddy reverse proxy in server mode.
 
 ---
 
-## Speedy — CLI
+## Speedy – CLI
 
 **Repository:** [LukaG712/Speedy](https://github.com/LukaG712/Speedy)
 **Command:** `evershade`

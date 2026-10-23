@@ -1,4 +1,4 @@
-# Evershade Glossary
+﻿# Evershade Glossary
 
 **Version:** 1.0.0
 **Last Updated:** 2026-10-23
@@ -181,7 +181,7 @@ An in-memory data store used for job queues (Trapper crawling), caching, and int
 ## S
 
 ### Server Mode
-Deployment mode (`EVERSHADE_MODE=server`) where services bind to all interfaces (`0.0.0.0`). Requires strong, unique API keys — refuses to start with defaults.
+Deployment mode (`EVERSHADE_MODE=server`) where services bind to all interfaces (`0.0.0.0`). Requires strong, unique API keys – refuses to start with defaults.
 
 ### Shrewd
 The LLM abstraction layer (port 8089). Provides a unified interface for OpenAI, Anthropic, Google AI, and Ollama. Handles model routing, cost tracking, and fallback configuration. Named after a possessor ghost from Luigi's Mansion.
@@ -234,7 +234,7 @@ An isolated container-based environment for agent execution. Each workstation ha
 
 ## Related Documentation
 
-- **[README](../README.md)** — Main documentation with inline glossary
-- **[Architecture](ARCHITECTURE.md)** — Detailed service descriptions
-- **[Service Catalog](SERVICE_CATALOG.md)** — Complete API endpoint reference
-- **[Advanced Guide](ADVANCED.md)** — Expert-level deep dives
+- **[README](../README.md)** – Main documentation with inline glossary
+- **[Architecture](ARCHITECTURE.md)** – Detailed service descriptions
+- **[Service Catalog](SERVICE_CATALOG.md)** – Complete API endpoint reference
+- **[Advanced Guide](ADVANCED.md)** – Expert-level deep dives

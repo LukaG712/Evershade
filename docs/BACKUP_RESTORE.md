@@ -1,4 +1,4 @@
-# Evershade Backup and Restore Guide
+﻿# Evershade Backup and Restore Guide
 
 **Version:** 1.0.0
 **Last Updated:** 2026-10-22
@@ -40,9 +40,9 @@ evershade backup create --output ./my-backup.tar.gz
 
 The backup includes:
 - All SQLite databases (using `sqlite3 .backup` API for consistent snapshots)
-- Configuration files (`.env` is redacted by default — secrets replaced with `<redacted>`)
+- Configuration files (`.env` is redacted by default – secrets replaced with `<redacted>`)
 - Backup manifest (`manifest.json`) with SHA-256 checksums for all files
-- **Free disk space check** before starting — fails gracefully if insufficient space
+- **Free disk space check** before starting – fails gracefully if insufficient space
 
 ---
 

@@ -1,4 +1,4 @@
-# Evershade
+﻿# Evershade
 
 > *"E. Gadd to Luigi! Am I comin' in clear, do you read me?"*
 > ~ **Prof. E. Gadd**, Luigi's Mansion: Dark Moon
@@ -17,41 +17,41 @@
 ## Table of Contents
 
 ### Getting Started
-- [What Is Evershade](#what-is-evershade) — Plain-language overview
-- [Why Evershade](#why-evershade) — Key features and capabilities
-- [Glossary](#glossary) — Key terms explained
-- [Quick Start](#quick-start) — Get up and running in 3 minutes
-- [Your First Agent](#your-first-agent) — Step-by-step tutorial
-- [FAQ](#faq) — Frequently asked questions
+- [What Is Evershade](#what-is-evershade) – Plain-language overview
+- [Why Evershade](#why-evershade) – Key features and capabilities
+- [Glossary](#glossary) – Key terms explained
+- [Quick Start](#quick-start) – Get up and running in 3 minutes
+- [Your First Agent](#your-first-agent) – Step-by-step tutorial
+- [FAQ](#faq) – Frequently asked questions
 
 ### Core Documentation
-- [Architecture](#architecture) — How everything fits together
-- [Services](#services) — The 10 microservices at a glance
-- [Mission Control](#mission-control) — Orchestrated AI missions with milestones
-- [Agent Harness](#agent-harness) — Spec mode, droids, skills, and hooks
-- [Workstations](#workstations) — Isolated agent environments
-- [Web Interfaces](#web-interfaces) — Dashboards and UIs
-- [API Documentation](#api-documentation) — Developer endpoints
+- [Architecture](#architecture) – How everything fits together
+- [Services](#services) – The 10 microservices at a glance
+- [Mission Control](#mission-control) – Orchestrated AI missions with milestones
+- [Agent Harness](#agent-harness) – Spec mode, droids, skills, and hooks
+- [Workstations](#workstations) – Isolated agent environments
+- [Web Interfaces](#web-interfaces) – Dashboards and UIs
+- [API Documentation](#api-documentation) – Developer endpoints
 
 ### Configuration & Deployment
-- [Configuration](#configuration) — Environment variables and settings
-- [Deployment](#deployment) — Production and remote access
-- [Security](#security) — Security model and best practices
+- [Configuration](#configuration) – Environment variables and settings
+- [Deployment](#deployment) – Production and remote access
+- [Security](#security) – Security model and best practices
 
 ### Operations
-- [Testing](#testing) — Test suite and quality gates
-- [Backup & Restore](#backup--restore) — Data protection
-- [Troubleshooting](#troubleshooting) — Common issues and fixes
+- [Testing](#testing) – Test suite and quality gates
+- [Backup & Restore](#backup--restore) – Data protection
+- [Troubleshooting](#troubleshooting) – Common issues and fixes
 
 ### Contributing & More
-- [Contributing](#contributing) — How to help
-- [Roadmap](#roadmap) — Development timeline and future plans
-- [Naming Theme](#naming-theme) — The Luigi's Mansion connection
+- [Contributing](#contributing) – How to help
+- [Roadmap](#roadmap) – Development timeline and future plans
+- [Naming Theme](#naming-theme) – The Luigi's Mansion connection
 - [License](#license)
 
 ### Advanced Topics
-- [Advanced Guide](docs/ADVANCED.md) — Expert deep dives, internals, and power-user patterns
-- [Full Documentation Index](#full-documentation-index) — All docs at a glance
+- [Advanced Guide](docs/ADVANCED.md) – Expert deep dives, internals, and power-user patterns
+- [Full Documentation Index](#full-documentation-index) – All docs at a glance
 
 ---
 
@@ -61,11 +61,11 @@ If you're new here, start here. Evershade is a **self-hosted AI agent platform**
 
 ### In Plain English
 
-- **You own everything.** Your data, your agents, your conversations — nothing leaves your machine unless you explicitly connect an external AI provider.
+- **You own everything.** Your data, your agents, your conversations – nothing leaves your machine unless you explicitly connect an external AI provider.
 - **It runs in Docker.** No complex setup. If you can run Docker, you can run Evershade.
 - **Agents do real work.** Agents can write code, scrape websites, search knowledge bases, send notifications, and chain tasks together in automated pipelines.
 - **Mission Control orchestrates complex projects.** Break large tasks into milestones, let AI plan and execute, then validate the results automatically.
-- **It's modular.** Use just the core services or add observability, notifications, local LLMs, and more — you choose what you need.
+- **It's modular.** Use just the core services or add observability, notifications, local LLMs, and more – you choose what you need.
 
 ### Who Is This For?
 
@@ -101,16 +101,16 @@ You interact with Evershade through a web dashboard or CLI. Greenie, the central
 | Feature | Description |
 |---------|-------------|
 | **Modular Microservices** | 10 independent services, each with a single responsibility. Mix and match via Docker Compose profiles. |
-| **AI Agent Orchestration** | Create, manage, and run AI agents with pipelines, workflows, and workstations — all from one dashboard. |
+| **AI Agent Orchestration** | Create, manage, and run AI agents with pipelines, workflows, and workstations – all from one dashboard. |
 | **Mission Control** | Factory-inspired mission system with milestones, automated planning, code review, and fix-revalidate cycles. |
 | **Agent Harness** | Spec mode for research-first development, custom droids (specialized subagents), reusable skills, and event-driven hooks. |
 | **Multi-Provider LLM** | Route requests to OpenAI, Anthropic, Google, or Ollama with cost tracking and privacy classification. |
 | **Web Scraping & Crawling** | Playwright-powered scraping, deep crawling, and site mapping with Redis-backed job queues. |
 | **Encrypted Secrets** | AES-256-GCM encryption for secrets at rest with versioned configuration management. |
 | **Full Observability** | Metrics, distributed traces, log aggregation, and alerting with deduplication and cooldown. |
-| **OTLP Integration** | OpenTelemetry Protocol support for traces, metrics, and logs — integrate with any OTLP collector. |
+| **OTLP Integration** | OpenTelemetry Protocol support for traces, metrics, and logs – integrate with any OTLP collector. |
 | **CSRF Protection** | Double-submit cookie pattern with HMAC-signed tokens for web UI security. |
-| **Semantic Search** | Vector embeddings and semantic search via Gobber — scan Obsidian vaults and search knowledge bases. |
+| **Semantic Search** | Vector embeddings and semantic search via Gobber – scan Obsidian vaults and search knowledge bases. |
 | **Isolated Workstations** | Container-based isolated agent environments with network policies and live terminal access. |
 
 ---
@@ -127,7 +127,7 @@ You interact with Evershade through a web dashboard or CLI. Greenie, the central
 ```bash
 git clone https://github.com/LukaG712/Evershade.git && cd Evershade
 
-# Install service repositories (required — services are in separate repos)
+# Install service repositories (required – services are in separate repos)
 ./install.sh --profile minimal    # Linux/macOS
 # .\install.ps1 -Profile minimal  # Windows PowerShell
 
@@ -191,7 +191,7 @@ New to Evershade? Here are the key terms you'll encounter:
 | **Milestone** | A phase within a mission. Each milestone contains one or more features that can be executed in parallel. |
 | **Mission Control** | The factory-inspired orchestration system for complex AI-driven development workflows. |
 | **Observability** | The ability to monitor system health via metrics, traces, and logs. Handled by the Sneaker service. |
-| **OTLP** | OpenTelemetry Protocol — a standard for sending traces, metrics, and logs to external monitoring systems. |
+| **OTLP** | OpenTelemetry Protocol – a standard for sending traces, metrics, and logs to external monitoring systems. |
 | **Pipeline** | A chain of cross-service steps executed in sequence. For example: scrape a page → summarize with AI → save to storage. |
 | **Poltergeist** | The notification service. Sends alerts to Slack, Discord, email, and Telegram. |
 | **Slinker** | The code execution engine. Runs AI agents against codebases in isolated Git worktrees. |
@@ -221,7 +221,7 @@ A: No. You can run Evershade with local models via Ollama, or without any LLM at
 A: Yes. The minimal profile needs ~4 GB RAM and 2 CPU cores. See [Resource Requirements](docs/RESOURCES.md) for details.
 
 **Q: What's the difference between Evershade and ChatGPT / Claude?**
-A: ChatGPT and Claude are cloud-based chat interfaces. Evershade is a self-hosted platform where AI agents do real work — write code, scrape websites, run tests, send notifications — all on your infrastructure with full data privacy.
+A: ChatGPT and Claude are cloud-based chat interfaces. Evershade is a self-hosted platform where AI agents do real work – write code, scrape websites, run tests, send notifications – all on your infrastructure with full data privacy.
 
 **Q: Is my data private?**
 A: All data stays on your machine. When you connect external LLM providers, prompts and responses go through their APIs (subject to their privacy policies). Using Ollama for local models keeps everything on-premise.
@@ -286,7 +286,7 @@ git clone https://github.com/LukaG712/Evershade.git && cd Evershade
 # .\install.ps1 -Profile minimal  # Windows PowerShell
 
 cp .env.example .env
-# Edit .env — at minimum, set unique API keys
+# Edit .env – at minimum, set unique API keys
 
 # Start services
 ./start.sh --profile minimal      # Linux/macOS
@@ -297,9 +297,9 @@ cp .env.example .env
 
 Open **http://localhost:8080** in your browser. You'll see the Greenie dashboard with:
 
-- **Chat** — Talk to AI agents
-- **Dashboard** — Manage agents, runs, pipelines
-- **API Docs** — Swagger UI at `/docs`
+- **Chat** – Talk to AI agents
+- **Dashboard** – Manage agents, runs, pipelines
+- **API Docs** – Swagger UI at `/docs`
 
 ### Step 3: Create Your First Agent
 
@@ -336,11 +336,11 @@ curl -X POST http://localhost:8080/api/pipeline \
 
 ### Step 6: Explore More
 
-- **Workflows** — Automate recurring tasks with schedules and triggers
-- **Slammer Dashboard** — Standalone dashboard at `http://localhost:5173`
-- **Speedy CLI** — Manage everything from the terminal: `evershade agents list`
-- **Notifications** — Configure Slack/Discord alerts via Poltergeist
-- **LLM Providers** — Connect OpenAI, Anthropic, or Ollama via Shrewd
+- **Workflows** – Automate recurring tasks with schedules and triggers
+- **Slammer Dashboard** – Standalone dashboard at `http://localhost:5173`
+- **Speedy CLI** – Manage everything from the terminal: `evershade agents list`
+- **Notifications** – Configure Slack/Discord alerts via Poltergeist
+- **LLM Providers** – Connect OpenAI, Anthropic, or Ollama via Shrewd
 
 ---
 
@@ -351,15 +351,15 @@ Evershade
 ├── 🌐 Browser (:8080/:5173)
 ├── ⚡ Speedy CLI
 └── 🔒 Caddy Proxy (TLS)
-    ├── 🟢 Greenie (:8080) — API backend & orchestrator
-    │   ├── 🔧 Slinker (:8000) — Code execution
-    │   ├── 🕸️ Trapper (:3000) — Web scraping
-    │   ├── 🧠 Shrewd (:8089) — LLM routing
-    │   ├── 💾 Gobber (:8085) — Storage & knowledge graph
-    │   ├── 🔐 Hider (:8087) — Encrypted secrets
-    │   ├── 📢 Poltergeist (:8088) — Notifications
-    │   └── 👁️ Sneaker (:8086) — Observability & OTLP
-    └── 🔵 Slammer (:5173) — React dashboard
+    ├── 🟢 Greenie (:8080) – API backend & orchestrator
+    │   ├── 🔧 Slinker (:8000) – Code execution
+    │   ├── 🕸️ Trapper (:3000) – Web scraping
+    │   ├── 🧠 Shrewd (:8089) – LLM routing
+    │   ├── 💾 Gobber (:8085) – Storage & knowledge graph
+    │   ├── 🔐 Hider (:8087) – Encrypted secrets
+    │   ├── 📢 Poltergeist (:8088) – Notifications
+    │   └── 👁️ Sneaker (:8086) – Observability & OTLP
+    └── 🔵 Slammer (:5173) – React dashboard
         └── Data Layer: SQLite · Redis · Obsidian Vault · Git
 ```
 
@@ -460,13 +460,13 @@ All service names are inspired by [Luigi's Mansion ghosts](https://luigi-mansion
 | **Poltergeist** | `1.2.0` | `8088` | Notifications (Slack, Discord, email, Telegram) | API only |
 | **Shrewd** | `1.2.0` | `8089` | LLM provider abstraction | API only |
 | **Slammer** | `1.4.0` | `5173` | Standalone web dashboard | React web app |
-| **Speedy** | `1.2.0` | — | CLI tool (`evershade` command) | Terminal |
+| **Speedy** | `1.2.0` | – | CLI tool (`evershade` command) | Terminal |
 
 > **🌐 Website:** Visit the [Evershade website](website/index.html) for interactive documentation, service details, and getting started guides.
 
 ### Service Details
 
-#### Greenie — Central Hub & API Backend
+#### Greenie – Central Hub & API Backend
 
 The brain of the operation. Greenie is a full-featured API server that manages AI agents, chat sessions, pipelines, analytics, missions, workflows, and workstations. It serves as the central orchestrator for all Evershade services.
 
@@ -479,19 +479,19 @@ The brain of the operation. Greenie is a full-featured API server that manages A
 
 ---
 
-#### Slinker — Execution Engine
+#### Slinker – Execution Engine
 
 The worker behind the scenes. Slinker takes tasks from Greenie and executes them in isolated Git worktrees using the Junie CLI. It handles code generation, file modifications, refactoring, and any task that requires running AI agents against a codebase.
 
 - **Git worktrees** per task for isolation
 - **Junie CLI** integration for code agents
-- Pure API service — manage tasks through Greenie's dashboard
+- Pure API service – manage tasks through Greenie's dashboard
 
 **Repo:** [LukaG712/Slinker](https://github.com/LukaG712/Slinker)
 
 ---
 
-#### Trapper — Web Scraping & Crawling
+#### Trapper – Web Scraping & Crawling
 
 The eyes on the web. Trapper uses Playwright to scrape, crawl, search, and map websites, turning raw HTML into clean, structured, LLM-ready data.
 
@@ -503,24 +503,24 @@ The eyes on the web. Trapper uses Playwright to scrape, crawl, search, and map w
 
 ---
 
-#### Gobber — Persistent Storage & Knowledge Graph
+#### Gobber – Persistent Storage & Knowledge Graph
 
-The memory and brain of the ecosystem. Gobber provides persistent storage for webhooks, analytics, RBAC, cache, and feature flags — solving the in-memory data loss problem when services restart.
+The memory and brain of the ecosystem. Gobber provides persistent storage for webhooks, analytics, RBAC, cache, and feature flags – solving the in-memory data loss problem when services restart.
 
 - **SQLite with WAL mode** for durability
-- **Obsidian vault integration** — scan notes, generate embeddings, enable semantic search
+- **Obsidian vault integration** – scan notes, generate embeddings, enable semantic search
 - Centralized data layer and semantic memory
 
 **Repo:** [LukaG712/Gobber](https://github.com/LukaG712/Gobber)
 
 ---
 
-#### Sneaker — Observability
+#### Sneaker – Observability
 
 The eyes on your system. Sneaker collects metrics, traces, and logs from all services, providing unified observability with alerting and OTLP integration.
 
 - **Metrics**, distributed traces, and log aggregation
-- **OTLP export** — integrate with any OpenTelemetry collector
+- **OTLP export** – integrate with any OpenTelemetry collector
 - **Alerting** with deduplication, cooldown, and Poltergeist delivery
 - System health monitoring across all services
 
@@ -528,7 +528,7 @@ The eyes on your system. Sneaker collects metrics, traces, and logs from all ser
 
 ---
 
-#### Hider — Secrets & Config
+#### Hider – Secrets & Config
 
 The vault for sensitive data. Hider provides encrypted storage for API keys, passwords, and centralized configuration management.
 
@@ -539,7 +539,7 @@ The vault for sensitive data. Hider provides encrypted storage for API keys, pas
 
 ---
 
-#### Poltergeist — Notifications
+#### Poltergeist – Notifications
 
 The messenger of the ecosystem. Poltergeist sends notifications to Slack, Discord, email, and Telegram with templated messages and async delivery.
 
@@ -550,9 +550,9 @@ The messenger of the ecosystem. Poltergeist sends notifications to Slack, Discor
 
 ---
 
-#### Shrewd — LLM Abstraction
+#### Shrewd – LLM Abstraction
 
-The brain behind the models. Shrewd provides a unified interface for OpenAI, Anthropic, Google, and Ollama — letting you swap models and manage costs.
+The brain behind the models. Shrewd provides a unified interface for OpenAI, Anthropic, Google, and Ollama – letting you swap models and manage costs.
 
 - **Providers:** OpenAI, Anthropic, Google, Ollama
 - LLM provider abstraction layer
@@ -561,7 +561,7 @@ The brain behind the models. Shrewd provides a unified interface for OpenAI, Ant
 
 ---
 
-#### Slammer — Web Dashboard
+#### Slammer – Web Dashboard
 
 The command center. Slammer is the single unified React-based web dashboard for managing agents, runs, pipelines, missions, workflows, workstations, metrics, logs, and plugin/MCP management across all Evershade services.
 
@@ -573,9 +573,9 @@ The command center. Slammer is the single unified React-based web dashboard for 
 
 ---
 
-#### Speedy — CLI Tool
+#### Speedy – CLI Tool
 
-The terminal companion. Speedy provides an `evershade` command for managing everything from the command line — services, agents, tasks, diagnostics, and backups.
+The terminal companion. Speedy provides an `evershade` command for managing everything from the command line – services, agents, tasks, diagnostics, and backups.
 
 - **Install:** `pip install speedy-cli`
 - **Commands:** `install`, `start`, `stop`, `logs`, `doctor`, `backup`, `restore`
@@ -712,7 +712,7 @@ Workstations provide isolated container-based environments for agent execution w
 
 | Interface | URL | Description |
 |-----------|-----|-------------|
-| **Slammer Dashboard** | `http://localhost:5173` | Single unified dashboard — agents, runs, missions, workflows, workstations, metrics, logs |
+| **Slammer Dashboard** | `http://localhost:5173` | Single unified dashboard – agents, runs, missions, workflows, workstations, metrics, logs |
 | **Greenie API Docs** | `http://localhost:8080/docs` | Swagger UI for all Greenie endpoints |
 | **Greenie ReDoc** | `http://localhost:8080/redoc` | Alternative API documentation |
 | **Slinker API Docs** | `http://localhost:8000/docs` | Swagger UI for Slinker endpoints |
@@ -799,7 +799,7 @@ EVERSHADE_PUBLIC_URL=http://YOUR_SERVER_IP:8080
 - **AES-256-GCM encryption** for secrets at rest (Hider)
 - **SSRF protection** blocks private IPs and cloud metadata (Trapper)
 - **Read-only containers** with capability dropping
-- **Internal Docker network** — only Greenie exposed on host
+- **Internal Docker network** – only Greenie exposed on host
 
 ### Security Notes
 
@@ -895,7 +895,7 @@ For detailed backup strategies, see [docs/BACKUP_RESTORE.md](docs/BACKUP_RESTORE
 | **Port already in use** | Change the port in `.env` or stop the conflicting service |
 | **API key authentication failed** | Ensure all `EVERSHADE_*_API_KEY` values match between services |
 | **Greenie can't reach Slinker/Trapper** | Verify Docker network: `docker network ls \| grep evershade` |
-| **Ollama not responding** | Check `EVERSHADE_OLLAMA_URL` — use `http://host.docker.internal:11434` on Docker |
+| **Ollama not responding** | Check `EVERSHADE_OLLAMA_URL` – use `http://host.docker.internal:11434` on Docker |
 | **Redis connection refused** | Ensure Redis container is running: `docker compose ps redis` |
 | **CSRF token missing** | Ensure cookies are enabled; check `CSRF_SECRET_KEY` is set |
 | **Encryption key error** | Set `EVERSHADE_ENCRYPTION_KEY` to a 32-byte hex string |
@@ -953,7 +953,7 @@ For detailed development instructions, see [docs/DEVELOPMENT.md](docs/DEVELOPMEN
 ## Repository Structure
 
 ```
-Evershade/ (this repo — orchestration)
+Evershade/ (this repo – orchestration)
 ├── .github/workflows/ci.yml   ← Root CI pipeline
 ├── docker-compose.yml         ← Service orchestration
 ├── start.sh / stop.sh         ← Startup scripts
@@ -1092,7 +1092,7 @@ For deeper dives, the `docs/` directory contains detailed guides:
 | [Architecture](docs/ARCHITECTURE.md) | Full system architecture, service boundaries, and data flow |
 | [Service Catalog](docs/SERVICE_CATALOG.md) | Every API endpoint for every service |
 | [Configuration](docs/CONFIGURATION.md) | Complete environment variable reference |
-| [Workstations](docs/WORKSTATIONS.md) | Isolated agent environments — templates, drivers, and security |
+| [Workstations](docs/WORKSTATIONS.md) | Isolated agent environments – templates, drivers, and security |
 
 ### Operations
 

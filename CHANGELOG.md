@@ -1,10 +1,10 @@
-# Changelog
+﻿# Changelog
 
 All notable changes to the Evershade ecosystem will be documented in this file.
 
 ## [1.12.0] - 2026-10-22
 
-### Added — Agent Harness (Phase 11)
+### Added – Agent Harness (Phase 11)
 
 Factory-inspired agent harness capabilities for reusable workflows, specialized subagents, and event-driven automation.
 
@@ -21,11 +21,11 @@ Factory-inspired agent harness capabilities for reusable workflows, specialized 
 ### Added
 
 **CSRF Protection, Gobber Embeddings API, and Sneaker OTLP Export (Phase 10)**
-- `Greenie/hub/api/csrf.py`: CSRF protection middleware — token generation with HMAC signing, validation with expiry, double-submit cookie pattern, configurable excluded paths, and middleware integration
-- `Greenie/hub/api/csrf.py`: CSRF token endpoints — `GET /api/csrf/token` for token generation, `GET /api/csrf/verify` for pre-flight checks
-- `Gobber/gobber/api.py`: Vector embedding API endpoints — `POST /api/embeddings/generate` for single text embedding, `POST /api/embeddings/search` for semantic search, `GET /api/embeddings/stats` for statistics, `POST /api/embeddings/batch` for batch embedding generation
-- `Sneaker/sneaker/otlp_export.py`: OTLP (OpenTelemetry Protocol) export support — receives traces/metrics/logs via OTLP JSON format, parses and stores them, forwards to external OTLP collector if configured, exports data in OTLP JSON format
-- `Sneaker/sneaker/api.py`: Integrated OTLP routes — `POST /v1/traces`, `POST /v1/metrics`, `POST /v1/logs`, `GET /api/otlp/stats`, `GET /api/otlp/export/*`
+- `Greenie/hub/api/csrf.py`: CSRF protection middleware – token generation with HMAC signing, validation with expiry, double-submit cookie pattern, configurable excluded paths, and middleware integration
+- `Greenie/hub/api/csrf.py`: CSRF token endpoints – `GET /api/csrf/token` for token generation, `GET /api/csrf/verify` for pre-flight checks
+- `Gobber/gobber/api.py`: Vector embedding API endpoints – `POST /api/embeddings/generate` for single text embedding, `POST /api/embeddings/search` for semantic search, `GET /api/embeddings/stats` for statistics, `POST /api/embeddings/batch` for batch embedding generation
+- `Sneaker/sneaker/otlp_export.py`: OTLP (OpenTelemetry Protocol) export support – receives traces/metrics/logs via OTLP JSON format, parses and stores them, forwards to external OTLP collector if configured, exports data in OTLP JSON format
+- `Sneaker/sneaker/api.py`: Integrated OTLP routes – `POST /v1/traces`, `POST /v1/metrics`, `POST /v1/logs`, `GET /api/otlp/stats`, `GET /api/otlp/export/*`
 - `tests/unit/test_csrf.py`: 25 unit tests for CSRF token generation, validation, extraction, skip logic, and configuration
 - `Sneaker/tests/test_otlp_export.py`: 12 unit tests for OTLP parsing (traces, metrics, logs), configuration, and store registration
 - `Gobber/tests/test_embeddings.py`: 8 unit tests for embedding generation, search, stats, and batch endpoints
@@ -41,12 +41,12 @@ Factory-inspired agent harness capabilities for reusable workflows, specialized 
 ### Configuration
 
 New environment variables:
-- `CSRF_SECRET_KEY` — Secret key for CSRF token signing (required in production)
-- `CSRF_ENABLED` — Enable/disable CSRF protection (default: true)
-- `CSRF_TOKEN_EXPIRY` — CSRF token expiry in seconds (default: 3600)
-- `CSRF_EXCLUDED_PATHS` — Comma-separated paths to exclude from CSRF (default: /health,/api/metrics)
-- `OTLP_ENDPOINT` — OTLP collector endpoint for Sneaker forwarding (optional)
-- `OTLP_INSECURE` — Use insecure connection for OTLP forwarding (default: true)
+- `CSRF_SECRET_KEY` – Secret key for CSRF token signing (required in production)
+- `CSRF_ENABLED` – Enable/disable CSRF protection (default: true)
+- `CSRF_TOKEN_EXPIRY` – CSRF token expiry in seconds (default: 3600)
+- `CSRF_EXCLUDED_PATHS` – Comma-separated paths to exclude from CSRF (default: /health,/api/metrics)
+- `OTLP_ENDPOINT` – OTLP collector endpoint for Sneaker forwarding (optional)
+- `OTLP_INSECURE` – Use insecure connection for OTLP forwarding (default: true)
 
 ---
 
@@ -55,9 +55,9 @@ New environment variables:
 ### Added
 
 **End-to-End Smoke Test, Cross-Service Integration, and Final Hardening (Phase 9)**
-- `tests/integration/test_smoke.py`: End-to-end smoke test — 8 tests covering full mission lifecycle (create → plan → execute → validate → complete), validation failure handling, cancel/resume, pause/resume, stats, repo intelligence, checkpoint recovery, and completion report
-- `tests/integration/test_mission_cross_service.py`: Cross-service mission integration tests — 13 tests covering API health, lifecycle via API, planning, validation, analytics, and logs
-- `Slammer/src/components/Missions.tsx`: Fixed unused `formatDuration` helper — now used by `missionDuration()` to display mission duration in the detail view info cards
+- `tests/integration/test_smoke.py`: End-to-end smoke test – 8 tests covering full mission lifecycle (create → plan → execute → validate → complete), validation failure handling, cancel/resume, pause/resume, stats, repo intelligence, checkpoint recovery, and completion report
+- `tests/integration/test_mission_cross_service.py`: Cross-service mission integration tests – 13 tests covering API health, lifecycle via API, planning, validation, analytics, and logs
+- `Slammer/src/components/Missions.tsx`: Fixed unused `formatDuration` helper – now used by `missionDuration()` to display mission duration in the detail view info cards
 
 ### Changed
 
@@ -74,12 +74,12 @@ New environment variables:
 ### Added
 
 **Mission Analytics, SSE Streaming, and Fix-Revalidate Cycle (Phase 8)**
-- `Greenie/hub/mission/analytics.py`: Mission-specific analytics — success/failure rates, average durations per lifecycle stage, model usage tracking, validation findings summary, autonomy distribution, and mission timelines
+- `Greenie/hub/mission/analytics.py`: Mission-specific analytics – success/failure rates, average durations per lifecycle stage, model usage tracking, validation findings summary, autonomy distribution, and mission timelines
 - `Greenie/hub/mission/sse.py`: Server-Sent Events (SSE) streaming for real-time mission execution logs
-- `Greenie/hub/mission/storage.py`: Execution log storage — `mission_logs` table with save, retrieve, filter, pagination, and since-timestamp queries
-- `Greenie/hub/mission/controller.py`: Fix-revalidate cycle — `create_fix_features()` and `start_fix_revalidate()` to automatically create worker features from validation failures, with configurable max retries
+- `Greenie/hub/mission/storage.py`: Execution log storage – `mission_logs` table with save, retrieve, filter, pagination, and since-timestamp queries
+- `Greenie/hub/mission/controller.py`: Fix-revalidate cycle – `create_fix_features()` and `start_fix_revalidate()` to automatically create worker features from validation failures, with configurable max retries
 - `Greenie/hub/mission/controller.py`: Execution logging at all lifecycle points (create, plan, execute, validate, cancel, pause, resume, approval)
-- `Greenie/hub/api/missions.py`: New API endpoints — logs (`GET /logs`, `GET /logs/stream` SSE), analytics (`GET /analytics`, `GET /timeline`, `GET /validation-summary`), diffs (`GET /diff`), fix-revalidate (`POST /fix-revalidate`)
+- `Greenie/hub/api/missions.py`: New API endpoints – logs (`GET /logs`, `GET /logs/stream` SSE), analytics (`GET /analytics`, `GET /timeline`, `GET /validation-summary`), diffs (`GET /diff`), fix-revalidate (`POST /fix-revalidate`)
 - `tests/unit/test_mission_analytics.py`: 17 unit tests for analytics functions
 - `tests/unit/test_mission_logs.py`: 10 unit tests for log storage and SSE streaming
 - `tests/unit/test_fix_revalidate.py`: 13 unit tests for fix-revalidate cycle and mission logging
@@ -91,16 +91,16 @@ New environment variables:
 **Factory-Inspired Mission Control System (Phases 1–7)**
 - `Greenie/hub/mission/models.py`: Mission, MissionMilestone, MissionFeature, ValidationContract, ValidationResult, MissionCheckpoint dataclasses with enums (MissionStatus, MilestoneStatus, FeatureStatus, ValidationSeverity, AutonomyLevel)
 - `Greenie/hub/mission/storage.py`: SQLite persistence with WAL mode for missions, checkpoints, and validation results
-- `Greenie/hub/mission/controller.py`: Full mission lifecycle controller — create, plan, execute, validate, complete, cancel, pause, resume, checkpoint recovery, and approval gates
-- `Greenie/hub/mission/automation.py`: Event-driven automation engine — GitHub webhook handler (issues, PRs, CI failures), HMAC signature verification, schedule-based triggers with cron parsing, idempotency with TTL expiration, rate limiting, and action registry
-- `Greenie/hub/mission/secret_redaction.py`: Secret redaction for logs and model context — pattern-based redaction of API keys, tokens, passwords, GitHub tokens, AWS keys, and email addresses; logging filter; env var and dict redaction
+- `Greenie/hub/mission/controller.py`: Full mission lifecycle controller – create, plan, execute, validate, complete, cancel, pause, resume, checkpoint recovery, and approval gates
+- `Greenie/hub/mission/automation.py`: Event-driven automation engine – GitHub webhook handler (issues, PRs, CI failures), HMAC signature verification, schedule-based triggers with cron parsing, idempotency with TTL expiration, rate limiting, and action registry
+- `Greenie/hub/mission/secret_redaction.py`: Secret redaction for logs and model context – pattern-based redaction of API keys, tokens, passwords, GitHub tokens, AWS keys, and email addresses; logging filter; env var and dict redaction
 - `Greenie/hub/mission/planner.py`: LLM-based planning via Shrewd with heuristic fallback and repo context integration
-- `Greenie/hub/mission/repo_intelligence.py`: Repository analysis — structure, frameworks, build/test commands, dependencies, conventions
-- `Greenie/hub/mission/auto_review.py`: Automated code review — deterministic checks (test, lint, type), diff-based security/correctness review, structured findings
-- `Greenie/hub/api/missions.py`: 18 REST endpoints — CRUD, planning, execution, validation, control, approval gates, and statistics
+- `Greenie/hub/mission/repo_intelligence.py`: Repository analysis – structure, frameworks, build/test commands, dependencies, conventions
+- `Greenie/hub/mission/auto_review.py`: Automated code review – deterministic checks (test, lint, type), diff-based security/correctness review, structured findings
+- `Greenie/hub/api/missions.py`: 18 REST endpoints – CRUD, planning, execution, validation, control, approval gates, and statistics
 - Extended `Greenie/hub/workflow/models.py`: New StepType values (PLANNER, WORKER, VALIDATOR, MILESTONE); role, model_override, milestone_id fields
 - Extended `Greenie/hub/workflow/executor.py`: Parallel step execution for independent workers within a milestone; opt-in via `parallel_workers` flag
-- `Slammer/src/components/Missions.tsx`: Full-featured React mission dashboard — list view, create form, detail view with milestone progress, validation results, execution logs, and action buttons
+- `Slammer/src/components/Missions.tsx`: Full-featured React mission dashboard – list view, create form, detail view with milestone progress, validation results, execution logs, and action buttons
 - `Slammer/src/App.tsx`: Added Missions page to navigation
 - `tests/unit/test_mission_models.py`: 23 unit tests for model serialization
 - `tests/unit/test_automation.py`: 20 unit tests for webhook handling, idempotency, rate limiting, schedule triggers, and action registry
@@ -127,8 +127,8 @@ New environment variables:
 ### Configuration
 
 New environment variables:
-- `GREENIE_MISSION_DB_PATH` — Mission control database path (default: data/missions.db)
-- `GITHUB_WEBHOOK_SECRET` — GitHub webhook HMAC verification secret (set via `automation.set_webhook_secret()`)
+- `GREENIE_MISSION_DB_PATH` – Mission control database path (default: data/missions.db)
+- `GITHUB_WEBHOOK_SECRET` – GitHub webhook HMAC verification secret (set via `automation.set_webhook_secret()`)
 
 ---
 
@@ -138,13 +138,13 @@ New environment variables:
 
 **Emergency Stop (Kill Switch)**
 - `Greenie/hub/emergency_stop.py`: Global kill switch that pauses all workflow execution and triggers, cancels running Slinker jobs, sends critical notification via Poltergeist, and records audit events
-- `Greenie/hub/api/emergency.py`: REST API — `GET /api/emergency/status`, `POST /api/emergency/stop`, `POST /api/emergency/resume`
+- `Greenie/hub/api/emergency.py`: REST API – `GET /api/emergency/status`, `POST /api/emergency/stop`, `POST /api/emergency/resume`
 - Can be reversed deliberately via resume endpoint
 
 **Activity Timeline and Audit Trail**
 - `Greenie/hub/activity_timeline.py`: Cross-service event history with SQLite persistence (WAL mode); records who initiated tasks, which services participated, which model was selected, which tools were invoked, which workstation executed work, approval gates, file modifications, failures, duration, cost, and outcome
 - Separate security audit trail for compliance
-- `Greenie/hub/api/timeline.py`: REST API — query timeline by correlation ID, workflow ID, task ID, agent ID, service, category; stats endpoint; event recording
+- `Greenie/hub/api/timeline.py`: REST API – query timeline by correlation ID, workflow ID, task ID, agent ID, service, category; stats endpoint; event recording
 - `Greenie/hub/api/audit/events`: Security audit trail query endpoint
 
 **WORKSTATIONS.md Documentation**
@@ -158,7 +158,7 @@ New environment variables:
 
 **Credential Rotation**
 - `Greenie/hub/credential_rotation.py`: Rotation without data loss for service API keys, Hider encryption key (with re-encryption), and session secrets; records audit events; SQLite history
-- `Greenie/hub/api/credentials.py`: REST API — `POST /api/credentials/rotate`, `GET /api/credentials/history`
+- `Greenie/hub/api/credentials.py`: REST API – `POST /api/credentials/rotate`, `GET /api/credentials/history`
 
 **Final Implementation Report**
 - `docs/FINAL_REPORT.md`: Complete 10-section report covering audit, changes by phase, architecture decisions, tests, integration verification, security, deployment, documentation, remaining work, and Definition of Done verification
@@ -166,7 +166,7 @@ New environment variables:
 ### Changed
 
 - Greenie version bumped to 1.7.0
-- Greenie API: Registered 3 new route modules (emergency, timeline, credentials) — now 51 total
+- Greenie API: Registered 3 new route modules (emergency, timeline, credentials) – now 51 total
 - ROADMAP: Phase 8 items checked off
 - `docs/ECOSYSTEM_AUDIT.md`: Phase 8 marked complete
 
@@ -177,9 +177,9 @@ New environment variables:
 ### Configuration
 
 New environment variables:
-- `GREENIE_TIMELINE_DB_PATH` — Activity timeline database path (default: data/timeline.db)
-- `GREENIE_CREDENTIALS_DB_PATH` — Credential rotation history path (default: data/credentials.db)
-- `SNEAKER_ALERTS_DB_PATH` — Alerting system database path (default: data/alerts.db)
+- `GREENIE_TIMELINE_DB_PATH` – Activity timeline database path (default: data/timeline.db)
+- `GREENIE_CREDENTIALS_DB_PATH` – Credential rotation history path (default: data/credentials.db)
+- `SNEAKER_ALERTS_DB_PATH` – Alerting system database path (default: data/alerts.db)
 
 ---
 
@@ -187,7 +187,7 @@ New environment variables:
 
 ### Added
 
-**Dashboard Strategy — Slammer as Single Dashboard**
+**Dashboard Strategy – Slammer as Single Dashboard**
 - `docs/DASHBOARD_STRATEGY.md`: Decision document resolving Greenie/Slammer relationship
 - Slammer is now the unified dashboard; Greenie operates as API-only backend
 - Caddyfile updated with proxy routing: Slammer for static files, Greenie for `/api/*`, Sneaker for `/sneaker/*`
@@ -202,15 +202,15 @@ New environment variables:
 
 **MCP (Model Context Protocol) Support**
 - `Greenie/hub/mcp/__init__.py`: Full MCP client implementation with SSE, HTTP, and stdio transport support; MCPManager for multi-server management; tool calling and resource access
-- `Greenie/hub/api/mcp.py`: REST API for MCP server management — list, add, remove, connect/disconnect servers, list and call tools
+- `Greenie/hub/api/mcp.py`: REST API for MCP server management – list, add, remove, connect/disconnect servers, list and call tools
 - MCP server configuration persisted to `data/mcp_servers.json`
 
 **Plugin Registry**
 - `Greenie/hub/plugins/__init__.py`: Plugin registry with install/uninstall/enable/disable, configuration management, and type-based filtering (tool, resource, prompt, integration)
-- `Greenie/hub/api/plugins.py`: REST API for plugin management — CRUD operations, enable/disable, config updates
+- `Greenie/hub/api/plugins.py`: REST API for plugin management – CRUD operations, enable/disable, config updates
 - Plugin data persisted to `data/plugins.json`
 
-**Slammer — Plugins & MCP Dashboard**
+**Slammer – Plugins & MCP Dashboard**
 - `Slammer/src/components/Plugins.tsx`: Plugin management UI with install form, enable/disable toggle, uninstall, and MCP server management
 - New "Metrics", "Logs", and "Plugins" tabs in Slammer navigation
 
@@ -229,7 +229,7 @@ New environment variables:
 ### Configuration
 
 New environment variables:
-- `GREENIE_DATA_DIR` — Data directory for MCP config and plugin registry (default: data/)
+- `GREENIE_DATA_DIR` – Data directory for MCP config and plugin registry (default: data/)
 
 ---
 
@@ -278,24 +278,24 @@ New environment variables:
 
 ### Added
 
-**Agent Workstations — Isolated Container Environments**
+**Agent Workstations – Isolated Container Environments**
 - `hub/workstation/models.py`: Data models for Workstation, WorkstationConfig, WorkstationAccess, and status enums
 - `hub/workstation/driver.py`: Docker SDK-based container driver with create/start/stop/destroy, exec, logs, and health inspection
 - `hub/workstation/storage.py`: SQLite persistence layer for workstation state with WAL mode
 - `hub/workstation/lifecycle.py`: High-level lifecycle management (create, start, stop, destroy, health check)
 - `hub/workstation/network_policy.py`: Default-deny network policy with IP validation, metadata endpoint blocking, and DNS allowlist
 - `hub/workstation/access.py`: Terminal (TTY via WebSocket) and desktop (VNC/noVNC) access setup
-- `hub/api/workstations.py`: Full REST API — 14 endpoints for CRUD, lifecycle, health, logs, exec, network policy, and access
+- `hub/api/workstations.py`: Full REST API – 14 endpoints for CRUD, lifecycle, health, logs, exec, network policy, and access
 - Graceful degradation when Docker is unavailable (simulation mode)
 - Resource usage tracking: CPU percentage, memory usage, disk usage
 
-**Workflow Engine — Workstation Step Type**
+**Workflow Engine – Workstation Step Type**
 - New `workstation` step type in workflow executor
 - Actions: create, start, exec, stop, destroy
 - Automatic workstation discovery by workflow run ID
 - Context variable interpolation in exec commands
 
-**Slammer — Workstations Dashboard**
+**Slammer – Workstations Dashboard**
 - `src/components/Workstations.tsx`: Workstations management page with stats, list, logs, and lifecycle actions
 - Stats dashboard: total, running, stopped, errors, Docker availability
 - Workstation cards with status, resource usage, tags, and action buttons
@@ -312,9 +312,9 @@ New environment variables:
 ### Configuration
 
 New environment variables:
-- `GREENIE_WORKSTATION_DB_PATH` — Workstation SQLite database path (default: Greenie/data/workstations.db)
-- `WORKSTATION_GATEWAY_URL` — Gateway URL for terminal/desktop access (default: http://localhost:8080)
-- `EVERSHADE_GREENIE_API_TOKEN` — API token for workstation access validation
+- `GREENIE_WORKSTATION_DB_PATH` – Workstation SQLite database path (default: Greenie/data/workstations.db)
+- `WORKSTATION_GATEWAY_URL` – Gateway URL for terminal/desktop access (default: http://localhost:8080)
+- `EVERSHADE_GREENIE_API_TOKEN` – API token for workstation access validation
 
 ---
 
@@ -322,12 +322,12 @@ New environment variables:
 
 ### Added
 
-**Workflow Engine — Persistent Multi-Step Orchestration**
+**Workflow Engine – Persistent Multi-Step Orchestration**
 - `hub/workflow/models.py`: Data models for WorkflowDefinition, WorkflowStep, WorkflowRun, WorkflowTrigger, WorkflowApproval
 - `hub/workflow/storage.py`: SQLite persistence layer with WAL mode for workflows, runs, and approvals
 - `hub/workflow/executor.py`: Step-by-step workflow executor with approval gates, condition evaluation, and context passing
 - `hub/workflow/triggers.py`: Schedule (cron), webhook (HMAC signature), and file change triggers
-- `hub/api/workflows.py`: Full REST API — CRUD for definitions, execute runs, approve/deny, webhook handler, stats
+- `hub/api/workflows.py`: Full REST API – CRUD for definitions, execute runs, approve/deny, webhook handler, stats
 - 5 step types: agent, service, approval, condition, notify
 - 3 trigger types: schedule, webhook, file_change
 - Approval gates with async pause/resume and configurable timeout
@@ -336,7 +336,7 @@ New environment variables:
 - On-failure policy per step (stop/continue)
 - Step dependencies for DAG-like execution
 
-**Slammer — Visual Workflow Builder**
+**Slammer – Visual Workflow Builder**
 - `src/components/WorkflowBuilder.tsx`: Full workflow builder with stats, workflow list, create/edit form
 - Step editing: add/remove steps of all 5 types with type-specific fields
 - Trigger configuration: schedule (cron), webhook (secret), file watch (paths)
@@ -356,8 +356,8 @@ New environment variables:
 ### Configuration
 
 New environment variables:
-- `GREENIE_WORKFLOW_DB_PATH` — Workflow SQLite database path (default: Greenie/data/workflows.db)
-- `WORKFLOW_FILE_POLL_INTERVAL` — File change trigger poll interval in seconds (default: 10)
+- `GREENIE_WORKFLOW_DB_PATH` – Workflow SQLite database path (default: Greenie/data/workflows.db)
+- `WORKFLOW_FILE_POLL_INTERVAL` – File change trigger poll interval in seconds (default: 10)
 
 ---
 
@@ -365,7 +365,7 @@ New environment variables:
 
 ### Added
 
-**Shrewd — Real LLM Provider Integration**
+**Shrewd – Real LLM Provider Integration**
 - `shrewd/providers.py`: Real provider classes for OpenAI, Anthropic, Google Gemini, and Ollama
 - `shrewd/routing.py`: Model routing with cost tracking and privacy classification
 - 16 models in registry (GPT-4o, Claude, Gemini, Llama, Gemma, Mistral, Phi)
@@ -374,20 +374,20 @@ New environment variables:
 - Graceful fallback to simulated response when provider is not configured
 - New endpoint: `GET /api/cost/summary` for usage tracking
 
-**Poltergeist — Real Notification Delivery**
+**Poltergeist – Real Notification Delivery**
 - `poltergeist/delivery.py`: Real delivery to Slack, Discord, Email (SMTP), Telegram, and generic webhooks
 - `poltergeist/storage.py`: SQLite persistence for notifications and templates
 - Retry logic with exponential backoff (configurable via `POLTERGEIST_MAX_RETRIES`)
 - Delivery status tracking: pending → sent/failed with error messages
 - New endpoint: `GET /api/notifications/{id}` for individual notification lookup
 
-**Slammer — Real Dashboard**
+**Slammer – Real Dashboard**
 - Service health polling every 10 seconds with online/offline/checking states
 - Agents page: fetches and displays agents from Greenie API
 - Runs page: displays recent runs with status, prompt, and timestamps
 - Navigation bar with three pages: Services, Agents, Runs
 
-**Speedy CLI — Full Command Set**
+**Speedy CLI – Full Command Set**
 - `evershade install`: Docker Compose pull and build with profile selection
 - `evershade start`: Start services via Docker Compose
 - `evershade stop`: Stop services with optional volume removal
@@ -413,44 +413,44 @@ New environment variables:
 ### Configuration
 
 New environment variables:
-- `OPENAI_API_KEY`, `OPENAI_BASE_URL` — OpenAI provider
-- `ANTHROPIC_API_KEY`, `ANTHROPIC_BASE_URL` — Anthropic provider
-- `GOOGLE_API_KEY`, `GOOGLE_BASE_URL` — Google Gemini provider
-- `OLLAMA_BASE_URL` — Ollama provider (default: http://localhost:11434)
-- `SLACK_WEBHOOK_URL` — Slack notifications
-- `DISCORD_WEBHOOK_URL` — Discord notifications
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`, `SMTP_TLS` — Email notifications
-- `TELEGRAM_BOT_TOKEN` — Telegram notifications
-- `POLTERGEIST_MAX_RETRIES` — Retry count for failed deliveries (default: 3)
-- `SHREWD_REQUEST_TIMEOUT` — LLM request timeout in seconds (default: 60)
-- `POLTERGEIST_REQUEST_TIMEOUT` — Notification delivery timeout (default: 30)
-- `SHREWD_DEFAULT_MODEL` — Default model when none specified (default: llama3)
+- `OPENAI_API_KEY`, `OPENAI_BASE_URL` – OpenAI provider
+- `ANTHROPIC_API_KEY`, `ANTHROPIC_BASE_URL` – Anthropic provider
+- `GOOGLE_API_KEY`, `GOOGLE_BASE_URL` – Google Gemini provider
+- `OLLAMA_BASE_URL` – Ollama provider (default: http://localhost:11434)
+- `SLACK_WEBHOOK_URL` – Slack notifications
+- `DISCORD_WEBHOOK_URL` – Discord notifications
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`, `SMTP_TLS` – Email notifications
+- `TELEGRAM_BOT_TOKEN` – Telegram notifications
+- `POLTERGEIST_MAX_RETRIES` – Retry count for failed deliveries (default: 3)
+- `SHREWD_REQUEST_TIMEOUT` – LLM request timeout in seconds (default: 60)
+- `POLTERGEIST_REQUEST_TIMEOUT` – Notification delivery timeout (default: 30)
+- `SHREWD_DEFAULT_MODEL` – Default model when none specified (default: llama3)
 
 ---
 
 ## [1.1.0] - 2026-10-22
 
 ### Security
-- **BREAKING:** All Python services (Hider, Gobber, Sneaker, Poltergeist, Shrewd) now require `Authorization: Bearer <key>` header — query parameter `x_key` auth is no longer supported
-- **BREAKING:** Trapper now requires `Authorization: Bearer <key>` header — query parameter `api-key` auth is no longer supported
+- **BREAKING:** All Python services (Hider, Gobber, Sneaker, Poltergeist, Shrewd) now require `Authorization: Bearer <key>` header – query parameter `x_key` auth is no longer supported
+- **BREAKING:** Trapper now requires `Authorization: Bearer <key>` header – query parameter `api-key` auth is no longer supported
 - Hider: AES-256-GCM encryption for all secrets at rest (requires `ENCRYPTION_KEY` env var)
 - Hider: SQLite persistence for secrets and configs (data survives restarts)
-- Trapper: SSRF protection — blocks requests to private IPs, loopback, link-local, and cloud metadata endpoints
+- Trapper: SSRF protection – blocks requests to private IPs, loopback, link-local, and cloud metadata endpoints
 - Container hardening: read-only filesystem (`read_only: true`) added to all services
 - Container hardening: tmpfs mounts for writable directories (/tmp, /app/data, /app/logs)
 - All services use constant-time comparison (`hmac.compare_digest`) for API key validation
 
 ### Changed
-- Greenie health checks: removed hardcoded `localhost` — uses Docker service names (Slinker, Trapper-api)
+- Greenie health checks: removed hardcoded `localhost` – uses Docker service names (Slinker, Trapper-api)
 - Speedy CLI: uses `EVERSHADE_` prefixed env vars with legacy fallback; sends Bearer auth headers
 - Speedy CLI: renamed "clairvoya" service to "shrewd"
 - Slammer: service URLs configurable via `VITE_*_URL` env vars; renamed "Clairvoya" to "Shrewd"
 - Slammer: supports relative URLs when behind reverse proxy via `VITE_BASE_URL`
 
 ### Added
-- `Hider/hider/encryption.py` — AES-256-GCM encryption utilities
-- `Hider/hider/storage.py` — SQLite storage layer for secrets and configs
-- `Trapper/src/utils/ssrfProtection.ts` — SSRF protection module
+- `Hider/hider/encryption.py` – AES-256-GCM encryption utilities
+- `Hider/hider/storage.py` – SQLite storage layer for secrets and configs
+- `Trapper/src/utils/ssrfProtection.ts` – SSRF protection module
 
 ## [1.0.0] - 2026-10-22
 

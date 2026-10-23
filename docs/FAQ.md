@@ -1,4 +1,4 @@
-# Evershade FAQ
+﻿# Evershade FAQ
 
 **Version:** 1.0.0
 **Last Updated:** 2026-10-23
@@ -22,7 +22,7 @@
 
 ### What is Evershade?
 
-Evershade is a self-hosted AI agent platform. It lets you create AI-powered agents that can write code, scrape websites, search knowledge bases, send notifications, and chain tasks together — all running on your own hardware.
+Evershade is a self-hosted AI agent platform. It lets you create AI-powered agents that can write code, scrape websites, search knowledge bases, send notifications, and chain tasks together – all running on your own hardware.
 
 ### Is Evershade free?
 

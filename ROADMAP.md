@@ -1,11 +1,11 @@
-# Evershade Roadmap
+﻿# Evershade Roadmap
 
 **Version:** 1.1.0
 **Last Updated:** 2026-10-22
 
 ---
 
-## Phase 1 — Foundations (Current)
+## Phase 1 – Foundations (Current)
 
 - [x] Complete ecosystem audit
 - [x] Architecture documentation
@@ -16,7 +16,7 @@
 
 ---
 
-## Phase 2 — Security & Persistence ✓
+## Phase 2 – Security & Persistence ✓
 
 - [x] Hider: Implement AES-256-GCM encryption for secrets
 - [x] Hider: SQLite persistence for secrets and configs
@@ -32,7 +32,7 @@
 
 ---
 
-## Phase 3 — Real Implementation ✓
+## Phase 3 – Real Implementation ✓
 
 - [x] Shrewd: Real LLM provider integration (OpenAI, Anthropic, Google, Ollama)
 - [x] Shrewd: Model routing with cost tracking and privacy classification
@@ -44,7 +44,7 @@
 
 ---
 
-## Phase 4 — Workflow Engine ✓
+## Phase 4 – Workflow Engine ✓
 
 - [x] Persistent workflow definitions
 - [x] Workflow triggers (schedule, webhook, file changes)
@@ -55,7 +55,7 @@
 
 ---
 
-## Phase 5 — Agent Workstations ✓
+## Phase 5 – Agent Workstations ✓
 
 - [x] Container driver for isolated agent environments
 - [x] Workstation lifecycle management (create, start, stop, destroy)
@@ -65,7 +65,7 @@
 
 ---
 
-## Phase 6 — Quality & Release ✓
+## Phase 6 – Quality & Release ✓
 
 - [x] Ecosystem-wide integration tests
 - [x] Security tests (prompt injection, SSRF, auth bypass)
@@ -77,7 +77,7 @@
 
 ---
 
-## Phase 7 — UI and Extensibility ✓
+## Phase 7 – UI and Extensibility ✓
 
 - [x] Resolve Greenie/Slammer relationship (Slammer as single dashboard)
 - [x] Integrate workflow builder (already in Phase 4)
@@ -88,7 +88,7 @@
 
 ---
 
-## Phase 8 — Quality and Release ✓
+## Phase 8 – Quality and Release ✓
 
 - [x] Emergency stop: Global kill switch (pause workflows, cancel jobs, notify)
 - [x] Activity Timeline: Cross-service event history with audit trail
@@ -101,7 +101,7 @@
 
 ---
 
-## Phase 9 — Mission Control System ✓
+## Phase 9 – Mission Control System ✓
 
 - [x] Mission data models: Mission, Milestone, Feature, ValidationContract, ValidationResult, Checkpoint
 - [x] SQLite persistence: WAL mode for missions, checkpoints, and validation results
@@ -122,7 +122,7 @@
 
 ---
 
-## Phase 10 — Security, Embeddings, and OTLP ✓
+## Phase 10 – Security, Embeddings, and OTLP ✓
 
 - [x] CSRF protection for web UI: Token generation, validation, middleware, excluded paths
 - [x] Rate limiting on auth endpoints: Already implemented in Phase 2 (core.py)
@@ -138,7 +138,7 @@
 - [ ] Ubuntu VM + remote access end-to-end test (requires VM)
 - [ ] Reboot persistence verification (requires reboot)
 
-## Phase 11 — Agent Harness ✓
+## Phase 11 – Agent Harness ✓
 
 - [x] Spec Mode: Read-only research phase before implementation, persistent spec store, approval gate
 - [x] Custom Droids: Specialized subagents with own prompts/models/tools, built-in droids (worker, explorer, reviewer, validator)

@@ -1,4 +1,4 @@
-# Evershade Getting Started Guide
+﻿# Evershade Getting Started Guide
 
 **Version:** 1.0.0
 **Last Updated:** 2026-10-23
@@ -121,10 +121,10 @@ Evershade's services live in separate Git repositories. The install script clone
 This downloads the core services (Greenie, Slinker, Trapper, Gobber) into the correct directories. The `minimal` profile is recommended for first-time users.
 
 **What just happened:**
-- `Greenie/` — Central orchestrator (Python/FastAPI)
-- `Slinker/` — Code execution engine (Python/FastAPI)
-- `Trapper/` — Web scraping service (TypeScript/Fastify)
-- `Gobber/` — Storage and knowledge graph (Python/FastAPI)
+- `Greenie/` – Central orchestrator (Python/FastAPI)
+- `Slinker/` – Code execution engine (Python/FastAPI)
+- `Trapper/` – Web scraping service (TypeScript/Fastify)
+- `Gobber/` – Storage and knowledge graph (Python/FastAPI)
 
 ---
 
@@ -348,20 +348,20 @@ Open **http://localhost:5173** in your browser. You'll see:
 Now that you have Evershade running, here's where to go next:
 
 ### For Beginners
-- **[FAQ](FAQ.md)** — Answers to common questions
-- **[Glossary](GLOSSARY.md)** — Key terms explained
-- **[README - Your First Agent](../../README.md#your-first-agent)** — Quick tutorial
+- **[FAQ](FAQ.md)** – Answers to common questions
+- **[Glossary](GLOSSARY.md)** – Key terms explained
+- **[README - Your First Agent](../../README.md#your-first-agent)** – Quick tutorial
 
 ### For Power Users
-- **[Advanced Guide](ADVANCED.md)** — Deep dives into internals
-- **[Architecture](ARCHITECTURE.md)** — Full system architecture
-- **[Service Catalog](SERVICE_CATALOG.md)** — Every API endpoint
+- **[Advanced Guide](ADVANCED.md)** – Deep dives into internals
+- **[Architecture](ARCHITECTURE.md)** – Full system architecture
+- **[Service Catalog](SERVICE_CATALOG.md)** – Every API endpoint
 
 ### For Operations
-- **[Configuration](CONFIGURATION.md)** — All environment variables
-- **[Deployment](DEPLOYMENT.md)** — Server and production deployment
-- **[Security](SECURITY.md)** — Security model and hardening
-- **[Backup & Restore](BACKUP_RESTORE.md)** — Data protection
+- **[Configuration](CONFIGURATION.md)** – All environment variables
+- **[Deployment](DEPLOYMENT.md)** – Server and production deployment
+- **[Security](SECURITY.md)** – Security model and hardening
+- **[Backup & Restore](BACKUP_RESTORE.md)** – Data protection
 
 ---
 
@@ -419,6 +419,6 @@ docker compose down -v
 
 ## Need Help?
 
-- **[Troubleshooting Guide](../../README.md#troubleshooting)** — Common issues and fixes
-- **[Contributing](../../CONTRIBUTING.md)** — Report bugs and suggest features
-- **[GitHub Issues](https://github.com/LukaG712/Evershade/issues)** — File an issue
+- **[Troubleshooting Guide](../../README.md#troubleshooting)** – Common issues and fixes
+- **[Contributing](../../CONTRIBUTING.md)** – Report bugs and suggest features
+- **[GitHub Issues](https://github.com/LukaG712/Evershade/issues)** – File an issue

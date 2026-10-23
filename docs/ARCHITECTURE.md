@@ -1,4 +1,4 @@
-# Evershade Architecture
+﻿# Evershade Architecture
 
 **Version:** 1.0.0
 **Last Updated:** 2026-10-22
@@ -11,11 +11,11 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 
 ### Design Principles
 
-1. **Modular services** — Each service has a clear boundary and public interface.
-2. **SQLite-first** — Use SQLite where it satisfies requirements; introduce other databases only when necessary.
-3. **No heavy infrastructure** — Avoid Kubernetes, Kafka, Elasticsearch, or distributed databases unless the audit identifies concrete need.
-4. **Self-hosted practical** — Must run on ordinary developer hardware without excessive resource consumption.
-5. **Security by default** — Least privilege, network isolation, and container hardening are the default, not an afterthought.
+1. **Modular services** – Each service has a clear boundary and public interface.
+2. **SQLite-first** – Use SQLite where it satisfies requirements; introduce other databases only when necessary.
+3. **No heavy infrastructure** – Avoid Kubernetes, Kafka, Elasticsearch, or distributed databases unless the audit identifies concrete need.
+4. **Self-hosted practical** – Must run on ordinary developer hardware without excessive resource consumption.
+5. **Security by default** – Least privilege, network isolation, and container hardening are the default, not an afterthought.
 
 ---
 
@@ -67,7 +67,7 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 │         │  HTTPS/HTTP     │  SSH/HTTPS           │  HTTP        │
 │         ▼                 ▼                      ▼              │
 │  ┌──────────────────────────────────────────────────────────┐  │
-│  │              Greenie (8080) — Gateway                     │  │
+│  │              Greenie (8080) – Gateway                     │  │
 │  │  ┌────────────┬────────────┬────────────┬──────────────┐ │  │
 │  │  │  Web UI    │  Chat API  │  Workflow  │  Management  │ │  │
 │  │  │  (static)  │  + SSE     │  Engine    │  + RBAC      │ │  │
@@ -106,7 +106,7 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 
 ## 4. Service Boundaries
 
-### Greenie — Central Hub & Dashboard
+### Greenie – Central Hub & Dashboard
 
 **Responsibility:** Orchestration, agent management, chat sessions, workflow execution, user interface.
 
@@ -125,9 +125,9 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 - Trapper (web scraping tasks)
 - Gobber (persistent feature stores, knowledge graph)
 - Shrewd (LLM requests)
-- Poltergeist (notifications) — optional
-- Sneaker (observability) — optional
-- Hider (secrets) — optional
+- Poltergeist (notifications) – optional
+- Sneaker (observability) – optional
+- Hider (secrets) – optional
 
 **Public Interface:**
 - REST API: `/api/*`
@@ -135,7 +135,7 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 - SSE: Various streaming endpoints
 - Static files: Web dashboard
 
-### Slinker — Code Execution Engine
+### Slinker – Code Execution Engine
 
 **Responsibility:** Execute AI agent tasks in isolated Git worktrees using the Junie CLI.
 
@@ -155,7 +155,7 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 - OpenAI-compatible: `/v1/chat/completions`, `/v1/models`
 - Health: `/health`, `/ready`
 
-### Trapper — Web Scraping & Crawling
+### Trapper – Web Scraping & Crawling
 
 **Responsibility:** Scrape, crawl, search, and interact with websites using Playwright.
 
@@ -172,7 +172,7 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 - REST API: `/api/*` (scrape, crawl, map, search, extract, interact, agent)
 - Health: `/health`
 
-### Gobber — Persistent Storage & Knowledge Graph
+### Gobber – Persistent Storage & Knowledge Graph
 
 **Responsibility:** Centralized persistent storage for ecosystem feature stores and semantic memory.
 
@@ -193,7 +193,7 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 - Embedding API: `/api/embeddings/*` (generate, search, batch, stats)
 - Health: `/health`
 
-### Sneaker — Observability
+### Sneaker – Observability
 
 **Responsibility:** Collect and query metrics, distributed traces, and structured logs.
 
@@ -212,7 +212,7 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 - OTLP stats: `GET /api/otlp/stats`
 - Health: `/health`
 
-### Hider — Secrets & Configuration
+### Hider – Secrets & Configuration
 
 **Responsibility:** Encrypted storage and retrieval of secrets and centralized configuration.
 
@@ -227,7 +227,7 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 - REST API: `/api/*` (secrets, configs)
 - Health: `/health`
 
-### Poltergeist — Notifications
+### Poltergeist – Notifications
 
 **Responsibility:** Send notifications through multiple channels with templating and async delivery.
 
@@ -243,7 +243,7 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 - REST API: `/api/*` (notifications, templates)
 - Health: `/health`
 
-### Shrewd — LLM Abstraction
+### Shrewd – LLM Abstraction
 
 **Responsibility:** Unified interface for multiple LLM providers with model routing.
 
@@ -260,7 +260,7 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 - REST API: `/api/*` (chat, models, providers)
 - Health: `/health`
 
-### Slammer — Web Dashboard
+### Slammer – Web Dashboard
 
 **Responsibility:** React-based standalone dashboard for platform management.
 
@@ -274,7 +274,7 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 **Public Interface:**
 - Static web application served on port 5173
 
-### Speedy — CLI
+### Speedy – CLI
 
 **Responsibility:** Command-line interface for platform management.
 
@@ -298,12 +298,12 @@ Evershade is a self-hosted AI agent platform composed of specialized microservic
 All service-to-service communication uses HTTP/JSON REST APIs.
 
 **Standard headers:**
-- `Authorization: Bearer <service-api-key>` — Service authentication
-- `X-Request-ID: <uuid>` — Unique request identifier
-- `X-Correlation-ID: <uuid>` — Correlates requests across services
-- `X-Service-Name: <service>` — Source service identification
-- `Content-Type: application/json` — Request format
-- `Accept: application/json` — Response format
+- `Authorization: Bearer <service-api-key>` – Service authentication
+- `X-Request-ID: <uuid>` – Unique request identifier
+- `X-Correlation-ID: <uuid>` – Correlates requests across services
+- `X-Service-Name: <service>` – Source service identification
+- `Content-Type: application/json` – Request format
+- `Accept: application/json` – Response format
 
 **Standard response envelope:**
 ```json
@@ -346,9 +346,9 @@ All service-to-service communication uses HTTP/JSON REST APIs.
 
 | Operation | Timeout | Retries | Backoff |
 |-----------|---------|---------|---------|
-| Health check | 5s | 0 | — |
+| Health check | 5s | 0 | – |
 | Synchronous API call | 30s | 1 | 1s fixed |
-| Long-running task (Slinker) | 1800s | 0 | — |
+| Long-running task (Slinker) | 1800s | 0 | – |
 | Web scraping (Trapper) | 60s | 1 | 2s fixed |
 | LLM request (Shrewd) | 120s | 1 | 5s fixed |
 
@@ -366,7 +366,7 @@ Used only where genuinely required:
 | Data Type | Owner | Consumers | Storage |
 |-----------|-------|-----------|---------|
 | Agent definitions | Greenie | Slinker, Shrewd | Greenie SQLite |
-| Chat sessions | Greenie | — | Greenie SQLite |
+| Chat sessions | Greenie | – | Greenie SQLite |
 | Workflow definitions | Greenie | All services | Greenie SQLite |
 | Task execution state | Slinker | Greenie | Slinker SQLite |
 | Web scraping results | Trapper | Greenie, Gobber | Return value (ephemeral) |
@@ -381,7 +381,7 @@ Used only where genuinely required:
 1. Services access other services' data only through public APIs.
 2. No direct database access across service boundaries.
 3. Schema changes are the responsibility of the owning service.
-4. No duplicated sources of truth — if Gobber owns webhooks, Greenie does not store them.
+4. No duplicated sources of truth – if Gobber owns webhooks, Greenie does not store them.
 
 ---
 
@@ -448,9 +448,9 @@ Every service exposes:
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/health` | GET | Liveness check — returns 200 if process is running |
-| `/ready` | GET | Readiness check — returns 200 if fully initialized (DB, config, deps) |
-| `/api/status` | GET | Detailed status — version, capabilities, dependency health |
+| `/health` | GET | Liveness check – returns 200 if process is running |
+| `/ready` | GET | Readiness check – returns 200 if fully initialized (DB, config, deps) |
+| `/api/status` | GET | Detailed status – version, capabilities, dependency health |
 
 **Health response:**
 ```json
@@ -482,7 +482,7 @@ When an optional service is unavailable:
 1. The platform continues to operate.
 2. Greenie logs a warning and marks the service as unavailable in the dashboard.
 3. Features depending on the unavailable service degrade gracefully (e.g., notifications are logged but not sent if Poltergeist is down).
-4. No cascade failure — a missing optional service never brings down the entire platform.
+4. No cascade failure – a missing optional service never brings down the entire platform.
 
 ---
 
@@ -543,30 +543,30 @@ User → Slammer Dashboard → Greenie Mission API → Mission Controller
 
 ### API Endpoints
 
-- `POST /api/missions` — Create a mission
-- `GET /api/missions` — List missions (filterable by status)
-- `GET /api/missions/{id}` — Mission detail with milestones, features, logs
-- `POST /api/missions/{id}/plan` — Apply a plan
-- `POST /api/missions/{id}/start` — Start execution
-- `POST /api/missions/{id}/cancel` — Cancel a mission
-- `POST /api/missions/{id}/resume` — Resume from checkpoint
-- `POST /api/missions/{id}/pause` — Pause a mission
-- `POST /api/missions/{id}/request-approval` — Request human approval
-- `POST /api/missions/{id}/approve` — Approve a pending request
-- `POST /api/missions/{id}/reject` — Reject a pending request
-- `GET /api/missions/{id}/validation` — Validation results
-- `GET /api/missions/{id}/logs` — Execution logs (paginated)
-- `GET /api/missions/{id}/logs/stream` — SSE log streaming (real-time)
-- `GET /api/missions/{id}/diff` — Changed files and diffs
-- `GET /api/missions/{id}/timeline` — Mission timeline with stage durations
-- `GET /api/missions/{id}/validation-summary` — Validation findings summary
-- `POST /api/missions/{id}/fix-revalidate` — Start fix-revalidate cycle
-- `GET /api/missions/analytics` — Aggregated mission analytics
-- `GET /api/missions/stats` — Mission statistics
+- `POST /api/missions` – Create a mission
+- `GET /api/missions` – List missions (filterable by status)
+- `GET /api/missions/{id}` – Mission detail with milestones, features, logs
+- `POST /api/missions/{id}/plan` – Apply a plan
+- `POST /api/missions/{id}/start` – Start execution
+- `POST /api/missions/{id}/cancel` – Cancel a mission
+- `POST /api/missions/{id}/resume` – Resume from checkpoint
+- `POST /api/missions/{id}/pause` – Pause a mission
+- `POST /api/missions/{id}/request-approval` – Request human approval
+- `POST /api/missions/{id}/approve` – Approve a pending request
+- `POST /api/missions/{id}/reject` – Reject a pending request
+- `GET /api/missions/{id}/validation` – Validation results
+- `GET /api/missions/{id}/logs` – Execution logs (paginated)
+- `GET /api/missions/{id}/logs/stream` – SSE log streaming (real-time)
+- `GET /api/missions/{id}/diff` – Changed files and diffs
+- `GET /api/missions/{id}/timeline` – Mission timeline with stage durations
+- `GET /api/missions/{id}/validation-summary` – Validation findings summary
+- `POST /api/missions/{id}/fix-revalidate` – Start fix-revalidate cycle
+- `GET /api/missions/analytics` – Aggregated mission analytics
+- `GET /api/missions/stats` – Mission statistics
 
 ---
 
-## 12. Phase 10 — Security, Embeddings, and OTLP
+## 12. Phase 10 – Security, Embeddings, and OTLP
 
 Phase 10 added CSRF protection, vector embedding API endpoints, and OTLP export support.
 
@@ -604,7 +604,7 @@ The following Phase 10 items require external infrastructure and are deferred:
 
 ---
 
-## 13. Phase 11 — Agent Harness
+## 13. Phase 11 – Agent Harness
 
 Phase 11 added Factory-inspired agent harness capabilities: Spec Mode, Custom Droids, Skills, Hooks, and Environments.
 

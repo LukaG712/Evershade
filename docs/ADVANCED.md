@@ -1,4 +1,4 @@
-# Evershade Advanced Guide
+﻿# Evershade Advanced Guide
 
 **Version:** 1.0.0
 **Last Updated:** 2026-10-23
@@ -53,13 +53,13 @@ Client → [CSRF Check] → [Auth Middleware] → [Rate Limiter] → [Idempotenc
 
 Greenie's request pipeline (in order):
 
-1. **Secret Redaction** — Scans request/response bodies for sensitive patterns
-2. **CSRF Protection** — Validates double-submit cookie pattern for cookie sessions
-3. **Authentication** — Bearer token (service-to-service) or session cookie (browser)
-4. **Rate Limiting** — Sliding window per-IP and per-API-key
-5. **Idempotency** — Checks `X-Idempotency-Key` header for retryable operations
-6. **Request ID** — Generates `X-Request-ID` and `X-Correlation-ID` headers
-7. **Routing** — FastAPI router dispatches to endpoint handlers
+1. **Secret Redaction** – Scans request/response bodies for sensitive patterns
+2. **CSRF Protection** – Validates double-submit cookie pattern for cookie sessions
+3. **Authentication** – Bearer token (service-to-service) or session cookie (browser)
+4. **Rate Limiting** – Sliding window per-IP and per-API-key
+5. **Idempotency** – Checks `X-Idempotency-Key` header for retryable operations
+6. **Request ID** – Generates `X-Request-ID` and `X-Correlation-ID` headers
+7. **Routing** – FastAPI router dispatches to endpoint handlers
 
 ### Service Communication Protocol
 
@@ -339,7 +339,7 @@ Skills can include supporting files (scripts, templates) in the same directory.
 Event-driven hooks for mission lifecycle:
 
 ```bash
-# PreToolUse hook — can block execution
+# PreToolUse hook – can block execution
 # Exit code 0: allow, 1: warn, 2: block
 
 #!/bin/bash
@@ -378,12 +378,12 @@ Only Greenie (and optionally Slammer/Caddy) are published to the host. All other
 ### Container Hardening Checklist
 
 Every container applies:
-- [x] `cap_drop: ALL` — No Linux capabilities
-- [x] `security_opt: no-new-privileges` — No privilege escalation
-- [x] `read_only: true` — Immutable root filesystem
-- [x] `tmpfs` mounts — Writable directories in memory
-- [x] Resource limits — CPU and memory caps
-- [x] Non-root user — Where applicable
+- [x] `cap_drop: ALL` – No Linux capabilities
+- [x] `security_opt: no-new-privileges` – No privilege escalation
+- [x] `read_only: true` – Immutable root filesystem
+- [x] `tmpfs` mounts – Writable directories in memory
+- [x] Resource limits – CPU and memory caps
+- [x] Non-root user – Where applicable
 
 ### Custom Seccomp Profiles
 
@@ -682,10 +682,10 @@ Configure automatic fallback on provider failure:
 
 When contributing advanced features:
 
-1. **Update this guide** — Document new internals and patterns
-2. **Add integration tests** — Cover cross-service interactions
-3. **Benchmark performance** — Measure impact on latency and resource usage
-4. **Security review** — Ensure no new attack surfaces
-5. **Backward compatibility** — Don't break existing configurations
+1. **Update this guide** – Document new internals and patterns
+2. **Add integration tests** – Cover cross-service interactions
+3. **Benchmark performance** – Measure impact on latency and resource usage
+4. **Security review** – Ensure no new attack surfaces
+5. **Backward compatibility** – Don't break existing configurations
 
 See [CONTRIBUTING.md](../../CONTRIBUTING.md) for the full process.

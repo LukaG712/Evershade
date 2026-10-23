@@ -1,4 +1,4 @@
-# Evershade Security Model
+﻿# Evershade Security Model
 
 **Version:** 1.1.0
 **Last Updated:** 2026-10-23
@@ -9,11 +9,11 @@
 
 Evershade's security model is built on five core principles:
 
-1. **Least privilege** — Every service runs with minimal permissions.
-2. **Defense in depth** — Multiple layers of protection; no single point of failure.
-3. **Network isolation** — Services communicate on an internal network; only the gateway is exposed.
-4. **Secrets protection** — Credentials are encrypted at rest and never logged.
-5. **Untrusted content** — All external content (web pages, repositories, notes) is treated as untrusted data.
+1. **Least privilege** – Every service runs with minimal permissions.
+2. **Defense in depth** – Multiple layers of protection; no single point of failure.
+3. **Network isolation** – Services communicate on an internal network; only the gateway is exposed.
+4. **Secrets protection** – Credentials are encrypted at rest and never logged.
+5. **Untrusted content** – All external content (web pages, repositories, notes) is treated as untrusted data.
 
 ### Security at a Glance
 
@@ -33,7 +33,7 @@ For beginners, here's what this means in practice:
 
 ### Service-to-Service
 
-All services authenticate using API keys passed via the `Authorization: Bearer` header. Query parameter authentication (`x_key`, `api-key`) has been **removed** — it is no longer supported. All services use constant-time comparison (`hmac.compare_digest`) to prevent timing attacks.
+All services authenticate using API keys passed via the `Authorization: Bearer` header. Query parameter authentication (`x_key`, `api-key`) has been **removed** – it is no longer supported. All services use constant-time comparison (`hmac.compare_digest`) to prevent timing attacks.
 
 **Auth header format:**
 ```
@@ -57,17 +57,17 @@ Greenie provides browser-based user authentication with:
 - **Session cleanup**: Expired and revoked sessions are automatically purged
 
 API endpoints:
-- `POST /api/auth/login` — Login with username/password
-- `POST /api/auth/logout` — Logout and revoke session
-- `GET /api/auth/me` — Get current user profile
-- `PUT /api/auth/me` — Update profile (display name, email)
-- `POST /api/auth/me/password` — Change password
-- `GET /api/auth/session` — Check authentication status
-- `GET /api/auth/users` — List all users (admin)
-- `POST /api/auth/users` — Create user (admin)
-- `PUT /api/auth/users/{username}` — Update user (admin)
-- `DELETE /api/auth/users/{username}` — Disable user (admin)
-- `POST /api/auth/users/{username}/reset-password` — Reset password (admin)
+- `POST /api/auth/login` – Login with username/password
+- `POST /api/auth/logout` – Logout and revoke session
+- `GET /api/auth/me` – Get current user profile
+- `PUT /api/auth/me` – Update profile (display name, email)
+- `POST /api/auth/me/password` – Change password
+- `GET /api/auth/session` – Check authentication status
+- `GET /api/auth/users` – List all users (admin)
+- `POST /api/auth/users` – Create user (admin)
+- `PUT /api/auth/users/{username}` – Update user (admin)
+- `DELETE /api/auth/users/{username}` – Disable user (admin)
+- `POST /api/auth/users/{username}/reset-password` – Reset password (admin)
 
 User sessions are separate from service-to-service API key authentication.
 API keys authenticate service clients; user sessions authenticate browser users.
@@ -98,9 +98,9 @@ API keys authenticate service clients; user sessions authenticate browser users.
 ### Container Hardening
 
 Every service container applies:
-- `cap_drop: ALL` — Drop all Linux capabilities
-- `security_opt: no-new-privileges` — Prevent privilege escalation
-- `read_only: true` — Read-only root filesystem (all services)
+- `cap_drop: ALL` – Drop all Linux capabilities
+- `security_opt: no-new-privileges` – Prevent privilege escalation
+- `read_only: true` – Read-only root filesystem (all services)
 - `tmpfs` mounts for writable directories (`/tmp`, `/app/data`, `/app/logs`)
 - Resource limits (CPU, memory, processes)
 
@@ -112,7 +112,7 @@ Every service container applies:
 
 - AES-256-GCM authenticated encryption for all secrets at rest
 - Encryption key derived from `ENCRYPTION_KEY` environment variable via SHA-256
-- SQLite persistence — secrets survive container restarts
+- SQLite persistence – secrets survive container restarts
 - Secrets are never logged or exposed in list API responses (only in GET by key)
 - 96-bit random nonce per encryption operation (no nonce reuse)
 - **Important:** Set a strong `ENCRYPTION_KEY` in production. Default key will be blocked in server mode.
@@ -132,9 +132,9 @@ Every service container applies:
 
 | Level | Security Boundary | Use Case |
 |-------|-------------------|----------|
-| `worktree` | **None** — shares host filesystem | Trusted development only |
-| `container` | **Yes** — isolated container | Default for untrusted code |
-| `workstation` | **Yes** — full VM isolation | Maximum isolation |
+| `worktree` | **None** – shares host filesystem | Trusted development only |
+| `container` | **Yes** – isolated container | Default for untrusted code |
+| `workstation` | **Yes** – full VM isolation | Maximum isolation |
 
 ### Command Execution
 
@@ -248,26 +248,26 @@ Report security vulnerabilities to the repository maintainers. Do not open publi
 
 ### For Beginners
 
-1. **Generate strong API keys** — Use `openssl rand -hex 32` for each service
-2. **Never commit `.env`** — It's in `.gitignore`, but double-check before pushing
-3. **Use minimal profile first** — Start small, add services as needed
-4. **Keep Docker updated** — Run the latest stable Docker version
-5. **Backup regularly** — Use `evershade backup` before major changes
+1. **Generate strong API keys** – Use `openssl rand -hex 32` for each service
+2. **Never commit `.env`** – It's in `.gitignore`, but double-check before pushing
+3. **Use minimal profile first** – Start small, add services as needed
+4. **Keep Docker updated** – Run the latest stable Docker version
+5. **Backup regularly** – Use `evershade backup` before major changes
 
 ### For Production
 
-1. **Enable TLS** — Use the Caddy proxy profile or external reverse proxy
-2. **Restrict firewall** — Only expose ports 80/443 to the internet
-3. **Rotate keys periodically** — Use the credential rotation API
-4. **Monitor logs** — Configure Sneaker alerts for suspicious activity
-5. **Use server mode** — Set `EVERSHADE_MODE=server` for production deployments
-6. **Enable rate limiting** — Configure appropriate limits for your traffic
-7. **Audit access** — Review the audit trail regularly via `/api/audit/events`
+1. **Enable TLS** – Use the Caddy proxy profile or external reverse proxy
+2. **Restrict firewall** – Only expose ports 80/443 to the internet
+3. **Rotate keys periodically** – Use the credential rotation API
+4. **Monitor logs** – Configure Sneaker alerts for suspicious activity
+5. **Use server mode** – Set `EVERSHADE_MODE=server` for production deployments
+6. **Enable rate limiting** – Configure appropriate limits for your traffic
+7. **Audit access** – Review the audit trail regularly via `/api/audit/events`
 
 ### For Maximum Security
 
-1. **Use container isolation** — Set `EVERSHADE_ISOLATION_MODE=container` for Slinker
-2. **Network policies** — Configure workstation network policies with default-deny
-3. **Secrets management** — Use Docker secrets instead of `.env` for production
-4. **Seccomp profiles** — Apply custom Seccomp profiles for additional hardening
-5. **Regular audits** — Run security tests: `./tests/run-all-tests.sh security`
+1. **Use container isolation** – Set `EVERSHADE_ISOLATION_MODE=container` for Slinker
+2. **Network policies** – Configure workstation network policies with default-deny
+3. **Secrets management** – Use Docker secrets instead of `.env` for production
+4. **Seccomp profiles** – Apply custom Seccomp profiles for additional hardening
+5. **Regular audits** – Run security tests: `./tests/run-all-tests.sh security`
