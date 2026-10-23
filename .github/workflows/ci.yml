@@ -1,0 +1,43 @@
+name: Evershade CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install linting tools
+        run: |
+          pip install ruff
+
+      - name: Python linting (ruff)
+        run: |
+          ruff check . --output-format github
+
+      - name: Python formatting check (ruff)
+        run: |
+          ruff format . --check --diff
+
+  docker-compose:
+    name: Validate Docker Compose
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Docker Compose file
+        run: |
+          docker compose config --quiet
