@@ -140,7 +140,7 @@ class Installer:
         self.profile = "standard"
         self.custom_services = []
         self.install_dir = DEFAULT_DIR
-        self.start_services = True
+        self.start_services_flag = True
         self.regenerate_keys = True
         self.create_shortcut = True
         self.user = get_windows_username()
@@ -309,7 +309,7 @@ class Installer:
 
     def start_services(self):
         """Start Evershade services."""
-        if not self.start_services:
+        if not self.start_services_flag:
             return True, "Skipped"
 
         start_ps1 = os.path.join(self.install_dir, "start.ps1")
@@ -886,7 +886,7 @@ class EvershadeInstallerGUI:
         opt_frame.pack(fill="x")
 
         self.shortcut_var = tk.BooleanVar(value=self.installer.create_shortcut)
-        self.start_var = tk.BooleanVar(value=self.installer.start_services)
+        self.start_var = tk.BooleanVar(value=self.installer.start_services_flag)
         self.regen_var = tk.BooleanVar(value=self.installer.regenerate_keys)
 
         ttk.Checkbutton(
@@ -957,7 +957,7 @@ class EvershadeInstallerGUI:
         if hasattr(self, "shortcut_var"):
             self.installer.create_shortcut = self.shortcut_var.get()
         if hasattr(self, "start_var"):
-            self.installer.start_services = self.start_var.get()
+            self.installer.start_services_flag = self.start_var.get()
         if hasattr(self, "regen_var"):
             self.installer.regenerate_keys = self.regen_var.get()
 
@@ -1314,7 +1314,7 @@ class EvershadeInstallerGUI:
         div.pack(fill="x", pady=(0, 15))
         div.pack_propagate(False)
 
-        if self.installer.start_services:
+        if self.installer.start_services_flag:
             info = ttk.Label(
                 parent,
                 text="Ready to start Evershade services. This may take a minute as Docker pulls images.",
@@ -1351,7 +1351,7 @@ class EvershadeInstallerGUI:
         start_btn.pack(pady=5)
 
     def _start_callback(self):
-        if not self.installer.start_services:
+        if not self.installer.start_services_flag:
             self._log_to_text(self.start_log, "Starting services is disabled.")
             self._log_to_text(
                 self.start_log,

@@ -129,7 +129,7 @@ class Installer:
         self.install_dir = DEFAULT_DIR
         self.use_systemd = True
         self.use_desktop = True
-        self.start_services = True
+        self.start_services_flag = True
         self.regenerate_keys = True
         self.user = get_invoking_user()
         self.log = []
@@ -382,7 +382,7 @@ StartupNotify=true
 
     def start_services(self):
         """Start Evershade services."""
-        if not self.start_services:
+        if not self.start_services_flag:
             return True, "Skipped"
 
         start_sh = os.path.join(self.install_dir, "start.sh")
@@ -1002,7 +1002,7 @@ class EvershadeInstallerGUI:
 
         self.systemd_var = tk.BooleanVar(value=self.installer.use_systemd)
         self.desktop_var = tk.BooleanVar(value=self.installer.use_desktop)
-        self.start_var = tk.BooleanVar(value=self.installer.start_services)
+        self.start_var = tk.BooleanVar(value=self.installer.start_services_flag)
         self.regen_var = tk.BooleanVar(value=self.installer.regenerate_keys)
 
         ttk.Checkbutton(
@@ -1085,7 +1085,7 @@ class EvershadeInstallerGUI:
         if hasattr(self, "desktop_var"):
             self.installer.use_desktop = self.desktop_var.get()
         if hasattr(self, "start_var"):
-            self.installer.start_services = self.start_var.get()
+            self.installer.start_services_flag = self.start_var.get()
         if hasattr(self, "regen_var"):
             self.installer.regenerate_keys = self.regen_var.get()
 
@@ -1490,7 +1490,7 @@ class EvershadeInstallerGUI:
         div.pack(fill="x", pady=(0, 15))
         div.pack_propagate(False)
 
-        if self.installer.start_services:
+        if self.installer.start_services_flag:
             info = ttk.Label(
                 parent,
                 text="Ready to start Evershade services. This may take a minute as Docker pulls images.",
@@ -1527,7 +1527,7 @@ class EvershadeInstallerGUI:
         start_btn.pack(pady=5)
 
     def _start_callback(self):
-        if not self.installer.start_services:
+        if not self.installer.start_services_flag:
             self._log_to_text(self.start_log, "STARTING SERVICES IS DISABLED.")
             self._log_to_text(
                 self.start_log,
