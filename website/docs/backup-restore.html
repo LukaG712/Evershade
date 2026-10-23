@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backup & Restore – Evershade</title><link rel="stylesheet" href="../css/style.css"></head><body>
+<header><div class="header-inner"><a href="../index.html" class="logo">👻 Evershade</a>
+<nav><a href="../index.html">Home</a>
+<div class="nav-dropdown"><a href="../services/services.html">Services ▾</a><div class="nav-dropdown-menu">
+<a href="../services/greenie.html">Greenie</a><a href="../services/slinker.html">Slinker</a><a href="../services/trapper.html">Trapper</a><a href="../services/gobber.html">Gobber</a>
+<a href="../services/sneaker.html">Sneaker</a><a href="../services/hider.html">Hider</a><a href="../services/poltergeist.html">Poltergeist</a><a href="../services/shrewd.html">Shrewd</a>
+<a href="../services/slammer.html">Slammer</a><a href="../services/speedy.html">Speedy</a></div></div>
+<div class="nav-dropdown"><a href="getting-started.html">Docs ▾</a><div class="nav-dropdown-menu">
+<a href="getting-started.html">Getting Started</a><a href="deployment.html">Deployment</a>
+<a href="configuration.html">Configuration</a><a href="security.html">Security</a>
+<a href="backup-restore.html">Backup & Restore</a><a href="resources.html">Resources</a></div></div>
+<div class="nav-dropdown"><a href="../api/api-reference.html">API ▾</a><div class="nav-dropdown-menu">
+<a href="../api/api-reference.html">API Reference</a><a href="../api/mission-control.html">Mission Control</a><a href="../api/agent-harness.html">Agent Harness</a></div></div>
+<div class="nav-dropdown"><a href="../docs/advanced.html">Reference ▾</a><div class="nav-dropdown-menu">
+<a href="../docs/advanced.html">Advanced Guide</a><a href="../docs/workstations.html">Workstations</a><a href="../company/architecture.html">Architecture</a></div></div>
+<a href="../reference/glossary.html">Glossary</a><a href="../reference/faq.html">FAQ</a></nav></div></header>
+<main>
+<div class="breadcrumb"><a href="../index.html">Home</a> <span>›</span> <a href="getting-started.html">Guides</a> <span>›</span> <span>Backup & Restore</span></div>
+<div class="section-header"><h2>💾 Backup & Restore</h2><p>Data protection strategies, automated backups, and disaster recovery.</p></div>
+<div class="content-with-sidebar"><div class="sidebar"><nav class="sidebar-nav"><h4>On this page</h4>
+<a href="#what">What Gets Backed Up</a><a href="#manual">Manual Backup</a><a href="#scheduled">Scheduled Backups</a>
+<a href="#restore">Restore</a><a href="#disaster">Disaster Recovery</a></nav></div>
+<div>
+<h3 id="what">What Gets Backed Up</h3>
+<div class="table-wrapper"><table><thead><tr><th>Data</th><th>Location</th><th>Method</th></tr></thead><tbody>
+<tr><td>Greenie database</td><td><code>greenie_data</code> volume</td><td>SQLite online backup API</td></tr>
+<tr><td>Slinker tasks</td><td><code>slinker_logs</code> volume</td><td>SQLite online backup API</td></tr>
+<tr><td>Gobber data</td><td><code>gobber_data</code> volume</td><td>SQLite online backup API</td></tr>
+<tr><td>Sneaker data</td><td><code>sneaker_data</code> volume</td><td>SQLite online backup API</td></tr>
+<tr><td>Hider secrets</td><td><code>hider_data</code> volume</td><td>SQLite online backup API</td></tr>
+<tr><td>Poltergeist data</td><td><code>poltergeist_data</code> volume</td><td>SQLite online backup API</td></tr>
+<tr><td>Redis data</td><td><code>redis_data</code> volume</td><td>BGSAVE + copy</td></tr>
+<tr><td>Configuration</td><td><code>.env</code>, <code>hub.yaml</code></td><td>File copy</td></tr>
+</tbody></table></div>
+<h3 id="manual" style="margin-top:2rem">Manual Backup</h3>
+<pre><code># Create backup (recommended)
+evershade backup create
+
+# Include secrets (default: redacted)
+evershade backup create --include-secrets
+
+# Custom output path
+evershade backup create --output ./my-backup.tar.gz</code></pre>
+<p>Backup includes all SQLite databases, configuration files (redacted by default), and a manifest with SHA-256 checksums.</p>
+<h3 id="scheduled" style="margin-top:2rem">Scheduled Backups</h3>
+<pre><code># Daily backup at 2 AM, retain 7 days
+curl -X POST http://localhost:8080/api/backups/schedule \
+  -H "Authorization: Bearer $EVERSHADE_GREENIE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"schedule": "0 2 * * *", "retention_days": 7}'</code></pre>
+<h3 id="restore" style="margin-top:2rem">Restore</h3>
+<pre><code># Restore from backup
+evershade backup restore backups/evershade-20261022-101500.tar.gz
+
+# Dry run (validate without restoring)
+evershade backup restore --dry-run backups/evershade-20261022-101500.tar.gz
+
+# Verify integrity
+evershade backup --verify backups/evershade-20261022-101500.tar.gz</code></pre>
+<div class="alert warning" style="margin-top:1rem"><strong>Warning:</strong> Restore replaces current data. A pre-restore recovery backup is created automatically in <code>backups/recovery/</code>.</div>
+<h3 id="disaster" style="margin-top:2rem">Disaster Recovery</h3>
+<ol style="padding-left:1.5rem;color:var(--text-secondary)">
+<li>Stop all services: <code>docker compose down</code></li>
+<li>Restore from backup: <code>evershade backup restore &lt;file&gt;</code></li>
+<li>Start services: <code>docker compose --profile standard up -d</code></li>
+<li>Verify: <code>evershade status</code></li>
+</ol>
+<div class="alert info" style="margin-top:1.5rem"><strong>No backup?</strong> Docker volumes survive <code>docker compose down</code> (use <code>-v</code> to delete). Recreate <code>.env</code> from your records.</div>
+</div></div></main>
+<footer><div class="footer-inner">
+<div class="footer-col"><h4>Platform</h4><a href="../index.html">Home</a><a href="../services/services.html">All Services</a><a href="../api/api-reference.html">API Reference</a></div>
+<div class="footer-col"><h4>Docs</h4><a href="getting-started.html">Getting Started</a><a href="deployment.html">Deployment</a><a href="configuration.html">Configuration</a><a href="security.html">Security</a></div>
+<div class="footer-col"><h4>Company</h4><a href="../company/about.html">About</a><a href="../company/architecture.html">Architecture</a><a href="../news/changelog.html">Changelog</a></div>
+<div class="footer-col"><h4>Resources</h4><a href="../reference/faq.html">FAQ</a><a href="resources.html">Resource Requirements</a><a href="https://github.com/LukaG712/Evershade" target="_blank">GitHub</a></div>
+</div><div class="footer-bottom"><p>Evershade is licensed under the <a href="https://github.com/LukaG712/Evershade/blob/main/LICENSE" target="_blank">MIT License</a>.</p></div></footer>
+<script src="../js/main.js"></script></body></html>

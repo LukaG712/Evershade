@@ -53,9 +53,13 @@ The API will be available at **http://localhost:8080**.
 
 ---
 
-## GUI Installer (Linux)
+## GUI Installers
 
-For a visual, step-by-step installation experience on Ubuntu Desktop, use the GUI installer:
+Evershade provides visual, step-by-step GUI installers for both **Linux** and **Windows**. The wizard handles everything: dependency checks, Docker setup, service installation, configuration, and auto-start.
+
+### Linux GUI Installer
+
+For a visual installation experience on Ubuntu Desktop, use the GUI installer:
 
 ```bash
 # Run the launcher script (checks prerequisites and installs missing ones)
@@ -65,7 +69,7 @@ bash run-install-gui.sh
 sudo python3 install-gui.py
 ```
 
-The GUI wizard guides you through 9 steps:
+The Linux GUI wizard guides you through 9 steps:
 1. **Welcome** — Overview of Evershade and requirements
 2. **System Check** — Verifies OS version, architecture, and installed tools
 3. **Installation Options** — Choose profile (minimal/standard/full/custom) and install directory. Custom mode lets you pick individual services via checkboxes.
@@ -76,7 +80,32 @@ The GUI wizard guides you through 9 steps:
 8. **Start Services** — Launches all services with your chosen profile
 9. **Complete** — Summary with quick commands and next steps
 
-**Requirements:** Python 3.6+, Tkinter (usually pre-installed), and a graphical display (X11/Wayland). For SSH sessions, use `ssh -X`.
+**Requirements:** Python 3.6+, Tkinter (usually pre-installed on Ubuntu Desktop), and a graphical display (X11/Wayland). For SSH sessions, use `ssh -X`.
+
+### Windows GUI Installer
+
+For a visual installation experience on Windows, use the GUI installer:
+
+```batch
+:: Double-click the launcher (checks Python and Tkinter)
+run-install-gui.bat
+
+:: Or run directly with Python
+python install-gui-win.py
+```
+
+The Windows GUI wizard guides you through 9 steps:
+1. **Welcome** — Overview of Evershade and requirements
+2. **System Check** — Verifies Windows version, architecture, and installed tools
+3. **Installation Options** — Choose profile (minimal/standard/full/custom) and install directory. Custom mode lets you pick individual services via checkboxes.
+4. **Docker Check** — Verifies Docker Desktop is installed and running (with download link if missing)
+5. **Clone & Install** — Clones the repository and installs services via PowerShell
+6. **Configure** — Creates `.env` with auto-generated secure API keys
+7. **Desktop Shortcut** — Optionally creates a desktop shortcut for easy launching
+8. **Start Services** — Launches all services with your chosen profile
+9. **Complete** — Summary with quick commands and next steps
+
+**Requirements:** Python 3.6+ with Tkinter (included by default), Docker Desktop, and Git.
 
 ---
 

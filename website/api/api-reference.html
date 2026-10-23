@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Reference – Evershade</title><link rel="stylesheet" href="../css/style.css"></head><body>
+<header><div class="header-inner"><a href="../index.html" class="logo">👻 Evershade</a>
+<nav><a href="../index.html">Home</a>
+<div class="nav-dropdown"><a href="../company/about.html">Company ▾</a><div class="nav-dropdown-menu">
+<a href="../company/about.html">About</a><a href="../company/architecture.html">Architecture</a></div></div>
+<div class="nav-dropdown"><a href="../services/services.html">Services ▾</a><div class="nav-dropdown-menu">
+<a href="../services/services.html">All Services</a><a href="../services/greenie.html">Greenie</a><a href="../services/slinker.html">Slinker</a><a href="../services/trapper.html">Trapper</a><a href="../services/gobber.html">Gobber</a>
+<a href="../services/sneaker.html">Sneaker</a><a href="../services/hider.html">Hider</a><a href="../services/poltergeist.html">Poltergeist</a><a href="../services/shrewd.html">Shrewd</a>
+<a href="../services/slammer.html">Slammer</a><a href="../services/speedy.html">Speedy</a></div></div>
+<div class="nav-dropdown"><a href="../docs/getting-started.html">Docs ▾</a><div class="nav-dropdown-menu">
+<a href="../docs/getting-started.html">Getting Started</a><a href="../docs/deployment.html">Deployment</a>
+<a href="../docs/configuration.html">Configuration</a><a href="../docs/security.html">Security</a>
+<a href="../docs/backup-restore.html">Backup & Restore</a><a href="../docs/resources.html">Resource Requirements</a>
+<a href="../docs/workstations.html">Workstations</a><a href="../docs/advanced.html">Advanced Guide</a></div></div>
+<div class="nav-dropdown"><a href="api-reference.html" class="active">API ▾</a><div class="nav-dropdown-menu">
+<a href="api-reference.html">API Reference</a><a href="mission-control.html">Mission Control</a><a href="agent-harness.html">Agent Harness</a></div></div>
+<div class="nav-dropdown"><a href="../reference/glossary.html">Reference ▾</a><div class="nav-dropdown-menu">
+<a href="../reference/glossary.html">Glossary</a><a href="../reference/faq.html">FAQ</a></div></div>
+<a href="../news/changelog.html">News</a></nav></div></header>
+<main>
+<div class="breadcrumb"><a href="../index.html">Home</a> <span>›</span> <span>API Reference</span></div>
+<div class="section-header"><h2>📡 API Reference</h2><p>Every API endpoint for every service. All services use HTTP/JSON REST APIs with Bearer token authentication.</p></div>
+<div class="content-with-sidebar"><div class="sidebar"><nav class="sidebar-nav"><h4>Services</h4>
+<a href="#greenie">Greenie</a><a href="#slinker">Slinker</a><a href="#trapper">Trapper</a>
+<a href="#gobber">Gobber</a><a href="#sneaker">Sneaker</a><a href="#hider">Hider</a>
+<a href="#poltergeist">Poltergeist</a><a href="#shrewd">Shrewd</a></nav></div>
+<div>
+<h3>Authentication</h3>
+<p>All endpoints require <code>Authorization: Bearer &lt;api-key&gt;</code> header. Query parameter authentication is not supported.</p>
+<h3>Standard Response Format</h3>
+<pre><code>{
+  "success": true,
+  "data": { ... },
+  "error": null,
+  "requestId": "uuid",
+  "timestamp": "2026-10-22T10:00:00Z"
+}</code></pre>
+<h3 id="greenie" style="margin-top:2rem">Greenie (Port 8080)</h3>
+<div class="table-wrapper"><table><thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead><tbody>
+<tr><td><span class="method get">GET</span></td><td><code>/api/health</code></td><td>Health check</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/agents</code></td><td>List agents</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/agents</code></td><td>Create agent</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/chat</code></td><td>Send chat message</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/workflows</code></td><td>List workflows</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/workflows</code></td><td>Create workflow</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/workstations</code></td><td>List workstations</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/workstations</code></td><td>Create workstation</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/system/stats</code></td><td>System stats</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/backup</code></td><td>List backups</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/backup</code></td><td>Create backup</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/docs</code></td><td>Swagger UI</td></tr>
+</tbody></table></div>
+<h3 id="slinker" style="margin-top:2rem">Slinker (Port 8000)</h3>
+<div class="table-wrapper"><table><thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead><tbody>
+<tr><td><span class="method get">GET</span></td><td><code>/api/v1/tasks</code></td><td>List tasks</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/v1/tasks/{id}</code></td><td>Get task details</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/v1/workers</code></td><td>List workers</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/v1/projects</code></td><td>List projects</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/v1/projects</code></td><td>Register project</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/v1/chat/completions</code></td><td>OpenAI-compatible chat</td></tr>
+</tbody></table></div>
+<h3 id="trapper" style="margin-top:2rem">Trapper (Port 3000)</h3>
+<div class="table-wrapper"><table><thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead><tbody>
+<tr><td><span class="method post">POST</span></td><td><code>/api/scrape</code></td><td>Scrape a page</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/crawl</code></td><td>Start crawl job</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/map</code></td><td>Map a website</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/search</code></td><td>Search the web</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/extract</code></td><td>Extract structured data</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/agent</code></td><td>Autonomous browsing agent</td></tr>
+</tbody></table></div>
+<h3 id="gobber" style="margin-top:2rem">Gobber (Port 8085)</h3>
+<div class="table-wrapper"><table><thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead><tbody>
+<tr><td><span class="method post">POST</span></td><td><code>/api/webhooks</code></td><td>Create webhook</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/webhooks</code></td><td>List webhooks</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/analytics/events</code></td><td>Record event</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/flags</code></td><td>Create feature flag</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/cache</code></td><td>Set cache entry</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/cache/{key}</code></td><td>Get cache entry</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/vault/search</code></td><td>Semantic search</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/embeddings/generate</code></td><td>Generate embedding</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/embeddings/search</code></td><td>Vector search</td></tr>
+</tbody></table></div>
+<h3 id="sneaker" style="margin-top:2rem">Sneaker (Port 8086)</h3>
+<div class="table-wrapper"><table><thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead><tbody>
+<tr><td><span class="method post">POST</span></td><td><code>/api/metrics</code></td><td>Record metric</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/metrics</code></td><td>Query metrics</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/traces</code></td><td>Record trace</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/traces</code></td><td>Query traces</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/logs</code></td><td>Record log</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/alerts</code></td><td>List alerts</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/v1/traces</code></td><td>OTLP traces</td></tr>
+</tbody></table></div>
+<h3 id="hider" style="margin-top:2rem">Hider (Port 8087)</h3>
+<div class="table-wrapper"><table><thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead><tbody>
+<tr><td><span class="method post">POST</span></td><td><code>/api/secrets</code></td><td>Create secret</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/secrets/{key}</code></td><td>Get secret</td></tr>
+<tr><td><span class="method put">PUT</span></td><td><code>/api/secrets/{key}</code></td><td>Update secret</td></tr>
+<tr><td><span class="method delete">DELETE</span></td><td><code>/api/secrets/{key}</code></td><td>Delete secret</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/configs/{key}</code></td><td>Get config</td></tr>
+</tbody></table></div>
+<h3 id="poltergeist" style="margin-top:2rem">Poltergeist (Port 8088)</h3>
+<div class="table-wrapper"><table><thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead><tbody>
+<tr><td><span class="method post">POST</span></td><td><code>/api/notifications</code></td><td>Send notification</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/templates</code></td><td>Create template</td></tr>
+<tr><td><span class="method post">POST</span></td><td><code>/api/templates/{name}/send</code></td><td>Send from template</td></tr>
+</tbody></table></div>
+<h3 id="shrewd" style="margin-top:2rem">Shrewd (Port 8089)</h3>
+<div class="table-wrapper"><table><thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead><tbody>
+<tr><td><span class="method post">POST</span></td><td><code>/api/chat</code></td><td>Chat completion</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/models</code></td><td>List models</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/providers</code></td><td>List providers</td></tr>
+<tr><td><span class="method get">GET</span></td><td><code>/api/usage</code></td><td>Usage stats</td></tr>
+</tbody></table></div>
+<div class="alert info" style="margin-top:2rem"><strong>Interactive docs:</strong> Each service exposes Swagger UI at <code>/docs</code> (e.g., <code>http://localhost:8080/docs</code>).</div>
+</div></div></main>
+<footer><div class="footer-inner">
+<div class="footer-col"><h4>Platform</h4><a href="../services/services.html">All Services</a><a href="../docs/getting-started.html">Getting Started</a><a href="api-reference.html">API Reference</a><a href="../reference/glossary.html">Glossary</a></div>
+<div class="footer-col"><h4>Docs</h4><a href="../docs/deployment.html">Deployment</a><a href="../docs/configuration.html">Configuration</a><a href="../docs/security.html">Security</a><a href="../docs/backup-restore.html">Backup & Restore</a></div>
+<div class="footer-col"><h4>Company</h4><a href="../company/about.html">About</a><a href="../company/architecture.html">Architecture</a><a href="../news/changelog.html">Changelog</a></div>
+<div class="footer-col"><h4>Resources</h4><a href="../reference/faq.html">FAQ</a><a href="../docs/resources.html">Resource Requirements</a><a href="https://github.com/LukaG712/Evershade" target="_blank">GitHub</a></div>
+</div><div class="footer-bottom"><p>Evershade is licensed under the <a href="https://github.com/LukaG712/Evershade/blob/main/LICENSE" target="_blank">MIT License</a>. All service names are inspired by Luigi's Mansion.</p></div></footer>
+<script src="../js/main.js"></script></body></html>

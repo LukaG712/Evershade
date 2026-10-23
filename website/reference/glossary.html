@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glossary – Evershade</title><link rel="stylesheet" href="css/style.css"></head><body>
+<header><div class="header-inner"><a href="index.html" class="logo">👻 Evershade</a>
+<nav><a href="index.html">Home</a>
+<div class="nav-dropdown"><a href="services/services.html">Services ▾</a><div class="nav-dropdown-menu">
+<a href="services/greenie.html">Greenie</a><a href="services/slinker.html">Slinker</a><a href="services/trapper.html">Trapper</a><a href="services/gobber.html">Gobber</a>
+<a href="services/sneaker.html">Sneaker</a><a href="services/hider.html">Hider</a><a href="services/poltergeist.html">Poltergeist</a><a href="services/shrewd.html">Shrewd</a>
+<a href="services/slammer.html">Slammer</a><a href="services/speedy.html">Speedy</a></div></div>
+<div class="nav-dropdown"><a href="docs/getting-started.html">Docs ▾</a><div class="nav-dropdown-menu">
+<a href="docs/getting-started.html">Getting Started</a><a href="docs/deployment.html">Deployment</a>
+<a href="docs/configuration.html">Configuration</a><a href="docs/security.html">Security</a></div></div>
+<div class="nav-dropdown"><a href="api/api-reference.html">API ▾</a><div class="nav-dropdown-menu">
+<a href="api/api-reference.html">API Reference</a><a href="api/mission-control.html">Mission Control</a><a href="api/agent-harness.html">Agent Harness</a></div></div>
+<div class="nav-dropdown"><a href="docs/advanced.html">Reference ▾</a><div class="nav-dropdown-menu">
+<a href="docs/advanced.html">Advanced Guide</a><a href="docs/workstations.html">Workstations</a><a href="company/architecture.html">Architecture</a></div></div>
+<a href="reference/glossary.html">Glossary</a><a href="reference/faq.html">FAQ</a></nav></div></header>
+<main>
+<div class="breadcrumb"><a href="index.html">Home</a> <span>›</span> <span>Glossary</span></div>
+<div class="section-header"><h2>📖 Glossary</h2><p>Key terms and concepts used throughout the Evershade platform.</p></div>
+<div class="search-box"><input type="text" placeholder="Search terms..."></div>
+<div class="table-wrapper"><table><thead><tr><th>Term</th><th>Definition</th></tr></thead><tbody>
+<tr><td><strong>Agent</strong></td><td>An AI-powered worker that executes tasks. Agents have a name, runner (Junie), and guidelines that define their behavior.</td></tr>
+<tr><td><strong>Agent Harness</strong></td><td>The execution framework that provides Spec Mode, droids, skills, hooks, and environments for agents.</td></tr>
+<tr><td><strong>Container Isolation</strong></td><td>Running agent tasks in isolated Docker containers to prevent access to host resources.</td></tr>
+<tr><td><strong>Droid</strong></td><td>A specialized agent configuration with predefined capabilities (coder, researcher, reviewer, deployer).</td></tr>
+<tr><td><strong>Evershade</strong></td><td>The self-hosted AI agent platform. Named after Evershade Valley from Luigi's Mansion: Dark Moon.</td></tr>
+<tr><td><strong>Feature Flag</strong></td><td>A toggle that enables or disables features without code changes. Managed by Gobber.</td></tr>
+<tr><td><strong>Gobber</strong></td><td>Storage service providing SQLite databases, knowledge graph, Obsidian vault integration, and semantic search.</td></tr>
+<tr><td><strong>Greenie</strong></td><td>Central orchestrator and API gateway. All requests flow through Greenie.</td></tr>
+<tr><td><strong>Hider</strong></td><td>Encrypted secrets management service using AES-256-GCM encryption.</td></tr>
+<tr><td><strong>Hook</strong></td><td>An event-driven callback triggered at specific points in the agent lifecycle.</td></tr>
+<tr><td><strong>Junie CLI</strong></td><td>The JetBrains Junie command-line interface used by Slinker for code execution.</td></tr>
+<tr><td><strong>Knowledge Graph</strong></td><td>A semantic network of interconnected data stored in Gobber, supporting vector-based search.</td></tr>
+<tr><td><strong>MCP Server</strong></td><td>Model Context Protocol server providing standardized tool access for agents.</td></tr>
+<tr><td><strong>Milestone</strong></td><td>A discrete step within a Mission. Milestones execute sequentially with validation between each.</td></tr>
+<tr><td><strong>Mission</strong></td><td>A multi-step AI workflow managed by Mission Control, consisting of milestones with validation.</td></tr>
+<tr><td><strong>Observability</strong></td><td>The ability to monitor system state through metrics, traces, and logs. Provided by Sneaker.</td></tr>
+<tr><td><strong>OTLP</strong></td><td>OpenTelemetry Protocol – standard format for exporting metrics, traces, and logs.</td></tr>
+<tr><td><strong>Plugin</strong></td><td>A Python package that extends platform functionality without modifying core services.</td></tr>
+<tr><td><strong>Poltergeist</strong></td><td>Notification delivery service supporting Slack, Discord, Email, and Telegram.</td></tr>
+<tr><td><strong>Profile</strong></td><td>A Docker Compose profile that determines which services are started (minimal, standard, full).</td></tr>
+<tr><td><strong>RBAC</strong></td><td>Role-Based Access Control – admin, user, and viewer roles for API and dashboard access.</td></tr>
+<tr><td><strong>Run</strong></td><td>A single execution of an agent task, including input, output, and metadata.</td></tr>
+<tr><td><strong>Shrewd</strong></td><td>LLM provider abstraction service supporting OpenAI, Anthropic, Google AI, and Ollama.</td></tr>
+<tr><td><strong>Slinker</strong></td><td>Code execution engine that runs AI agents against codebases in isolated worktrees.</td></tr>
+<tr><td><strong>Slammer</strong></td><td>React-based web dashboard for platform management.</td></tr>
+<tr><td><strong>Sneaker</strong></td><td>Observability service collecting metrics, traces, logs, and managing alerts.</td></tr>
+<tr><td><strong>Speedy</strong></td><td>CLI tool providing terminal-based platform management via the <code>evershade</code> command.</td></tr>
+<tr><td><strong>Spec Mode</strong></td><td>Structured task definition mode with input/output schemas, constraints, and validation rules.</td></tr>
+<tr><td><strong>Skill</strong></td><td>A reusable capability that agents can use, organized hierarchically with inheritance.</td></tr>
+<tr><td><strong>Trapper</strong></td><td>Web scraping and crawling service using Playwright for headless browser automation.</td></tr>
+<tr><td><strong>Validation</strong></td><td>Checks run after each milestone to verify success. Failed validation triggers fix-revalidate cycles.</td></tr>
+<tr><td><strong>Workflow</strong></td><td>A defined sequence of steps that agents execute, managed by Greenie.</td></tr>
+<tr><td><strong>Workstation</strong></td><td>An isolated Docker container providing a full development environment for agent execution.</td></tr>
+<tr><td><strong>Worktree</strong></td><td>A Git worktree – an isolated checkout of a repository used by Slinker for code execution.</td></tr>
+</tbody></table></div>
+</main>
+<footer><div class="footer-inner">
+<div class="footer-col"><h4>Platform</h4><a href="index.html">Home</a><a href="services/services.html">All Services</a><a href="api/api-reference.html">API Reference</a><a href="reference/glossary.html">Glossary</a></div>
+<div class="footer-col"><h4>Docs</h4><a href="docs/getting-started.html">Getting Started</a><a href="docs/deployment.html">Deployment</a><a href="docs/configuration.html">Configuration</a><a href="docs/security.html">Security</a></div>
+<div class="footer-col"><h4>Company</h4><a href="docs/advanced.html">Advanced Guide</a><a href="docs/workstations.html">Workstations</a><a href="company/architecture.html">Architecture</a><a href="api/mission-control.html">Mission Control</a></div>
+<div class="footer-col"><h4>Resources</h4><a href="reference/faq.html">FAQ</a><a href="docs/resources.html">Resource Requirements</a><a href="https://github.com/LukaG712/Evershade" target="_blank">GitHub</a></div>
+</div><div class="footer-bottom"><p>Evershade is licensed under the <a href="https://github.com/LukaG712/Evershade/blob/main/LICENSE" target="_blank">MIT License</a>. All service names are inspired by Luigi's Mansion.</p></div></footer>
+<script src="js/main.js"></script></body></html>

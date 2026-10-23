@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security – Evershade</title><link rel="stylesheet" href="../css/style.css"></head><body>
+<header><div class="header-inner"><a href="../index.html" class="logo">👻 Evershade</a>
+<nav><a href="../index.html">Home</a>
+<div class="nav-dropdown"><a href="../services/services.html">Services ▾</a><div class="nav-dropdown-menu">
+<a href="../services/greenie.html">Greenie</a><a href="../services/slinker.html">Slinker</a><a href="../services/trapper.html">Trapper</a><a href="../services/gobber.html">Gobber</a>
+<a href="../services/sneaker.html">Sneaker</a><a href="../services/hider.html">Hider</a><a href="../services/poltergeist.html">Poltergeist</a><a href="../services/shrewd.html">Shrewd</a>
+<a href="../services/slammer.html">Slammer</a><a href="../services/speedy.html">Speedy</a></div></div>
+<div class="nav-dropdown"><a href="getting-started.html">Docs ▾</a><div class="nav-dropdown-menu">
+<a href="getting-started.html">Getting Started</a><a href="deployment.html">Deployment</a>
+<a href="configuration.html">Configuration</a><a href="security.html">Security</a>
+<a href="backup-restore.html">Backup & Restore</a><a href="resources.html">Resources</a></div></div>
+<div class="nav-dropdown"><a href="../api/api-reference.html">API ▾</a><div class="nav-dropdown-menu">
+<a href="../api/api-reference.html">API Reference</a><a href="../api/mission-control.html">Mission Control</a><a href="../api/agent-harness.html">Agent Harness</a></div></div>
+<div class="nav-dropdown"><a href="../docs/advanced.html">Reference ▾</a><div class="nav-dropdown-menu">
+<a href="../docs/advanced.html">Advanced Guide</a><a href="../docs/workstations.html">Workstations</a><a href="../company/architecture.html">Architecture</a></div></div>
+<a href="../reference/glossary.html">Glossary</a><a href="../reference/faq.html">FAQ</a></nav></div></header>
+<main>
+<div class="breadcrumb"><a href="../index.html">Home</a> <span>›</span> <a href="getting-started.html">Guides</a> <span>›</span> <span>Security</span></div>
+<div class="section-header"><h2>🔐 Security Model</h2><p>Security principles, authentication, container hardening, and best practices.</p></div>
+<div class="content-with-sidebar"><div class="sidebar"><nav class="sidebar-nav"><h4>On this page</h4>
+<a href="#principles">Principles</a><a href="#auth">Authentication</a><a href="#network">Network</a>
+<a href="#secrets">Secrets</a><a href="#csrf">CSRF</a><a href="#rate-limiting">Rate Limiting</a>
+<a href="#best-practices">Best Practices</a></nav></div>
+<div>
+<h3 id="principles">Security Principles</h3>
+<ul class="feature-list">
+<li><span class="check">✓</span> <strong>Least privilege</strong> – Every service runs with minimal permissions</li>
+<li><span class="check">✓</span> <strong>Defense in depth</strong> – Multiple layers of protection</li>
+<li><span class="check">✓</span> <strong>Network isolation</strong> – Only the gateway is exposed</li>
+<li><span class="check">✓</span> <strong>Secrets protection</strong> – Credentials encrypted at rest, never logged</li>
+<li><span class="check">✓</span> <strong>Untrusted content</strong> – All external content treated as data, not instructions</li>
+</ul>
+<h3 id="auth" style="margin-top:2rem">Authentication</h3>
+<div class="table-wrapper"><table><thead><tr><th>Method</th><th>Description</th></tr></thead><tbody>
+<tr><td>Service-to-service</td><td>Bearer token API keys with constant-time comparison</td></tr>
+<tr><td>Browser users</td><td>Username/password with bcrypt (12 rounds), HMAC-signed session cookies</td></tr>
+<tr><td>RBAC</td><td>Admin, user, and viewer roles</td></tr>
+</tbody></table></div>
+<h3 id="network" style="margin-top:2rem">Network Security</h3>
+<ul class="feature-list">
+<li><span class="check">✓</span> Only Greenie (port 8080) published to host</li>
+<li><span class="check">✓</span> All other services on internal Docker network</li>
+<li><span class="check">✓</span> Caddy reverse proxy for TLS in server mode</li>
+</ul>
+<h3 id="secrets" style="margin-top:2rem">Container Hardening</h3>
+<ul class="feature-list">
+<li><span class="check">✓</span> <code>cap_drop: ALL</code> – No Linux capabilities</li>
+<li><span class="check">✓</span> <code>no-new-privileges</code> – No privilege escalation</li>
+<li><span class="check">✓</span> <code>read_only: true</code> – Immutable root filesystem</li>
+<li><span class="check">✓</span> <code>tmpfs</code> mounts for writable directories</li>
+<li><span class="check">✓</span> Resource limits (CPU, memory, processes)</li>
+</ul>
+<h3 id="csrf" style="margin-top:2rem">CSRF Protection</h3>
+<p>Greenie implements CSRF protection for cookie-authenticated sessions using HMAC-signed tokens with the double-submit cookie pattern. Bearer-authenticated API clients are exempt.</p>
+<h3 id="rate-limiting" style="margin-top:2rem">Rate Limiting</h3>
+<div class="table-wrapper"><table><thead><tr><th>Operation</th><th>Limit</th></tr></thead><tbody>
+<tr><td>Auth failures</td><td>10 per 60s per IP</td></tr>
+<tr><td>LLM requests</td><td>20/min</td></tr>
+<tr><td>Code execution</td><td>5/min</td></tr>
+<tr><td>Default</td><td>60 requests/min</td></tr>
+</tbody></table></div>
+<h3 id="best-practices" style="margin-top:2rem">Best Practices</h3>
+<h4>For Beginners</h4>
+<ul class="feature-list">
+<li><span class="check">✓</span> Generate strong API keys with <code>openssl rand -hex 32</code></li>
+<li><span class="check">✓</span> Never commit <code>.env</code> to Git</li>
+<li><span class="check">✓</span> Use minimal profile first</li>
+<li><span class="check">✓</span> Keep Docker updated</li>
+<li><span class="check">✓</span> Backup regularly with <code>evershade backup</code></li>
+</ul>
+<h4 style="margin-top:1.5rem">For Production</h4>
+<ul class="feature-list">
+<li><span class="check">✓</span> Enable TLS with Caddy proxy profile</li>
+<li><span class="check">✓</span> Restrict firewall – only ports 80/443</li>
+<li><span class="check">✓</span> Rotate keys periodically</li>
+<li><span class="check">✓</span> Monitor logs with Sneaker alerts</li>
+<li><span class="check">✓</span> Use <code>EVERSHADE_MODE=server</code></li>
+<li><span class="check">✓</span> Enable rate limiting</li>
+<li><span class="check">✓</span> Use container isolation for Slinker</li>
+</ul></div></div></main>
+<footer><div class="footer-inner">
+<div class="footer-col"><h4>Platform</h4><a href="../index.html">Home</a><a href="../services/services.html">All Services</a><a href="../api/api-reference.html">API Reference</a></div>
+<div class="footer-col"><h4>Docs</h4><a href="getting-started.html">Getting Started</a><a href="deployment.html">Deployment</a><a href="configuration.html">Configuration</a><a href="security.html">Security</a></div>
+<div class="footer-col"><h4>Company</h4><a href="../company/about.html">About</a><a href="../company/architecture.html">Architecture</a><a href="../news/changelog.html">Changelog</a></div>
+<div class="footer-col"><h4>Resources</h4><a href="../reference/faq.html">FAQ</a><a href="resources.html">Resource Requirements</a><a href="https://github.com/LukaG712/Evershade" target="_blank">GitHub</a></div>
+</div><div class="footer-bottom"><p>Evershade is licensed under the <a href="https://github.com/LukaG712/Evershade/blob/main/LICENSE" target="_blank">MIT License</a>.</p></div></footer>
+<script src="../js/main.js"></script></body></html>

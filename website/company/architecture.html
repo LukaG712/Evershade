@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecture – Evershade</title><link rel="stylesheet" href="../css/style.css"></head><body>
+<header><div class="header-inner"><a href="../index.html" class="logo">👻 Evershade</a>
+<nav><a href="../index.html">Home</a>
+<div class="nav-dropdown"><a href="about.html" class="active">Company ▾</a><div class="nav-dropdown-menu">
+<a href="about.html">About</a><a href="architecture.html">Architecture</a></div></div>
+<div class="nav-dropdown"><a href="../services/services.html">Services ▾</a><div class="nav-dropdown-menu">
+<a href="../services/services.html">All Services</a><a href="../services/greenie.html">Greenie</a><a href="../services/slinker.html">Slinker</a><a href="../services/trapper.html">Trapper</a><a href="../services/gobber.html">Gobber</a>
+<a href="../services/sneaker.html">Sneaker</a><a href="../services/hider.html">Hider</a><a href="../services/poltergeist.html">Poltergeist</a><a href="../services/shrewd.html">Shrewd</a>
+<a href="../services/slammer.html">Slammer</a><a href="../services/speedy.html">Speedy</a></div></div>
+<div class="nav-dropdown"><a href="../docs/getting-started.html">Docs ▾</a><div class="nav-dropdown-menu">
+<a href="../docs/getting-started.html">Getting Started</a><a href="../docs/deployment.html">Deployment</a>
+<a href="../docs/configuration.html">Configuration</a><a href="../docs/security.html">Security</a>
+<a href="../docs/backup-restore.html">Backup & Restore</a><a href="../docs/resources.html">Resource Requirements</a>
+<a href="../docs/workstations.html">Workstations</a><a href="../docs/advanced.html">Advanced Guide</a></div></div>
+<div class="nav-dropdown"><a href="../api/api-reference.html">API ▾</a><div class="nav-dropdown-menu">
+<a href="../api/api-reference.html">API Reference</a><a href="../api/mission-control.html">Mission Control</a><a href="../api/agent-harness.html">Agent Harness</a></div></div>
+<div class="nav-dropdown"><a href="../reference/glossary.html">Reference ▾</a><div class="nav-dropdown-menu">
+<a href="../reference/glossary.html">Glossary</a><a href="../reference/faq.html">FAQ</a></div></div>
+<a href="../news/changelog.html">News</a></nav></div></header>
+<main>
+<div class="breadcrumb"><a href="../index.html">Home</a> <span>›</span> <span>Company</span> <span>›</span> <span>Architecture</span></div>
+<div class="section-header"><h2>🏗️ System Architecture</h2><p>System architecture, service boundaries, data flow, and communication standards.</p></div>
+<div class="content-with-sidebar"><div class="sidebar"><nav class="sidebar-nav"><h4>On this page</h4>
+<a href="#overview">Overview</a><a href="#services">Service Boundaries</a>
+<a href="#data-flow">Data Flow</a><a href="#communication">Communication</a>
+<a href="#storage">Storage</a><a href="#networking">Networking</a></nav></div>
+<div>
+<h3 id="overview">Overview</h3><p>Evershade is a microservices architecture where each service has a single responsibility. Services communicate via HTTP/JSON REST APIs and async events through Redis. Greenie acts as the central orchestrator and API gateway.</p>
+<h3 id="services" style="margin-top:2rem">Service Boundaries</h3>
+<div class="table-wrapper"><table><thead><tr><th>Layer</th><th>Services</th><th>Responsibility</th></tr></thead><tbody>
+<tr><td><strong>Gateway</strong></td><td>Greenie</td><td>API gateway, auth, routing, orchestration</td></tr>
+<tr><td><strong>Core</strong></td><td>Slinker, Trapper, Gobber</td><td>Code execution, web scraping, storage</td></tr>
+<tr><td><strong>Support</strong></td><td>Sneaker, Hider, Poltergeist, Shrewd</td><td>Observability, secrets, notifications, LLM</td></tr>
+<tr><td><strong>Frontend</strong></td><td>Slammer, Speedy</td><td>Web dashboard, CLI tool</td></tr>
+</tbody></table></div>
+<h3 id="data-flow" style="margin-top:2rem">Data Flow</h3><h4>Request Flow (Synchronous)</h4>
+<ol style="padding-left:1.5rem;color:var(--text-secondary)">
+<li>Client → Greenie (port 8080)</li>
+<li>Greenie authenticates request</li>
+<li>Greenie → Target service (internal network)</li>
+<li>Target service processes and responds</li>
+<li>Greenie → Client (aggregated response)</li>
+</ol>
+<h4 style="margin-top:1rem">Event Flow (Asynchronous)</h4>
+<ol style="padding-left:1.5rem;color:var(--text-secondary)">
+<li>Service publishes event to Redis</li>
+<li>Redis distributes to subscribers</li>
+<li>Subscribers process events independently</li>
+<li>Results stored in respective databases</li>
+</ol>
+<h3 id="communication" style="margin-top:2rem">Communication Standards</h3><h4>HTTP/JSON REST</h4><ul class="feature-list">
+<li><span class="check">✓</span> All services expose REST APIs</li>
+<li><span class="check">✓</span> Bearer token authentication</li>
+<li><span class="check">✓</span> Standard response format with <code>success</code>, <code>data</code>, <code>error</code></li>
+<li><span class="check">✓</span> HTTP status codes for error handling</li>
+</ul>
+<h4 style="margin-top:1rem">Redis Events</h4><ul class="feature-list">
+<li><span class="check">✓</span> Pub/Sub for real-time events</li>
+<li><span class="check">✓</span> Streams for persistent event logs</li>
+<li><span class="check">✓</span> Queues for task distribution</li>
+</ul>
+<h3 id="storage" style="margin-top:2rem">Storage Architecture</h3><div class="table-wrapper"><table><thead><tr><th>Service</th><th>Database</th><th>Persistence</th></tr></thead><tbody>
+<tr><td>Greenie</td><td>SQLite</td><td>Docker volume <code>greenie_data</code></td></tr>
+<tr><td>Slinker</td><td>SQLite</td><td>Docker volume <code>slinker_logs</code></td></tr>
+<tr><td>Trapper</td><td>Redis</td><td>Docker volume <code>redis_data</code></td></tr>
+<tr><td>Gobber</td><td>SQLite</td><td>Docker volume <code>gobber_data</code></td></tr>
+<tr><td>Sneaker</td><td>SQLite</td><td>Docker volume <code>sneaker_data</code></td></tr>
+<tr><td>Hider</td><td>SQLite</td><td>Docker volume <code>hider_data</code></td></tr>
+<tr><td>Poltergeist</td><td>SQLite</td><td>Docker volume <code>poltergeist_data</code></td></tr>
+<tr><td>Shrewd</td><td>In-memory</td><td>None (stateless)</td></tr>
+</tbody></table></div>
+<h3 id="networking" style="margin-top:2rem">Networking</h3><h4>Docker Network</h4><ul class="feature-list">
+<li><span class="check">✓</span> All services on <code>evershade-network</code> bridge network</li>
+<li><span class="check">✓</span> Services communicate via Docker DNS (service name)</li>
+<li><span class="check">✓</span> Only Greenie (port 8080) published to host</li>
+<li><span class="check">✓</span> Slammer (port 5173) published in <code>full</code> profile</li>
+</ul>
+<h4 style="margin-top:1rem">External Access</h4><ul class="feature-list">
+<li><span class="check">✓</span> Caddy reverse proxy for TLS (proxy profile)</li>
+<li><span class="check">✓</span> Automatic HTTPS with Let's Encrypt</li>
+<li><span class="check">✓</span> Subdomain routing for services</li>
+</ul>
+<div class="alert info" style="margin-top:2rem"><strong>Design Principle:</strong> Each service is independently deployable and replaceable. Optional services degrade gracefully when unavailable.</div>
+</div></div></main>
+<footer><div class="footer-inner">
+<div class="footer-col"><h4>Platform</h4><a href="../services/services.html">All Services</a><a href="../docs/getting-started.html">Getting Started</a><a href="../api/api-reference.html">API Reference</a><a href="../reference/glossary.html">Glossary</a></div>
+<div class="footer-col"><h4>Docs</h4><a href="../docs/deployment.html">Deployment</a><a href="../docs/configuration.html">Configuration</a><a href="../docs/security.html">Security</a><a href="../docs/backup-restore.html">Backup & Restore</a></div>
+<div class="footer-col"><h4>Company</h4><a href="about.html">About</a><a href="architecture.html">Architecture</a><a href="../news/changelog.html">Changelog</a></div>
+<div class="footer-col"><h4>Resources</h4><a href="../reference/faq.html">FAQ</a><a href="../docs/resources.html">Resource Requirements</a><a href="https://github.com/LukaG712/Evershade" target="_blank">GitHub</a></div>
+</div><div class="footer-bottom"><p>Evershade is licensed under the <a href="https://github.com/LukaG712/Evershade/blob/main/LICENSE" target="_blank">MIT License</a>. All service names are inspired by Luigi's Mansion.</p></div></footer>
+<script src="../js/main.js"></script></body></html>

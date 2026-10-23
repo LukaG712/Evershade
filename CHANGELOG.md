@@ -2,6 +2,36 @@
 
 All notable changes to the Evershade ecosystem will be documented in this file.
 
+## [1.14.0] - 2026-10-23
+
+### Added
+
+**First Official Release — GUI Installers for Linux and Windows**
+
+This is the first official release of the Evershade ecosystem, including all services, installers, and documentation.
+
+- **Linux GUI Installer** (`install-gui.py`, `run-install-gui.sh`): Visual wizard installer for Ubuntu Desktop with 9 steps: Welcome, System Check, Installation Options (profile + custom service selection), Install Docker, Clone & Install, Configure (.env with auto-generated API keys), System Integration (systemd + desktop launcher), Start Services, and Complete summary.
+- **Windows GUI Installer** (`install-gui-win.py`, `run-install-gui.bat`): Visual wizard installer for Windows with 9 steps: Welcome, System Check, Installation Options (profile + custom service selection), Docker Desktop Check, Clone & Install, Configure (.env with auto-generated API keys), Desktop Shortcut, Start Services, and Complete summary.
+- **Custom Service Selection**: All installers (CLI and GUI) now support custom mode where users can pick individual services via checkboxes/flags instead of predefined profiles.
+- **Service Submodules**: All 10 services are included as git submodules under `services/` directory: Greenie, Slinker, Trapper, Gobber, Sneaker, Hider, Poltergeist, Shrewd, Slammer, and Speedy.
+- **Documentation Website** (`website/`): Full documentation website with HTML pages for getting started, architecture, security, configuration, deployment, API reference, and individual service documentation.
+- **Update Scripts** (`update.sh`, `update.ps1`, `update-ubuntu.sh`): Scripts to update an existing Evershade installation to the latest version.
+
+### Changed
+
+- All service repositories moved into `services/` directory for cleaner organization
+- README updated with GUI Installer sections for both Linux and Windows
+- Install scripts refactored to support custom service selection
+
+### Breaking Changes
+
+- All services require `Authorization: Bearer` header — query parameter auth removed
+- Hider requires `ENCRYPTION_KEY` environment variable for AES-256-GCM encryption
+- Hider secrets are now encrypted at rest in SQLite — migration required from in-memory data
+- Slammer is the single dashboard — Greenie operates as API-only backend
+
+---
+
 ## [1.12.0] - 2026-10-22
 
 ### Added – Agent Harness (Phase 11)

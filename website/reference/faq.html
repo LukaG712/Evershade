@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ – Evershade</title><link rel="stylesheet" href="css/style.css"></head><body>
+<header><div class="header-inner"><a href="index.html" class="logo">👻 Evershade</a>
+<nav><a href="index.html">Home</a>
+<div class="nav-dropdown"><a href="services/services.html">Services ▾</a><div class="nav-dropdown-menu">
+<a href="services/greenie.html">Greenie</a><a href="services/slinker.html">Slinker</a><a href="services/trapper.html">Trapper</a><a href="services/gobber.html">Gobber</a>
+<a href="services/sneaker.html">Sneaker</a><a href="services/hider.html">Hider</a><a href="services/poltergeist.html">Poltergeist</a><a href="services/shrewd.html">Shrewd</a>
+<a href="services/slammer.html">Slammer</a><a href="services/speedy.html">Speedy</a></div></div>
+<div class="nav-dropdown"><a href="docs/getting-started.html">Docs ▾</a><div class="nav-dropdown-menu">
+<a href="docs/getting-started.html">Getting Started</a><a href="docs/deployment.html">Deployment</a>
+<a href="docs/configuration.html">Configuration</a><a href="docs/security.html">Security</a></div></div>
+<div class="nav-dropdown"><a href="api/api-reference.html">API ▾</a><div class="nav-dropdown-menu">
+<a href="api/api-reference.html">API Reference</a><a href="api/mission-control.html">Mission Control</a><a href="api/agent-harness.html">Agent Harness</a></div></div>
+<div class="nav-dropdown"><a href="docs/advanced.html">Reference ▾</a><div class="nav-dropdown-menu">
+<a href="docs/advanced.html">Advanced Guide</a><a href="docs/workstations.html">Workstations</a><a href="company/architecture.html">Architecture</a></div></div>
+<a href="reference/glossary.html">Glossary</a><a href="reference/faq.html">FAQ</a></nav></div></header>
+<main>
+<div class="breadcrumb"><a href="index.html">Home</a> <span>›</span> <span>FAQ</span></div>
+<div class="section-header"><h2>❓ Frequently Asked Questions</h2><p>Common questions about Evershade, organized by topic.</p></div>
+<div class="search-box"><input type="text" placeholder="Search questions..."></div>
+
+<div class="content-with-sidebar"><div class="sidebar"><nav class="sidebar-nav"><h4>Topics</h4>
+<a href="#general">General</a><a href="#installation">Installation</a>
+<a href="#services">Services</a><a href="#security">Security</a>
+<a href="#agents">Agents</a><a href="#troubleshooting">Troubleshooting</a></nav></div>
+<div>
+
+<h3 id="general">General</h3>
+
+<h4 style="margin-top:1.5rem">What is Evershade?</h4>
+<p>Evershade is a self-hosted AI agent platform built as a collection of specialized microservices. It lets you create, manage, and run AI-powered agents on your own hardware for tasks like code generation, web scraping, research, and more.</p>
+
+<h4 style="margin-top:1.5rem">Is Evershade free?</h4>
+<p>Yes. Evershade is open-source software licensed under the MIT License. You can use it for personal or commercial purposes without restriction.</p>
+
+<h4 style="margin-top:1.5rem">Why the ghost theme?</h4>
+<p>All services are named after ghosts from the Luigi's Mansion series. The repository is named Evershade after Evershade Valley from Luigi's Mansion: Dark Moon. This is a fan-made project and is not affiliated with Nintendo.</p>
+
+<h4 style="margin-top:1.5rem">What AI models does Evershade support?</h4>
+<p>Through Shrewd, Evershade supports OpenAI (GPT-4o), Anthropic (Claude), Google AI (Gemini), and local Ollama models. You can configure multiple providers with automatic fallback.</p>
+
+<h3 id="installation">Installation</h3>
+
+<h4 style="margin-top:1.5rem">What are the minimum system requirements?</h4>
+<p>Minimum: 2 CPU cores, 4 GB RAM, 10 GB disk. Recommended: 4+ cores, 8+ GB RAM, 20+ GB disk. With Ollama: 8+ cores, 16+ GB RAM.</p>
+
+<h4 style="margin-top:1.5rem">Do I need Docker?</h4>
+<p>Yes. Evershade runs entirely in Docker containers. You need Docker Engine 24+ or Docker Desktop.</p>
+
+<h4 style="margin-top:1.5rem">Can I run Evershade on Windows?</h4>
+<p>Yes. Use PowerShell scripts (<code>install.ps1</code>, <code>start.ps1</code>, <code>stop.ps1</code>) and Docker Desktop.</p>
+
+<h4 style="margin-top:1.5rem">Why do I need to run the install script?</h4>
+<p>Service repositories are maintained separately and must be cloned by the install script. This keeps the main repository lightweight.</p>
+
+<h3 id="services">Services</h3>
+
+<h4 style="margin-top:1.5rem">Which services are required?</h4>
+<p>Four core services are required: Greenie (orchestrator), Slinker (code execution), Trapper (web scraping), and Gobber (storage). All others are optional.</p>
+
+<h4 style="margin-top:1.5rem">What happens if an optional service is unavailable?</h4>
+<p>The platform continues to operate. Greenie logs a warning and marks the service as unavailable. Features depending on that service degrade gracefully — no cascade failure.</p>
+
+<h4 style="margin-top:1.5rem">Can I use Evershade without a web dashboard?</h4>
+<p>Yes. Greenie is API-only. Slammer (the dashboard) is optional. You can manage everything via the API or the Speedy CLI tool.</p>
+
+<h4 style="margin-top:1.5rem">How do services communicate?</h4>
+<p>Services communicate via HTTP/JSON REST APIs for synchronous requests and Redis pub/sub for async events. All communication happens on the internal Docker network.</p>
+
+<h3 id="security">Security</h3>
+
+<h4 style="margin-top:1.5rem">Is my data safe?</h4>
+<p>Your data stays on your machine. Nothing leaves your hardware unless you explicitly connect an external AI provider. Secrets are encrypted at rest with AES-256-GCM.</p>
+
+<h4 style="margin-top:1.5rem">How do I secure Evershade for production?</h4>
+<p>Enable TLS with the Caddy proxy profile, configure firewall rules, replace all default API keys, set <code>EVERSHADE_MODE=server</code>, and enable rate limiting.</p>
+
+<h4 style="margin-top:1.5rem">Can I access Evershade remotely?</h4>
+<p>Yes, but you should use SSH tunneling, VPN (Tailscale/WireGuard), or the Caddy reverse proxy with TLS. Never expose services directly to the internet without proper security.</p>
+
+<h4 style="margin-top:1.5rem">How are secrets stored?</h4>
+<p>Hider encrypts all secrets using AES-256-GCM with a 96-bit random nonce per operation. The encryption key is derived from <code>EVERSHADE_ENCRYPTION_KEY</code> via SHA-256.</p>
+
+<h3 id="agents">Agents</h3>
+
+<h4 style="margin-top:1.5rem">What is an agent?</h4>
+<p>An agent is an AI-powered worker that executes tasks. Each agent has a name, a runner (Junie), and guidelines that define its behavior.</p>
+
+<h4 style="margin-top:1.5rem">What is Mission Control?</h4>
+<p>Mission Control breaks large tasks into milestones, lets AI plan and execute, then validates automatically with fix-revalidate cycles. It's the primary way to run complex, multi-step AI workflows.</p>
+
+<h4 style="margin-top:1.5rem">Can agents run code safely?</h4>
+<p>Yes. Slinker supports three isolation levels: worktree (shares host filesystem), container (isolated Docker container), and workstation (full VM isolation). Use container or workstation for untrusted code.</p>
+
+<h4 style="margin-top:1.5rem">What are workstations?</h4>
+<p>Workstations are isolated Docker containers that provide a full development environment for agents. They have their own filesystem, network, and resource limits.</p>
+
+<h3 id="troubleshooting">Troubleshooting</h3>
+
+<h4 style="margin-top:1.5rem">Services won't start. What do I do?</h4>
+<p>Run <code>evershade doctor</code> for diagnostics. Check <code>docker compose logs</code> for error messages. Verify your <code>.env</code> file has all required API keys.</p>
+
+<h4 style="margin-top:1.5rem">I get "port already in use" errors.</h4>
+<p>Find the conflicting process (<code>netstat -ano | findstr :8080</code> on Windows) or change the port in <code>docker-compose.yml</code>.</p>
+
+<h4 style="margin-top:1.5rem">How do I reset everything?</h4>
+<p>Run <code>docker compose down -v</code> to stop services and delete volumes. Then reconfigure and restart. Make sure to backup first with <code>evershade backup create</code>.</p>
+
+<h4 style="margin-top:1.5rem">Docker is running out of memory.</h4>
+<p>In Docker Desktop, go to Settings → Resources and increase memory to at least 8 GB. Restart Docker after changing.</p>
+
+<h4 style="margin-top:1.5rem">How do I enable debug logging?</h4>
+<p>Set <code>EVERSHADE_LOG_LEVEL=DEBUG</code> in your <code>.env</code> file and restart services with <code>docker compose restart</code>.</p>
+
+<h4 style="margin-top:1.5rem">Where can I report bugs?</h4>
+<p>Report issues on <a href="https://github.com/LukaG712/Evershade/issues" target="_blank">GitHub Issues</a>. Include your <code>.env</code> configuration (redacted) and relevant logs.</p>
+
+</div></div></main>
+<footer><div class="footer-inner">
+<div class="footer-col"><h4>Platform</h4><a href="index.html">Home</a><a href="services/services.html">All Services</a><a href="api/api-reference.html">API Reference</a><a href="reference/glossary.html">Glossary</a></div>
+<div class="footer-col"><h4>Docs</h4><a href="docs/getting-started.html">Getting Started</a><a href="docs/deployment.html">Deployment</a><a href="docs/configuration.html">Configuration</a><a href="docs/security.html">Security</a></div>
+<div class="footer-col"><h4>Company</h4><a href="docs/advanced.html">Advanced Guide</a><a href="docs/workstations.html">Workstations</a><a href="company/architecture.html">Architecture</a><a href="api/mission-control.html">Mission Control</a></div>
+<div class="footer-col"><h4>Resources</h4><a href="reference/faq.html">FAQ</a><a href="docs/resources.html">Resource Requirements</a><a href="https://github.com/LukaG712/Evershade" target="_blank">GitHub</a></div>
+</div><div class="footer-bottom"><p>Evershade is licensed under the <a href="https://github.com/LukaG712/Evershade/blob/main/LICENSE" target="_blank">MIT License</a>. All service names are inspired by Luigi's Mansion.</p></div></footer>
+<script src="js/main.js"></script></body></html>
