@@ -118,8 +118,8 @@ $requiredDirs = @($profileServices | Where-Object { $_ -notin @("redis", "ollama
 
 $missingDirs = $false
 foreach ($dir in $requiredDirs) {
-    if (-not (Test-Path $dir)) {
-        Write-Host "[XX] ERROR: Directory '$dir' not found." -ForegroundColor Red
+    if (-not (Test-Path "services/$dir")) {
+        Write-Host "[XX] ERROR: Directory 'services/$dir' not found." -ForegroundColor Red
         Write-Host "[WARN] Run .\install.ps1 -Profile $Profile to install missing services." -ForegroundColor Yellow
         $missingDirs = $true
     }

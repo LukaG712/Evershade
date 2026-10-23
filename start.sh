@@ -150,8 +150,8 @@ for svc in profile_services:
 REQUIRED_DIRS=$(get_required_dirs)
 missing_dirs=false
 for dir in $REQUIRED_DIRS; do
-    if [ ! -d "$dir" ]; then
-        echo -e "${RED}ERROR: Directory '$dir' not found.${NC}"
+    if [ ! -d "services/$dir" ]; then
+        echo -e "${RED}ERROR: Directory 'services/$dir' not found.${NC}"
         echo -e "${YELLOW}Run ./install.sh --profile $PROFILE to install missing services.${NC}"
         missing_dirs=true
     fi
