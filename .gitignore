@@ -1,4 +1,6 @@
 # Sub-projects are tracked as git submodules
+# Separate repositories (not submodules)
+EvershadePage/
 
 # Node modules
 node_modules/
