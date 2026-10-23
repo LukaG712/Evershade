@@ -1,0 +1,30 @@
+[submodule "Greenie"]
+	path = Greenie
+	url = https://github.com/LukaG712/Greenie
+[submodule "Slinker"]
+	path = Slinker
+	url = https://github.com/LukaG712/Slinker
+[submodule "Trapper"]
+	path = Trapper
+	url = https://github.com/LukaG712/Trapper
+[submodule "Gobber"]
+	path = Gobber
+	url = https://github.com/LukaG712/Gobber
+[submodule "Sneaker"]
+	path = Sneaker
+	url = https://github.com/LukaG712/Sneaker
+[submodule "Hider"]
+	path = Hider
+	url = https://github.com/LukaG712/Hider
+[submodule "Poltergeist"]
+	path = Poltergeist
+	url = https://github.com/LukaG712/Poltergeist
+[submodule "Shrewd"]
+	path = Shrewd
+	url = https://github.com/LukaG712/Shrewd
+[submodule "Slammer"]
+	path = Slammer
+	url = https://github.com/LukaG712/Slammer
+[submodule "Speedy"]
+	path = Speedy
+	url = https://github.com/LukaG712/Speedy

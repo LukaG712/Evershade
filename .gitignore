@@ -1,14 +1,4 @@
-# Sub-projects (cloned by install script into separate git repos)
-Greenie/
-Slinker/
-Trapper/
-Gobber/
-Sneaker/
-Hider/
-Poltergeist/
-Shrewd/
-Speedy/
-Slammer/
+# Sub-projects are tracked as git submodules
 
 # Node modules
 node_modules/
