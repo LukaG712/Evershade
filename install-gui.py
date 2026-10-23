@@ -431,7 +431,7 @@ class EvershadeInstallerGUI:
             "Card.TLabelframe.Label", foreground="#333", font=("Helvetica", 11, "bold")
         )
         self.style.configure("Accent.TButton", font=("Helvetica", 11, "bold"))
-        self.style.configure("Horizontal.TProgressbar", thickness=20)
+        self.style.configure("Custom.TProgressbar", thickness=20)
         self.style.configure("Danger.TButton", foreground="red")
 
         # State
@@ -470,7 +470,7 @@ class EvershadeInstallerGUI:
         prog_frame.pack(fill="x")
 
         self.progress = ttk.Progressbar(
-            prog_frame, mode="determinate", maximum=100, style="Horizontal.TProgressbar"
+            prog_frame, mode="determinate", maximum=100, style="Custom.TProgressbar"
         )
         self.progress.pack(fill="x", pady=(0, 5))
 
