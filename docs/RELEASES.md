@@ -1,7 +1,7 @@
 ﻿# Evershade Release Notes
 
-**Version:** 1.8.0
-**Last Updated:** 2026-10-22
+**Version:** 1.14.0
+**Last Updated:** 2026-10-23
 
 ---
 
@@ -9,8 +9,8 @@
 
 | Evershade | Greenie | Slinker | Trapper | Gobber | Sneaker | Hider | Poltergeist | Shrewd | Slammer | Speedy |
 |-----------|---------|---------|---------|--------|---------|-------|-------------|--------|---------|--------|
-| 1.8.0 | 1.7.0 | 1.1.0 | 1.0.0 | 1.0.0 | 1.1.0 | 1.0.0 | 1.1.0 | 1.1.0 | 1.4.0 | 1.1.0 |
-| 1.7.0 | 1.7.0 | 1.1.0 | 1.0.0 | 1.0.0 | 1.1.0 | 1.0.0 | 1.1.0 | 1.1.0 | 1.4.0 | 1.1.0 |
+| 1.14.0 | 1.8.0 | 1.2.0 | 1.1.0 | 1.1.0 | 1.2.0 | 1.1.0 | 1.2.0 | 1.2.0 | 1.4.0 | 1.2.0 |
+| 1.12.0 | 1.7.0 | 1.1.0 | 1.0.0 | 1.0.0 | 1.1.0 | 1.0.0 | 1.1.0 | 1.1.0 | 1.4.0 | 1.1.0 |
 | 1.0.0 | 1.0.3 | 1.0.0 | 1.0.0 | 1.0.0 | 1.0.0 | 1.0.0 | 1.0.0 | 1.0.0 | 1.0.0 | 1.0.0 |
 
 > Service versions are pinned in `version-manifest.json`. Always check the manifest for the authoritative compatibility matrix.
@@ -29,6 +29,14 @@
 6. **Rebuild and restart:** `docker compose up -d --build`
 7. **Verify health:** `evershade status`
 8. **Run doctor check:** `evershade doctor`
+
+### Breaking Changes in 1.14.0
+
+- All services require `Authorization: Bearer` header — query parameter auth removed
+- Hider requires `ENCRYPTION_KEY` environment variable for AES-256-GCM encryption
+- Hider secrets are now encrypted at rest in SQLite — migration required from in-memory data
+- Slammer is the single dashboard — Greenie operates as API-only backend
+- **GUI Installers added**: Linux (`install-gui.py`) and Windows (`install-gui-win.py`) visual wizards
 
 ### Breaking Changes in 1.8.0
 
@@ -72,7 +80,7 @@
 2. Update `CHANGELOG.md`
 3. Validate manifest: `python scripts/validate_manifest.py`
 4. Sign release: `python scripts/release_sign.py --version X.Y.Z --sign-all`
-5. Tag release: `git tag -a v1.8.0 -m "Release v1.8.0"`
+5. Tag release: `git tag -a v1.14.0 -m "Release v1.14.0"`
 6. Push: `git push origin master --tags`
 
 ---

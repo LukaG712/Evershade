@@ -1,7 +1,7 @@
 {
   "version": "1.14.0",
   "description": "Evershade ecosystem version manifest — defines compatible service versions",
-  "updated": "2026-10-22",
+  "updated": "2026-10-23",
   "migration_version": 1,
   "migrations": [
     {

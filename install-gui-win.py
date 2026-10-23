@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Evershade — GUI Installer for Windows
 A visual wizard installer for the Evershade self-hosted AI agent platform.
@@ -6,29 +5,61 @@ Requires: Python 3.6+, Tkinter (usually pre-installed with Python on Windows).
 Run with: python install-gui-win.py
 """
 
+import ctypes
 import os
-import sys
-import subprocess
-import json
 import secrets
 import shutil
-import ctypes
-from pathlib import Path
+import subprocess
+import sys
 
 try:
     import tkinter as tk
-    from tkinter import ttk, messagebox, filedialog
+    from tkinter import filedialog, messagebox, ttk
 except ImportError:
-    print("ERROR: Tkinter is not installed. Install Python from python.org (Tkinter is included by default).")
+    print(
+        "ERROR: Tkinter is not installed. Install Python from python.org (Tkinter is included by default)."
+    )
     sys.exit(1)
 
 # ─── Constants ────────────────────────────────────────────────────────
 REPO_URL = "https://github.com/LukaG712/Evershade.git"
 DEFAULT_DIR = os.path.join(os.path.expanduser("~"), "Evershade")
 PROFILES = {
-    "minimal": {"name": "Minimal", "desc": "Core services only (4 services)", "services": ["Greenie", "Slinker", "Trapper", "Gobber"]},
-    "standard": {"name": "Standard", "desc": "All services except dashboard (8 services)", "services": ["Greenie", "Slinker", "Trapper", "Gobber", "Sneaker", "Hider", "Poltergeist", "Shrewd"]},
-    "full": {"name": "Full", "desc": "Everything including Slammer dashboard (10 services)", "services": ["Greenie", "Slinker", "Trapper", "Gobber", "Sneaker", "Hider", "Poltergeist", "Shrewd", "Slammer", "Speedy"]},
+    "minimal": {
+        "name": "Minimal",
+        "desc": "Core services only (4 services)",
+        "services": ["Greenie", "Slinker", "Trapper", "Gobber"],
+    },
+    "standard": {
+        "name": "Standard",
+        "desc": "All services except dashboard (8 services)",
+        "services": [
+            "Greenie",
+            "Slinker",
+            "Trapper",
+            "Gobber",
+            "Sneaker",
+            "Hider",
+            "Poltergeist",
+            "Shrewd",
+        ],
+    },
+    "full": {
+        "name": "Full",
+        "desc": "Everything including Slammer dashboard (10 services)",
+        "services": [
+            "Greenie",
+            "Slinker",
+            "Trapper",
+            "Gobber",
+            "Sneaker",
+            "Hider",
+            "Poltergeist",
+            "Shrewd",
+            "Slammer",
+            "Speedy",
+        ],
+    },
 }
 
 ALL_SERVICES = [
@@ -38,42 +69,70 @@ ALL_SERVICES = [
     {"name": "Gobber", "required": True, "desc": "Storage & search"},
     {"name": "Sneaker", "required": False, "desc": "Observability & alerting"},
     {"name": "Hider", "required": False, "desc": "Encrypted secrets management"},
-    {"name": "Poltergeist", "required": False, "desc": "Notifications (Slack, Discord, Email, Telegram)"},
-    {"name": "Shrewd", "required": False, "desc": "LLM providers (OpenAI, Anthropic, Google, Ollama)"},
+    {
+        "name": "Poltergeist",
+        "required": False,
+        "desc": "Notifications (Slack, Discord, Email, Telegram)",
+    },
+    {
+        "name": "Shrewd",
+        "required": False,
+        "desc": "LLM providers (OpenAI, Anthropic, Google, Ollama)",
+    },
     {"name": "Slammer", "required": False, "desc": "Web dashboard"},
     {"name": "Speedy", "required": False, "desc": "CLI tool"},
 ]
 
 API_KEY_VARS = [
-    "EVERSHADE_GREENIE_API_KEY", "EVERSHADE_SLINKER_API_KEY", "EVERSHADE_TRAPPER_API_KEY",
-    "EVERSHADE_GOBBER_API_KEY", "EVERSHADE_SNEAKER_API_KEY", "EVERSHADE_HIDER_API_KEY",
-    "EVERSHADE_POLTERGEIST_API_KEY", "EVERSHADE_SHREWD_API_KEY", "EVERSHADE_ENCRYPTION_KEY"
+    "EVERSHADE_GREENIE_API_KEY",
+    "EVERSHADE_SLINKER_API_KEY",
+    "EVERSHADE_TRAPPER_API_KEY",
+    "EVERSHADE_GOBBER_API_KEY",
+    "EVERSHADE_SNEAKER_API_KEY",
+    "EVERSHADE_HIDER_API_KEY",
+    "EVERSHADE_POLTERGEIST_API_KEY",
+    "EVERSHADE_SHREWD_API_KEY",
+    "EVERSHADE_ENCRYPTION_KEY",
 ]
+
 
 # ─── Helpers ──────────────────────────────────────────────────────────
 def run_command(cmd, check=False, timeout=300):
     """Run a command and return (returncode, stdout, stderr)."""
     try:
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=timeout, encoding="utf-8", errors="replace")
+        result = subprocess.run(
+            cmd,
+            shell=True,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            encoding="utf-8",
+            errors="replace",
+            check=False,
+        )
         return result.returncode, result.stdout.strip(), result.stderr.strip()
     except subprocess.TimeoutExpired:
         return -1, "", "Command timed out"
-    except Exception as e:
+    except OSError as e:
         return -1, "", str(e)
+
 
 def command_exists(cmd):
     return shutil.which(cmd) is not None
+
 
 def is_admin():
     """Check if running as administrator."""
     try:
         return ctypes.windll.shell32.IsUserAnAdmin()
-    except Exception:
+    except OSError:
         return False
+
 
 def get_windows_username():
     """Get the current Windows username."""
     return os.environ.get("USERNAME", "user")
+
 
 # ─── Installer Logic ──────────────────────────────────────────────────
 class Installer:
@@ -121,7 +180,7 @@ class Installer:
             return False, f"Docker daemon not running: {err[:100]}"
 
         # Check Docker Compose
-        rc, compose_ver, _ = run_command("docker compose version")
+        rc, _compose_ver, _ = run_command("docker compose version")
         if rc != 0:
             return False, "Docker Compose plugin not found"
 
@@ -131,14 +190,14 @@ class Installer:
         """Clone or update the Evershade repository."""
         if os.path.isdir(self.install_dir):
             if os.path.isdir(os.path.join(self.install_dir, ".git")):
-                rc, out, err = run_command(f"cd \"{self.install_dir}\" && git pull")
+                rc, _out, err = run_command(f'cd "{self.install_dir}" && git pull')
                 if rc != 0:
                     return False, f"Failed to update repo: {err}"
                 return True, "Repository updated"
             else:
                 return False, "Directory exists but is not a git repo"
         else:
-            rc, out, err = run_command(f"git clone {REPO_URL} \"{self.install_dir}\"")
+            rc, _out, err = run_command(f'git clone {REPO_URL} "{self.install_dir}"')
             if rc != 0:
                 return False, f"Failed to clone repo: {err}"
             return True, "Repository cloned"
@@ -153,15 +212,15 @@ class Installer:
         if self.profile == "custom" and self.custom_services:
             cmd += f" -CustomServices '{','.join(self.custom_services)}'"
 
-        rc, out, err = run_command(cmd, timeout=600)
+        rc, _out, _err = run_command(cmd, timeout=600)
         if rc != 0:
-            return False, f"Service install failed: {err[:200]}"
+            return False, f"Service install failed: {_err[:200]}"
         return True, "Services installed"
 
     def init_submodules(self):
         """Initialize and update git submodules."""
-        cmd = f"cd \"{self.install_dir}\" && git submodule update --init --recursive"
-        rc, out, err = run_command(cmd)
+        cmd = f'cd "{self.install_dir}" && git submodule update --init --recursive'
+        rc, _out, _err = run_command(cmd)
         if rc != 0:
             pass  # Submodules might not be set up
         return True, "Submodules initialized"
@@ -212,7 +271,6 @@ class Installer:
             return True, "Skipped"
 
         try:
-            import pythoncom
             import win32com.client
 
             shell = win32com.client.Dispatch("WScript.Shell")
@@ -234,14 +292,19 @@ class Installer:
                 desktop = os.path.join(os.path.expanduser("~"), "Desktop")
                 batch_path = os.path.join(desktop, "Start Evershade.bat")
                 with open(batch_path, "w", encoding="utf-8") as f:
-                    f.write(f"@echo off\n")
-                    f.write(f"cd /d \"{self.install_dir}\"\n")
-                    f.write(f"powershell -ExecutionPolicy Bypass -File start.ps1 -Profile {self.profile}\n")
-                    f.write(f"pause\n")
-                return True, "Desktop batch file created (pywin32 not available for .lnk shortcut)"
-            except Exception as e:
+                    f.write("@echo off\n")
+                    f.write(f'cd /d "{self.install_dir}"\n')
+                    f.write(
+                        f"powershell -ExecutionPolicy Bypass -File start.ps1 -Profile {self.profile}\n"
+                    )
+                    f.write("pause\n")
+                return (
+                    True,
+                    "Desktop batch file created (pywin32 not available for .lnk shortcut)",
+                )
+            except OSError as e:
                 return False, f"Failed to create shortcut: {e}"
-        except Exception as e:
+        except OSError as e:
             return False, f"Failed to create shortcut: {e}"
 
     def start_services(self):
@@ -254,10 +317,11 @@ class Installer:
             return False, "start.ps1 not found"
 
         cmd = f'powershell -ExecutionPolicy Bypass -File "{start_ps1}" -Profile {self.profile}'
-        rc, out, err = run_command(cmd, timeout=300)
+        rc, _out, err = run_command(cmd, timeout=300)
         if rc != 0:
             return False, f"Failed to start services: {err[:200]}"
         return True, "Services started"
+
 
 # ─── GUI Application ──────────────────────────────────────────────────
 class EvershadeInstallerGUI:
@@ -273,14 +337,20 @@ class EvershadeInstallerGUI:
         self.style.configure("Title.TLabel", font=("Segoe UI", 18, "bold"))
         self.style.configure("Subtitle.TLabel", font=("Segoe UI", 11))
         self.style.configure("Heading.TLabel", font=("Segoe UI", 13, "bold"))
-        self.style.configure("Success.TLabel", foreground="green", font=("Segoe UI", 11, "bold"))
-        self.style.configure("Error.TLabel", foreground="red", font=("Segoe UI", 11, "bold"))
+        self.style.configure(
+            "Success.TLabel", foreground="green", font=("Segoe UI", 11, "bold")
+        )
+        self.style.configure(
+            "Error.TLabel", foreground="red", font=("Segoe UI", 11, "bold")
+        )
         self.style.configure("Info.TLabel", foreground="#555", font=("Segoe UI", 10))
         self.style.configure("Small.TLabel", font=("Segoe UI", 9))
         self.style.configure("Card.TFrame", background="#f5f5f5")
         self.style.configure("Card.TLabel", background="#f5f5f5")
         self.style.configure("Card.TLabelframe", background="#f5f5f5")
-        self.style.configure("Card.TLabelframe.Label", foreground="#333", font=("Segoe UI", 11, "bold"))
+        self.style.configure(
+            "Card.TLabelframe.Label", foreground="#333", font=("Segoe UI", 11, "bold")
+        )
         self.style.configure("Accent.TButton", font=("Segoe UI", 11, "bold"))
         self.style.configure("Progressbar.Horizontal", thickness=20)
         self.style.configure("Danger.TButton", foreground="red")
@@ -309,17 +379,25 @@ class EvershadeInstallerGUI:
         title = ttk.Label(header, text="🏚️  Evershade Installer", style="Title.TLabel")
         title.pack(anchor="w")
 
-        subtitle = ttk.Label(header, text="Self-hosted AI Agent Platform — Windows Setup Wizard", style="Info.TLabel")
+        subtitle = ttk.Label(
+            header,
+            text="Self-hosted AI Agent Platform — Windows Setup Wizard",
+            style="Info.TLabel",
+        )
         subtitle.pack(anchor="w")
 
     def _build_progress(self):
         prog_frame = ttk.Frame(self.root, padding=(20, 5, 20, 5))
         prog_frame.pack(fill="x")
 
-        self.progress = ttk.Progressbar(prog_frame, mode="determinate", maximum=100, style="Progressbar.Horizontal")
+        self.progress = ttk.Progressbar(
+            prog_frame, mode="determinate", maximum=100, style="Progressbar.Horizontal"
+        )
         self.progress.pack(fill="x", pady=(0, 5))
 
-        self.step_label = ttk.Label(prog_frame, text="Step 1 of 7", style="Small.TLabel")
+        self.step_label = ttk.Label(
+            prog_frame, text="Step 1 of 7", style="Small.TLabel"
+        )
         self.step_label.pack(anchor="w")
 
     def _build_content_area(self):
@@ -330,13 +408,19 @@ class EvershadeInstallerGUI:
         nav = ttk.Frame(self.root, padding=(20, 10, 20, 20))
         nav.pack(fill="x")
 
-        self.back_btn = ttk.Button(nav, text="← Back", command=self._prev_step, style="Accent.TButton")
+        self.back_btn = ttk.Button(
+            nav, text="← Back", command=self._prev_step, style="Accent.TButton"
+        )
         self.back_btn.pack(side="left")
 
-        self.next_btn = ttk.Button(nav, text="Next →", command=self._next_step, style="Accent.TButton")
+        self.next_btn = ttk.Button(
+            nav, text="Next →", command=self._next_step, style="Accent.TButton"
+        )
         self.next_btn.pack(side="right")
 
-        self.cancel_btn = ttk.Button(nav, text="Cancel", command=self._cancel, style="Danger.TButton")
+        self.cancel_btn = ttk.Button(
+            nav, text="Cancel", command=self._cancel, style="Danger.TButton"
+        )
         self.cancel_btn.pack(side="right", padx=(0, 10))
 
     def _create_steps(self):
@@ -359,7 +443,9 @@ class EvershadeInstallerGUI:
         total = len(self.steps)
         pct = int((index / (total - 1)) * 100)
         self.progress["value"] = pct
-        self.step_label.config(text=f"Step {index + 1} of {total}: {self.steps[index][0]}")
+        self.step_label.config(
+            text=f"Step {index + 1} of {total}: {self.steps[index][0]}"
+        )
 
         # Clear content
         for widget in self.content_frame.winfo_children():
@@ -380,7 +466,12 @@ class EvershadeInstallerGUI:
             self.next_btn.pack(side="right")
         else:
             # Last step — show close button
-            close_btn = ttk.Button(self.root.winfo_children()[-1], text="Close", command=self.root.quit, style="Accent.TButton")
+            close_btn = ttk.Button(
+                self.root.winfo_children()[-1],
+                text="Close",
+                command=self.root.quit,
+                style="Accent.TButton",
+            )
             close_btn.pack(side="right")
 
         self.root.update()
@@ -396,37 +487,58 @@ class EvershadeInstallerGUI:
             self._show_step(self.current_step - 1)
 
     def _cancel(self):
-        if messagebox.askyesno("Cancel Installation", "Are you sure you want to cancel?"):
+        if messagebox.askyesno(
+            "Cancel Installation", "Are you sure you want to cancel?"
+        ):
             self.root.quit()
 
     # ─── Step: Welcome ────────────────────────────────────────────────
     def _step_welcome(self, parent):
-        card = ttk.LabelFrame(parent, text="Welcome to Evershade", padding=20, style="Card.TLabelframe")
+        card = ttk.LabelFrame(
+            parent, text="Welcome to Evershade", padding=20, style="Card.TLabelframe"
+        )
         card.pack(fill="both", expand=True)
 
-        desc = ttk.Label(card, text=(
-            "Evershade is a self-hosted AI agent platform that lets you create, manage, and run "
-            "AI-powered agents on your own hardware. This wizard will guide you through the installation process."
-        ), style="Subtitle.TLabel", wraplength=650, justify="left")
+        desc = ttk.Label(
+            card,
+            text=(
+                "Evershade is a self-hosted AI agent platform that lets you create, manage, and run "
+                "AI-powered agents on your own hardware. This wizard will guide you through the installation process."
+            ),
+            style="Subtitle.TLabel",
+            wraplength=650,
+            justify="left",
+        )
         desc.pack(pady=(0, 20), anchor="w")
 
-        features = ttk.Label(card, text=(
-            "✓  Docker-based microservices\n"
-            "✓  AI agents for code, web scraping, search, and more\n"
-            "✓  Encrypted secrets management\n"
-            "✓  Real-time notifications (Slack, Discord, Email, Telegram)\n"
-            "✓  Web dashboard for management\n"
-            "✓  Fully self-hosted — your data stays yours"
-        ), style="Info.TLabel", justify="left")
+        features = ttk.Label(
+            card,
+            text=(
+                "✓  Docker-based microservices\n"
+                "✓  AI agents for code, web scraping, search, and more\n"
+                "✓  Encrypted secrets management\n"
+                "✓  Real-time notifications (Slack, Discord, Email, Telegram)\n"
+                "✓  Web dashboard for management\n"
+                "✓  Fully self-hosted — your data stays yours"
+            ),
+            style="Info.TLabel",
+            justify="left",
+        )
         features.pack(pady=(0, 20), anchor="w")
 
-        req = ttk.Label(card, text="Requirements:\n  • Docker Desktop (will be checked)\n  • Git (will be checked)\n  • Python 3.6+ (already running this installer)",
-                       style="Info.TLabel", justify="left")
+        req = ttk.Label(
+            card,
+            text="Requirements:\n  • Docker Desktop (will be checked)\n  • Git (will be checked)\n  • Python 3.6+ (already running this installer)",
+            style="Info.TLabel",
+            justify="left",
+        )
         req.pack(anchor="w")
 
     # ─── Step: System Check ───────────────────────────────────────────
     def _step_system_check(self, parent):
-        ttk.Label(parent, text="System Check", style="Heading.TLabel").pack(pady=(0, 15), anchor="w")
+        ttk.Label(parent, text="System Check", style="Heading.TLabel").pack(
+            pady=(0, 15), anchor="w"
+        )
 
         # Check Windows version
         win_info = ttk.Label(parent, text="", style="Info.TLabel", justify="left")
@@ -439,7 +551,9 @@ class EvershadeInstallerGUI:
         # Check dependencies
         deps_frame = ttk.Frame(parent)
         deps_frame.pack(fill="x", pady=(0, 10))
-        ttk.Label(deps_frame, text="Required Tools:", style="Heading.TLabel").pack(anchor="w")
+        ttk.Label(deps_frame, text="Required Tools:", style="Heading.TLabel").pack(
+            anchor="w"
+        )
 
         tools_frame = ttk.Frame(parent)
         tools_frame.pack(fill="x", pady=(0, 15))
@@ -451,6 +565,7 @@ class EvershadeInstallerGUI:
         # Run checks
         # Windows version
         import platform
+
         win_ver = platform.version()
         win_release = platform.release()
         win_info.config(text=f"🖥  System: Windows {win_release} (Build {win_ver})")
@@ -466,36 +581,59 @@ class EvershadeInstallerGUI:
             exists = command_exists(tool)
             status = "✓" if exists else "✗"
             color = "green" if exists else "red"
-            ttk.Label(tools_frame, text=f"  {status}  {tool}", foreground=color, style="Small.TLabel").pack(anchor="w")
+            ttk.Label(
+                tools_frame,
+                text=f"  {status}  {tool}",
+                foreground=color,
+                style="Small.TLabel",
+            ).pack(anchor="w")
 
         # PowerShell
         ps_exists = command_exists("powershell")
         status = "✓" if ps_exists else "✗"
         color = "green" if ps_exists else "red"
-        ttk.Label(tools_frame, text=f"  {status}  powershell", foreground=color, style="Small.TLabel").pack(anchor="w")
+        ttk.Label(
+            tools_frame,
+            text=f"  {status}  powershell",
+            foreground=color,
+            style="Small.TLabel",
+        ).pack(anchor="w")
 
         # Docker
         docker_ok, docker_msg = self.installer.check_docker()
         if docker_ok:
             docker_info.config(text=f"✓  {docker_msg}", foreground="green")
         else:
-            docker_info.config(text=f"✗  {docker_msg} (Docker Desktop required)", foreground="red")
+            docker_info.config(
+                text=f"✗  {docker_msg} (Docker Desktop required)", foreground="red"
+            )
 
         # Install button for missing deps
         if missing:
-            info_lbl = ttk.Label(parent, text="Missing tools detected. Please install them before continuing:",
-                                style="Error.TLabel")
+            info_lbl = ttk.Label(
+                parent,
+                text="Missing tools detected. Please install them before continuing:",
+                style="Error.TLabel",
+            )
             info_lbl.pack(pady=(5, 5), anchor="w")
-            missing_list = ttk.Label(parent, text=f"  • Git: https://git-scm.com/download/win\n  • Curl: Included in Windows 10+",
-                                    style="Small.TLabel", justify="left")
+            missing_list = ttk.Label(
+                parent,
+                text="  • Git: https://git-scm.com/download/win\n  • Curl: Included in Windows 10+",
+                style="Small.TLabel",
+                justify="left",
+            )
             missing_list.pack(anchor="w")
 
     # ─── Step: Installation Options ───────────────────────────────────
     def _step_options(self, parent):
-        ttk.Label(parent, text="Installation Options", style="Heading.TLabel").pack(pady=(0, 15), anchor="w")
+        ttk.Label(parent, text="Installation Options", style="Heading.TLabel").pack(
+            pady=(0, 15), anchor="w"
+        )
 
         # Profile selection
-        prof_frame = ttk.LabelFrame(parent, text="Installation Profile", padding=15, style="Card.TLabelframe")
+        prof_frame = ttk.LabelFrame(
+            parent, text="Installation Profile", padding=15, style="Card.TLabelframe"
+        )
         prof_frame.pack(fill="x", pady=(0, 15))
 
         self.profile_var = tk.StringVar(value=self.installer.profile)
@@ -503,17 +641,37 @@ class EvershadeInstallerGUI:
         self.service_vars = {}
 
         for key, info in PROFILES.items():
-            rb = ttk.Radiobutton(prof_frame, text=f"{info['name']}", variable=self.profile_var, value=key,
-                                command=lambda: self._update_profile_desc())
+            rb = ttk.Radiobutton(
+                prof_frame,
+                text=f"{info['name']}",
+                variable=self.profile_var,
+                value=key,
+                command=lambda: self._update_profile_desc(),
+            )
             rb.pack(anchor="w", pady=2)
-            desc_lbl = ttk.Label(prof_frame, text=f"   {info['desc']}", style="Small.TLabel", foreground="#666")
+            desc_lbl = ttk.Label(
+                prof_frame,
+                text=f"   {info['desc']}",
+                style="Small.TLabel",
+                foreground="#666",
+            )
             desc_lbl.pack(anchor="w")
 
         # Custom radio button
-        custom_rb = ttk.Radiobutton(prof_frame, text="Custom", variable=self.profile_var, value="custom",
-                                   command=lambda: self._update_profile_desc())
+        custom_rb = ttk.Radiobutton(
+            prof_frame,
+            text="Custom",
+            variable=self.profile_var,
+            value="custom",
+            command=lambda: self._update_profile_desc(),
+        )
         custom_rb.pack(anchor="w", pady=2)
-        custom_desc_lbl = ttk.Label(prof_frame, text=f"   Choose individual services below", style="Small.TLabel", foreground="#666")
+        custom_desc_lbl = ttk.Label(
+            prof_frame,
+            text="   Choose individual services below",
+            style="Small.TLabel",
+            foreground="#666",
+        )
         custom_desc_lbl.pack(anchor="w")
 
         self.profile_desc = ttk.Label(prof_frame, text="", style="Info.TLabel")
@@ -521,12 +679,19 @@ class EvershadeInstallerGUI:
         self._update_profile_desc()
 
         # Custom service selection frame (hidden by default)
-        self.custom_frame = ttk.LabelFrame(parent, text="Select Services", padding=15, style="Card.TLabelframe")
+        self.custom_frame = ttk.LabelFrame(
+            parent, text="Select Services", padding=15, style="Card.TLabelframe"
+        )
 
         # Required services
         req_frame = ttk.Frame(self.custom_frame)
         req_frame.pack(fill="x", pady=(0, 5))
-        ttk.Label(req_frame, text="Required (cannot be removed):", style="Small.TLabel", foreground="#666").pack(anchor="w")
+        ttk.Label(
+            req_frame,
+            text="Required (cannot be removed):",
+            style="Small.TLabel",
+            foreground="#666",
+        ).pack(anchor="w")
 
         req_check_frame = ttk.Frame(self.custom_frame)
         req_check_frame.pack(fill="x", pady=(0, 10))
@@ -535,13 +700,20 @@ class EvershadeInstallerGUI:
             if svc["required"]:
                 var = tk.BooleanVar(value=True)
                 self.service_vars[svc["name"]] = var
-                cb = ttk.Checkbutton(req_check_frame, text=f"{svc['name']} — {svc['desc']}", variable=var, state="disabled")
+                cb = ttk.Checkbutton(
+                    req_check_frame,
+                    text=f"{svc['name']} — {svc['desc']}",
+                    variable=var,
+                    state="disabled",
+                )
                 cb.pack(anchor="w", pady=1)
 
         # Optional services
         opt_frame = ttk.Frame(self.custom_frame)
         opt_frame.pack(fill="x", pady=(0, 5))
-        ttk.Label(opt_frame, text="Optional:", style="Small.TLabel", foreground="#666").pack(anchor="w")
+        ttk.Label(
+            opt_frame, text="Optional:", style="Small.TLabel", foreground="#666"
+        ).pack(anchor="w")
 
         opt_check_frame = ttk.Frame(self.custom_frame)
         opt_check_frame.pack(fill="x", pady=(0, 5))
@@ -550,20 +722,28 @@ class EvershadeInstallerGUI:
             if not svc["required"]:
                 var = tk.BooleanVar(value=False)
                 self.service_vars[svc["name"]] = var
-                cb = ttk.Checkbutton(opt_check_frame, text=f"{svc['name']} — {svc['desc']}", variable=var)
+                cb = ttk.Checkbutton(
+                    opt_check_frame, text=f"{svc['name']} — {svc['desc']}", variable=var
+                )
                 cb.pack(anchor="w", pady=1)
 
         # Select All / Deselect All buttons
         btn_frame = ttk.Frame(self.custom_frame)
         btn_frame.pack(fill="x", pady=(5, 0))
-        ttk.Button(btn_frame, text="Select All Optional", command=self._select_all_optional).pack(side="left", padx=(0, 5))
-        ttk.Button(btn_frame, text="Deselect All Optional", command=self._deselect_all_optional).pack(side="left")
+        ttk.Button(
+            btn_frame, text="Select All Optional", command=self._select_all_optional
+        ).pack(side="left", padx=(0, 5))
+        ttk.Button(
+            btn_frame, text="Deselect All Optional", command=self._deselect_all_optional
+        ).pack(side="left")
 
         # Hide custom frame initially
         self.custom_frame.pack_forget()
 
         # Install directory
-        dir_frame = ttk.LabelFrame(parent, text="Installation Directory", padding=15, style="Card.TLabelframe")
+        dir_frame = ttk.LabelFrame(
+            parent, text="Installation Directory", padding=15, style="Card.TLabelframe"
+        )
         dir_frame.pack(fill="x", pady=(0, 15))
 
         dir_row = ttk.Frame(dir_frame)
@@ -576,20 +756,32 @@ class EvershadeInstallerGUI:
         browse_btn = ttk.Button(dir_row, text="Browse...", command=self._browse_dir)
         browse_btn.pack(side="left")
 
-        default_btn = ttk.Button(dir_row, text="Default", command=lambda: self.dir_var.set(DEFAULT_DIR))
+        default_btn = ttk.Button(
+            dir_row, text="Default", command=lambda: self.dir_var.set(DEFAULT_DIR)
+        )
         default_btn.pack(side="left", padx=(10, 0))
 
         # Options
-        opt_frame = ttk.LabelFrame(parent, text="Options", padding=15, style="Card.TLabelframe")
+        opt_frame = ttk.LabelFrame(
+            parent, text="Options", padding=15, style="Card.TLabelframe"
+        )
         opt_frame.pack(fill="x")
 
         self.shortcut_var = tk.BooleanVar(value=self.installer.create_shortcut)
         self.start_var = tk.BooleanVar(value=self.installer.start_services)
         self.regen_var = tk.BooleanVar(value=self.installer.regenerate_keys)
 
-        ttk.Checkbutton(opt_frame, text="Create desktop shortcut", variable=self.shortcut_var).pack(anchor="w", pady=3)
-        ttk.Checkbutton(opt_frame, text="Start services after installation", variable=self.start_var).pack(anchor="w", pady=3)
-        ttk.Checkbutton(opt_frame, text="Regenerate API keys (if .env exists)", variable=self.regen_var).pack(anchor="w", pady=3)
+        ttk.Checkbutton(
+            opt_frame, text="Create desktop shortcut", variable=self.shortcut_var
+        ).pack(anchor="w", pady=3)
+        ttk.Checkbutton(
+            opt_frame, text="Start services after installation", variable=self.start_var
+        ).pack(anchor="w", pady=3)
+        ttk.Checkbutton(
+            opt_frame,
+            text="Regenerate API keys (if .env exists)",
+            variable=self.regen_var,
+        ).pack(anchor="w", pady=3)
 
     def _select_all_optional(self):
         for svc in ALL_SERVICES:
@@ -609,12 +801,16 @@ class EvershadeInstallerGUI:
             self.custom_frame.pack(fill="x", pady=(0, 15))
 
             selected = self._get_custom_services()
-            self.profile_desc.config(text=f"   Selected ({len(selected)}): {', '.join(selected)}")
+            self.profile_desc.config(
+                text=f"   Selected ({len(selected)}): {', '.join(selected)}"
+            )
         else:
             self.custom_frame.pack_forget()
             info = PROFILES.get(key, {})
             services = info.get("services", [])
-            self.profile_desc.config(text=f"   Services ({len(services)}): {', '.join(services)}")
+            self.profile_desc.config(
+                text=f"   Services ({len(services)}): {', '.join(services)}"
+            )
 
     def _get_custom_services(self):
         """Get list of selected services from checkboxes."""
@@ -642,11 +838,18 @@ class EvershadeInstallerGUI:
 
     # ─── Step: Docker Check ─────────────────────────────────────────
     def _step_docker(self, parent):
-        ttk.Label(parent, text="Docker Desktop Check", style="Heading.TLabel").pack(pady=(0, 15), anchor="w")
+        ttk.Label(parent, text="Docker Desktop Check", style="Heading.TLabel").pack(
+            pady=(0, 15), anchor="w"
+        )
 
-        info = ttk.Label(parent, text="Docker Desktop is required to run Evershade services on Windows. "
-                                      "Unlike Linux, Docker on Windows uses Docker Desktop which includes Compose.",
-                        style="Info.TLabel", wraplength=650, justify="left")
+        info = ttk.Label(
+            parent,
+            text="Docker Desktop is required to run Evershade services on Windows. "
+            "Unlike Linux, Docker on Windows uses Docker Desktop which includes Compose.",
+            style="Info.TLabel",
+            wraplength=650,
+            justify="left",
+        )
         info.pack(pady=(0, 15), anchor="w")
 
         # Check current state
@@ -658,24 +861,45 @@ class EvershadeInstallerGUI:
             status = ttk.Label(parent, text=f"✗  {docker_msg}", style="Error.TLabel")
             status.pack(pady=10, anchor="w")
 
-            install_info = ttk.Label(parent, text="To install Docker Desktop:\n"
-                                                  "  1. Download from https://www.docker.com/products/docker-desktop/\n"
-                                                  "  2. Run the installer and follow the wizard\n"
-                                                  "  3. Restart if prompted\n"
-                                                  "  4. Re-run this installer",
-                                    style="Info.TLabel", justify="left")
+            install_info = ttk.Label(
+                parent,
+                text="To install Docker Desktop:\n"
+                "  1. Download from https://www.docker.com/products/docker-desktop/\n"
+                "  2. Run the installer and follow the wizard\n"
+                "  3. Restart if prompted\n"
+                "  4. Re-run this installer",
+                style="Info.TLabel",
+                justify="left",
+            )
             install_info.pack(pady=10, anchor="w")
 
             # Open download link button
-            download_btn = ttk.Button(parent, text="Open Docker Desktop Download Page",
-                                     command=lambda: os.startfile("https://www.docker.com/products/docker-desktop/"),
-                                     style="Accent.TButton")
+            download_btn = ttk.Button(
+                parent,
+                text="Open Docker Desktop Download Page",
+                command=lambda: os.startfile(
+                    "https://www.docker.com/products/docker-desktop/"
+                ),
+                style="Accent.TButton",
+            )
             download_btn.pack(pady=5)
 
-        self.docker_log = tk.Text(parent, height=6, width=80, wrap="word", state="disabled", font=("Consolas", 9))
+        self.docker_log = tk.Text(
+            parent,
+            height=6,
+            width=80,
+            wrap="word",
+            state="disabled",
+            font=("Consolas", 9),
+        )
         self.docker_log.pack(fill="both", expand=True, pady=10)
 
-        check_btn = ttk.Button(parent, text="Re-check Docker", command=self._check_docker_callback, style="Accent.TButton")
+        check_btn = ttk.Button(
+            parent,
+            text="Re-check Docker",
+            command=self._check_docker_callback,
+            style="Accent.TButton",
+        )
         check_btn.pack(pady=5)
 
     def _log_to_text(self, text_widget, msg):
@@ -698,7 +922,9 @@ class EvershadeInstallerGUI:
             self._log_to_text(self.docker_log, "Docker is ready to use!")
         else:
             self._log_to_text(self.docker_log, f"✗ {docker_msg}")
-            self._log_to_text(self.docker_log, "Please install Docker Desktop and try again.")
+            self._log_to_text(
+                self.docker_log, "Please install Docker Desktop and try again."
+            )
 
         for child in self.content_frame.winfo_children():
             if isinstance(child, ttk.Button):
@@ -707,25 +933,52 @@ class EvershadeInstallerGUI:
 
     # ─── Step: Clone & Install ────────────────────────────────────────
     def _step_clone(self, parent):
-        ttk.Label(parent, text="Clone & Install Services", style="Heading.TLabel").pack(pady=(0, 15), anchor="w")
+        ttk.Label(parent, text="Clone & Install Services", style="Heading.TLabel").pack(
+            pady=(0, 15), anchor="w"
+        )
 
-        info = ttk.Label(parent, text=f"Cloning Evershade to: {self.installer.install_dir}", style="Info.TLabel", justify="left")
+        info = ttk.Label(
+            parent,
+            text=f"Cloning Evershade to: {self.installer.install_dir}",
+            style="Info.TLabel",
+            justify="left",
+        )
         info.pack(pady=(0, 5), anchor="w")
 
         services = self.installer.get_selected_services()
         if self.installer.profile == "custom":
-            prof_label = ttk.Label(parent, text=f"Profile: Custom ({len(services)} services: {', '.join(services)})",
-                                  style="Info.TLabel", justify="left")
+            prof_label = ttk.Label(
+                parent,
+                text=f"Profile: Custom ({len(services)} services: {', '.join(services)})",
+                style="Info.TLabel",
+                justify="left",
+            )
         else:
             profile_info = PROFILES.get(self.installer.profile, {})
-            prof_label = ttk.Label(parent, text=f"Profile: {profile_info.get('name', self.installer.profile)} ({len(services)} services)",
-                                  style="Info.TLabel", justify="left")
+            prof_label = ttk.Label(
+                parent,
+                text=f"Profile: {profile_info.get('name', self.installer.profile)} ({len(services)} services)",
+                style="Info.TLabel",
+                justify="left",
+            )
         prof_label.pack(pady=(0, 15), anchor="w")
 
-        self.clone_log = tk.Text(parent, height=12, width=80, wrap="word", state="disabled", font=("Consolas", 9))
+        self.clone_log = tk.Text(
+            parent,
+            height=12,
+            width=80,
+            wrap="word",
+            state="disabled",
+            font=("Consolas", 9),
+        )
         self.clone_log.pack(fill="both", expand=True, pady=10)
 
-        install_btn = ttk.Button(parent, text="Install", command=self._install_callback, style="Accent.TButton")
+        install_btn = ttk.Button(
+            parent,
+            text="Install",
+            command=self._install_callback,
+            style="Accent.TButton",
+        )
         install_btn.pack(pady=5)
 
     def _install_callback(self):
@@ -748,7 +1001,10 @@ class EvershadeInstallerGUI:
         self._log_to_text(self.clone_log, f"{'✓' if ok else '✗'} {msg}")
 
         # Install services
-        self._log_to_text(self.clone_log, f"Installing services (profile: {self.installer.profile})...")
+        self._log_to_text(
+            self.clone_log,
+            f"Installing services (profile: {self.installer.profile})...",
+        )
         ok, msg = self.installer.install_services()
         self._log_to_text(self.clone_log, f"{'✓' if ok else '✗'} {msg}")
 
@@ -769,9 +1025,17 @@ class EvershadeInstallerGUI:
 
     # ─── Step: Configure ──────────────────────────────────────────────
     def _step_configure(self, parent):
-        ttk.Label(parent, text="Configuration", style="Heading.TLabel").pack(pady=(0, 15), anchor="w")
+        ttk.Label(parent, text="Configuration", style="Heading.TLabel").pack(
+            pady=(0, 15), anchor="w"
+        )
 
-        info = ttk.Label(parent, text="Setting up environment variables and API keys.", style="Info.TLabel", wraplength=650, justify="left")
+        info = ttk.Label(
+            parent,
+            text="Setting up environment variables and API keys.",
+            style="Info.TLabel",
+            wraplength=650,
+            justify="left",
+        )
         info.pack(pady=(0, 15), anchor="w")
 
         env_path = os.path.join(self.installer.install_dir, ".env")
@@ -782,16 +1046,34 @@ class EvershadeInstallerGUI:
 
         if exists:
             if self.installer.regenerate_keys:
-                status.config(text="⚠  Existing .env will be regenerated with new API keys.", foreground="orange")
+                status.config(
+                    text="⚠  Existing .env will be regenerated with new API keys.",
+                    foreground="orange",
+                )
             else:
                 status.config(text="✓  Existing .env will be kept.", foreground="green")
         else:
-            status.config(text="A new .env file will be created with auto-generated secure API keys.", foreground="green")
+            status.config(
+                text="A new .env file will be created with auto-generated secure API keys.",
+                foreground="green",
+            )
 
-        self.config_log = tk.Text(parent, height=8, width=80, wrap="word", state="disabled", font=("Consolas", 9))
+        self.config_log = tk.Text(
+            parent,
+            height=8,
+            width=80,
+            wrap="word",
+            state="disabled",
+            font=("Consolas", 9),
+        )
         self.config_log.pack(fill="both", expand=True, pady=10)
 
-        config_btn = ttk.Button(parent, text="Configure", command=self._configure_callback, style="Accent.TButton")
+        config_btn = ttk.Button(
+            parent,
+            text="Configure",
+            command=self._configure_callback,
+            style="Accent.TButton",
+        )
         config_btn.pack(pady=5)
 
     def _configure_callback(self):
@@ -822,16 +1104,35 @@ class EvershadeInstallerGUI:
 
     # ─── Step: Desktop Shortcut ───────────────────────────────────────
     def _step_shortcut(self, parent):
-        ttk.Label(parent, text="Desktop Shortcut", style="Heading.TLabel").pack(pady=(0, 15), anchor="w")
+        ttk.Label(parent, text="Desktop Shortcut", style="Heading.TLabel").pack(
+            pady=(0, 15), anchor="w"
+        )
 
-        info = ttk.Label(parent, text="Optionally create a desktop shortcut to easily start Evershade.",
-                        style="Info.TLabel", wraplength=650, justify="left")
+        info = ttk.Label(
+            parent,
+            text="Optionally create a desktop shortcut to easily start Evershade.",
+            style="Info.TLabel",
+            wraplength=650,
+            justify="left",
+        )
         info.pack(pady=(0, 15), anchor="w")
 
-        self.shortcut_log = tk.Text(parent, height=6, width=80, wrap="word", state="disabled", font=("Consolas", 9))
+        self.shortcut_log = tk.Text(
+            parent,
+            height=6,
+            width=80,
+            wrap="word",
+            state="disabled",
+            font=("Consolas", 9),
+        )
         self.shortcut_log.pack(fill="both", expand=True, pady=10)
 
-        setup_btn = ttk.Button(parent, text="Create Shortcut", command=self._shortcut_callback, style="Accent.TButton")
+        setup_btn = ttk.Button(
+            parent,
+            text="Create Shortcut",
+            command=self._shortcut_callback,
+            style="Accent.TButton",
+        )
         setup_btn.pack(pady=5)
 
     def _shortcut_callback(self):
@@ -845,7 +1146,9 @@ class EvershadeInstallerGUI:
             ok, msg = self.installer.create_shortcut()
             self._log_to_text(self.shortcut_log, f"{'✓' if ok else '✗'} {msg}")
         else:
-            self._log_to_text(self.shortcut_log, "Skipping desktop shortcut (disabled in options)")
+            self._log_to_text(
+                self.shortcut_log, "Skipping desktop shortcut (disabled in options)"
+            )
 
         self._log_to_text(self.shortcut_log, "Shortcut step complete!")
 
@@ -856,26 +1159,53 @@ class EvershadeInstallerGUI:
 
     # ─── Step: Start Services ─────────────────────────────────────────
     def _step_start(self, parent):
-        ttk.Label(parent, text="Start Services", style="Heading.TLabel").pack(pady=(0, 15), anchor="w")
+        ttk.Label(parent, text="Start Services", style="Heading.TLabel").pack(
+            pady=(0, 15), anchor="w"
+        )
 
         if self.installer.start_services:
-            info = ttk.Label(parent, text="Ready to start Evershade services. This may take a minute as Docker pulls images.",
-                            style="Info.TLabel", wraplength=650, justify="left")
+            info = ttk.Label(
+                parent,
+                text="Ready to start Evershade services. This may take a minute as Docker pulls images.",
+                style="Info.TLabel",
+                wraplength=650,
+                justify="left",
+            )
         else:
-            info = ttk.Label(parent, text="Starting services is disabled. You can start them manually later.",
-                            style="Info.TLabel", wraplength=650, justify="left")
+            info = ttk.Label(
+                parent,
+                text="Starting services is disabled. You can start them manually later.",
+                style="Info.TLabel",
+                wraplength=650,
+                justify="left",
+            )
         info.pack(pady=(0, 15), anchor="w")
 
-        self.start_log = tk.Text(parent, height=10, width=80, wrap="word", state="disabled", font=("Consolas", 9))
+        self.start_log = tk.Text(
+            parent,
+            height=10,
+            width=80,
+            wrap="word",
+            state="disabled",
+            font=("Consolas", 9),
+        )
         self.start_log.pack(fill="both", expand=True, pady=10)
 
-        start_btn = ttk.Button(parent, text="Start Services", command=self._start_callback, style="Accent.TButton")
+        start_btn = ttk.Button(
+            parent,
+            text="Start Services",
+            command=self._start_callback,
+            style="Accent.TButton",
+        )
         start_btn.pack(pady=5)
 
     def _start_callback(self):
         if not self.installer.start_services:
             self._log_to_text(self.start_log, "Starting services is disabled.")
-            self._log_to_text(self.start_log, f"To start manually: cd {self.installer.install_dir} && .\\start.ps1 -Profile {self.installer.profile}")
+            self._log_to_text(
+                self.start_log,
+                f"To start manually: cd {self.installer.install_dir} && .\\start.ps1 -Profile {self.installer.profile}",
+            )
             for child in self.content_frame.winfo_children():
                 if isinstance(child, ttk.Button):
                     child.config(state="normal", text="OK")
@@ -895,7 +1225,10 @@ class EvershadeInstallerGUI:
             self._log_to_text(self.start_log, "")
             self._log_to_text(self.start_log, "Services are running!")
             self._log_to_text(self.start_log, "  API:     http://localhost:8080")
-            self._log_to_text(self.start_log, "  Dashboard: http://localhost:5173 (if Slammer installed)")
+            self._log_to_text(
+                self.start_log,
+                "  Dashboard: http://localhost:5173 (if Slammer installed)",
+            )
 
         for child in self.content_frame.winfo_children():
             if isinstance(child, ttk.Button):
@@ -904,10 +1237,17 @@ class EvershadeInstallerGUI:
 
     # ─── Step: Complete ───────────────────────────────────────────────
     def _step_complete(self, parent):
-        card = ttk.LabelFrame(parent, text="Installation Complete!", padding=25, style="Card.TLabelframe")
+        card = ttk.LabelFrame(
+            parent, text="Installation Complete!", padding=25, style="Card.TLabelframe"
+        )
         card.pack(fill="both", expand=True)
 
-        success = ttk.Label(card, text="✓  Evershade has been successfully installed!", style="Success.TLabel", font=("Segoe UI", 14, "bold"))
+        success = ttk.Label(
+            card,
+            text="✓  Evershade has been successfully installed!",
+            style="Success.TLabel",
+            font=("Segoe UI", 14, "bold"),
+        )
         success.pack(pady=(0, 20), anchor="w")
 
         # Summary
@@ -915,14 +1255,16 @@ class EvershadeInstallerGUI:
         if self.installer.profile == "custom":
             profile_name = f"Custom ({len(services)} services)"
         else:
-            profile_name = PROFILES.get(self.installer.profile, {}).get('name', self.installer.profile)
+            profile_name = PROFILES.get(self.installer.profile, {}).get(
+                "name", self.installer.profile
+            )
 
         summary_text = f"""Installation Summary:
   Directory:    {self.installer.install_dir}
   Profile:      {profile_name}
-  Services:     {', '.join(services)}
+  Services:     {", ".join(services)}
   User:         {self.installer.user}
-  Shortcut:     {'Yes' if self.installer.create_shortcut else 'No'}
+  Shortcut:     {"Yes" if self.installer.create_shortcut else "No"}
 
 Quick Commands:
   cd {self.installer.install_dir}
@@ -939,13 +1281,27 @@ For LLM providers, edit {self.installer.install_dir}\\.env and add your API keys
   EVERSHADE_ANTHROPIC_API_KEY
   EVERSHADE_GOOGLE_API_KEY"""
 
-        summary = tk.Text(card, height=18, width=80, wrap="word", font=("Consolas", 9), padx=10, pady=10)
+        summary = tk.Text(
+            card,
+            height=18,
+            width=80,
+            wrap="word",
+            font=("Consolas", 9),
+            padx=10,
+            pady=10,
+        )
         summary.insert("1.0", summary_text)
         summary.config(state="disabled")
         summary.pack(fill="x", pady=10)
 
-        welcome = ttk.Label(card, text="Welcome to Evershade! 🏚️", style="Success.TLabel", font=("Segoe UI", 12, "italic"))
+        welcome = ttk.Label(
+            card,
+            text="Welcome to Evershade! 🏚️",
+            style="Success.TLabel",
+            font=("Segoe UI", 12, "italic"),
+        )
         welcome.pack(pady=(10, 0))
+
 
 if __name__ == "__main__":
     root = tk.Tk()
