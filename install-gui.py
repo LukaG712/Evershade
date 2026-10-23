@@ -433,6 +433,10 @@ class EvershadeInstallerGUI:
         self.style.configure("Accent.TButton", font=("Helvetica", 11, "bold"))
         self.style.configure("TProgressbar", thickness=20)
         self.style.configure("Danger.TButton", foreground="red")
+        self.style.configure("Green.TLabel", foreground="green")
+        self.style.configure("Red.TLabel", foreground="red")
+        self.style.configure("Orange.TLabel", foreground="orange")
+        self.style.configure("Gray.TLabel", foreground="#666")
 
         # State
         self.installer = Installer()
@@ -606,8 +610,7 @@ class EvershadeInstallerGUI:
         warn = ttk.Label(
             card,
             text="⚠ This installer requires root (sudo) privileges for Docker installation.",
-            foreground="orange",
-            style="Small.TLabel",
+            style="Orange.TLabel",
         )
         warn.pack(anchor="w")
 
@@ -686,11 +689,11 @@ class EvershadeInstallerGUI:
             exists = command_exists(tool)
             status = "✓" if exists else "✗"
             color = "green" if exists else "red"
+            style_name = "Green.TLabel" if exists else "Red.TLabel"
             ttk.Label(
                 tools_frame,
                 text=f"  {status}  {tool}",
-                foreground=color,
-                style="Small.TLabel",
+                style=style_name,
             ).pack(anchor="w")
 
         # Docker
@@ -699,15 +702,18 @@ class EvershadeInstallerGUI:
         if docker_exists and compose_exists:
             _rc, _ver, _ = run_command("docker --version | awk '{print $3}'")
             docker_info.config(
-                text=f"✓  Docker: {_ver} (Compose available)", foreground="green"
+                text=f"✓  Docker: {_ver} (Compose available)",
+                style="Green.TLabel",
             )
         elif docker_exists:
             docker_info.config(
-                text="⚠  Docker installed but Compose missing", foreground="orange"
+                text="⚠  Docker installed but Compose missing",
+                style="Orange.TLabel",
             )
         else:
             docker_info.config(
-                text="✗  Docker not installed (will be installed)", foreground="red"
+                text="✗  Docker not installed (will be installed)",
+                style="Red.TLabel",
             )
 
         # Install button for missing deps
@@ -730,9 +736,9 @@ class EvershadeInstallerGUI:
         for child in self.content_frame.winfo_children():
             if isinstance(child, ttk.Button):
                 if ok:
-                    child.config(text="✓ Dependencies Installed", foreground="green")
+                    child.config(text="✓ Dependencies Installed")
                 else:
-                    child.config(state="normal", text="Retry Install", foreground="red")
+                    child.config(state="normal", text="Retry Install")
                 self.root.update()
                 break
 
@@ -764,8 +770,7 @@ class EvershadeInstallerGUI:
             desc_lbl = ttk.Label(
                 prof_frame,
                 text=f"   {info['desc']}",
-                style="Small.TLabel",
-                foreground="#666",
+                style="Gray.TLabel",
             )
             desc_lbl.pack(anchor="w")
 
@@ -781,14 +786,12 @@ class EvershadeInstallerGUI:
         custom_desc_lbl = ttk.Label(
             prof_frame,
             text="   Choose individual services below",
-            style="Small.TLabel",
-            foreground="#666",
+            style="Gray.TLabel",
         )
         custom_desc_lbl.pack(anchor="w")
 
         self.profile_desc = ttk.Label(prof_frame, text="", style="Info.TLabel")
         self.profile_desc.pack(pady=(5, 0), anchor="w")
-        self._update_profile_desc()
 
         # Custom service selection frame (hidden by default)
         self.custom_frame = ttk.LabelFrame(
@@ -801,8 +804,7 @@ class EvershadeInstallerGUI:
         ttk.Label(
             req_frame,
             text="Required (cannot be removed):",
-            style="Small.TLabel",
-            foreground="#666",
+            style="Gray.TLabel",
         ).pack(anchor="w")
 
         req_check_frame = ttk.Frame(self.custom_frame)
@@ -824,7 +826,7 @@ class EvershadeInstallerGUI:
         opt_frame = ttk.Frame(self.custom_frame)
         opt_frame.pack(fill="x", pady=(0, 5))
         ttk.Label(
-            opt_frame, text="Optional:", style="Small.TLabel", foreground="#666"
+            opt_frame, text="Optional:", style="Gray.TLabel"
         ).pack(anchor="w")
 
         opt_check_frame = ttk.Frame(self.custom_frame)
@@ -851,6 +853,9 @@ class EvershadeInstallerGUI:
 
         # Hide custom frame initially
         self.custom_frame.pack_forget()
+
+        # Update profile description now that custom_frame exists
+        self._update_profile_desc()
 
         # Install directory
         dir_frame = ttk.LabelFrame(
@@ -914,6 +919,10 @@ class EvershadeInstallerGUI:
     def _update_profile_desc(self):
         key = self.profile_var.get()
 
+        # Guard: custom_frame may not be created yet
+        if self.custom_frame is None:
+            return
+
         # Show/hide custom frame
         if key == "custom":
             self.custom_frame.pack(fill="x", pady=(0, 15), before=None)
@@ -950,12 +959,19 @@ class EvershadeInstallerGUI:
             self.dir_var.set(directory)
 
     def _save_options(self):
+        if not hasattr(self, "profile_var"):
+            return
         self.installer.profile = self.profile_var.get()
-        self.installer.install_dir = self.dir_var.get()
-        self.installer.use_systemd = self.systemd_var.get()
-        self.installer.use_desktop = self.desktop_var.get()
-        self.installer.start_services = self.start_var.get()
-        self.installer.regenerate_keys = self.regen_var.get()
+        if hasattr(self, "dir_var"):
+            self.installer.install_dir = self.dir_var.get()
+        if hasattr(self, "systemd_var"):
+            self.installer.use_systemd = self.systemd_var.get()
+        if hasattr(self, "desktop_var"):
+            self.installer.use_desktop = self.desktop_var.get()
+        if hasattr(self, "start_var"):
+            self.installer.start_services = self.start_var.get()
+        if hasattr(self, "regen_var"):
+            self.installer.regenerate_keys = self.regen_var.get()
 
         # Save custom services if custom profile selected
         if self.installer.profile == "custom":
@@ -1002,16 +1018,14 @@ class EvershadeInstallerGUI:
                 grp_status = ttk.Label(
                     parent,
                     text=f"⚠  User '{self.installer.user}' will be added to docker group.",
-                    foreground="orange",
-                    style="Info.TLabel",
+                    style="Orange.TLabel",
                 )
             grp_status.pack(pady=5, anchor="w")
         else:
             status = ttk.Label(
                 parent,
                 text="Docker will be installed during this step.",
-                foreground="orange",
-                style="Info.TLabel",
+                style="Orange.TLabel",
             )
             status.pack(pady=10, anchor="w")
 
@@ -1203,14 +1217,17 @@ class EvershadeInstallerGUI:
             if self.installer.regenerate_keys:
                 status.config(
                     text="⚠  Existing .env will be regenerated with new API keys.",
-                    foreground="orange",
+                    style="Orange.TLabel",
                 )
             else:
-                status.config(text="✓  Existing .env will be kept.", foreground="green")
+                status.config(
+                    text="✓  Existing .env will be kept.",
+                    style="Green.TLabel",
+                )
         else:
             status.config(
                 text="A new .env file will be created with auto-generated secure API keys.",
-                foreground="green",
+                style="Green.TLabel",
             )
 
         self.config_log = tk.Text(

@@ -354,6 +354,10 @@ class EvershadeInstallerGUI:
         self.style.configure("Accent.TButton", font=("Segoe UI", 11, "bold"))
         self.style.configure("TProgressbar", thickness=20)
         self.style.configure("Danger.TButton", foreground="red")
+        self.style.configure("Green.TLabel", foreground="green")
+        self.style.configure("Red.TLabel", foreground="red")
+        self.style.configure("Orange.TLabel", foreground="orange")
+        self.style.configure("Gray.TLabel", foreground="#666")
 
         # State
         self.installer = Installer()
@@ -578,32 +582,30 @@ class EvershadeInstallerGUI:
         for tool in ["git", "curl", "python"]:
             exists = command_exists(tool)
             status = "✓" if exists else "✗"
-            color = "green" if exists else "red"
+            style_name = "Green.TLabel" if exists else "Red.TLabel"
             ttk.Label(
                 tools_frame,
                 text=f"  {status}  {tool}",
-                foreground=color,
-                style="Small.TLabel",
+                style=style_name,
             ).pack(anchor="w")
 
         # PowerShell
         ps_exists = command_exists("powershell")
         status = "✓" if ps_exists else "✗"
-        color = "green" if ps_exists else "red"
+        ps_style = "Green.TLabel" if ps_exists else "Red.TLabel"
         ttk.Label(
             tools_frame,
             text=f"  {status}  powershell",
-            foreground=color,
-            style="Small.TLabel",
+            style=ps_style,
         ).pack(anchor="w")
 
         # Docker
         docker_ok, docker_msg = self.installer.check_docker()
         if docker_ok:
-            docker_info.config(text=f"✓  {docker_msg}", foreground="green")
+            docker_info.config(text=f"✓  {docker_msg}", style="Green.TLabel")
         else:
             docker_info.config(
-                text=f"✗  {docker_msg} (Docker Desktop required)", foreground="red"
+                text=f"✗  {docker_msg} (Docker Desktop required)", style="Red.TLabel"
             )
 
         # Install button for missing deps
@@ -650,8 +652,7 @@ class EvershadeInstallerGUI:
             desc_lbl = ttk.Label(
                 prof_frame,
                 text=f"   {info['desc']}",
-                style="Small.TLabel",
-                foreground="#666",
+                style="Gray.TLabel",
             )
             desc_lbl.pack(anchor="w")
 
@@ -667,14 +668,12 @@ class EvershadeInstallerGUI:
         custom_desc_lbl = ttk.Label(
             prof_frame,
             text="   Choose individual services below",
-            style="Small.TLabel",
-            foreground="#666",
+            style="Gray.TLabel",
         )
         custom_desc_lbl.pack(anchor="w")
 
         self.profile_desc = ttk.Label(prof_frame, text="", style="Info.TLabel")
         self.profile_desc.pack(pady=(5, 0), anchor="w")
-        self._update_profile_desc()
 
         # Custom service selection frame (hidden by default)
         self.custom_frame = ttk.LabelFrame(
@@ -687,8 +686,7 @@ class EvershadeInstallerGUI:
         ttk.Label(
             req_frame,
             text="Required (cannot be removed):",
-            style="Small.TLabel",
-            foreground="#666",
+            style="Gray.TLabel",
         ).pack(anchor="w")
 
         req_check_frame = ttk.Frame(self.custom_frame)
@@ -710,7 +708,7 @@ class EvershadeInstallerGUI:
         opt_frame = ttk.Frame(self.custom_frame)
         opt_frame.pack(fill="x", pady=(0, 5))
         ttk.Label(
-            opt_frame, text="Optional:", style="Small.TLabel", foreground="#666"
+            opt_frame, text="Optional:", style="Gray.TLabel"
         ).pack(anchor="w")
 
         opt_check_frame = ttk.Frame(self.custom_frame)
@@ -737,6 +735,9 @@ class EvershadeInstallerGUI:
 
         # Hide custom frame initially
         self.custom_frame.pack_forget()
+
+        # Update profile description now that custom_frame exists
+        self._update_profile_desc()
 
         # Install directory
         dir_frame = ttk.LabelFrame(
@@ -794,6 +795,10 @@ class EvershadeInstallerGUI:
     def _update_profile_desc(self):
         key = self.profile_var.get()
 
+        # Guard: custom_frame may not be created yet
+        if self.custom_frame is None:
+            return
+
         # Show/hide custom frame
         if key == "custom":
             self.custom_frame.pack(fill="x", pady=(0, 15))
@@ -825,11 +830,17 @@ class EvershadeInstallerGUI:
             self.dir_var.set(directory)
 
     def _save_options(self):
+        if not hasattr(self, "profile_var"):
+            return
         self.installer.profile = self.profile_var.get()
-        self.installer.install_dir = self.dir_var.get()
-        self.installer.create_shortcut = self.shortcut_var.get()
-        self.installer.start_services = self.start_var.get()
-        self.installer.regenerate_keys = self.regen_var.get()
+        if hasattr(self, "dir_var"):
+            self.installer.install_dir = self.dir_var.get()
+        if hasattr(self, "shortcut_var"):
+            self.installer.create_shortcut = self.shortcut_var.get()
+        if hasattr(self, "start_var"):
+            self.installer.start_services = self.start_var.get()
+        if hasattr(self, "regen_var"):
+            self.installer.regenerate_keys = self.regen_var.get()
 
         if self.installer.profile == "custom":
             self.installer.custom_services = self._get_custom_services()
@@ -1046,14 +1057,17 @@ class EvershadeInstallerGUI:
             if self.installer.regenerate_keys:
                 status.config(
                     text="⚠  Existing .env will be regenerated with new API keys.",
-                    foreground="orange",
+                    style="Orange.TLabel",
                 )
             else:
-                status.config(text="✓  Existing .env will be kept.", foreground="green")
+                status.config(
+                    text="✓  Existing .env will be kept.",
+                    style="Green.TLabel",
+                )
         else:
             status.config(
                 text="A new .env file will be created with auto-generated secure API keys.",
-                foreground="green",
+                style="Green.TLabel",
             )
 
         self.config_log = tk.Text(
