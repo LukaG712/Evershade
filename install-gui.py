@@ -469,9 +469,7 @@ class EvershadeInstallerGUI:
         prog_frame = ttk.Frame(self.root, padding=(20, 5, 20, 5))
         prog_frame.pack(fill="x")
 
-        self.progress = ttk.Progressbar(
-            prog_frame, mode="determinate", maximum=100
-        )
+        self.progress = ttk.Progressbar(prog_frame, mode="determinate", maximum=100)
         self.progress.pack(fill="x", pady=(0, 5))
 
         self.step_label = ttk.Label(
