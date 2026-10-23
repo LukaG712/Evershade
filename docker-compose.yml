@@ -164,12 +164,6 @@ services:
     networks:
       - internal
     # No host port — only accessible via Greenie or internal network
-    # Dev profile exposes port for direct access:
-    ports:
-      - target: 8000
-        published: "8000"
-        protocol: tcp
-        mode: host
     environment:
       - API_KEY=${EVERSHADE_SLINKER_API_KEY:-Slinker-dev-key-change-me}
       - PORT=8000

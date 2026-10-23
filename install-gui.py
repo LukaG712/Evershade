@@ -661,11 +661,15 @@ class EvershadeInstallerGUI:
             version = release.get("VERSION_ID", "unknown")
             pretty = release.get("PRETTY_NAME", "unknown")
             ubuntu_info.config(text=f"🖥  System: {pretty}")
-            if version < "20.04":
-                ubuntu_info.config(
-                    style="Error.TLabel",
-                    text=f"❌ Ubuntu 20.04+ required. Detected: {version}",
-                )
+            try:
+                version_tuple = tuple(map(int, version.split(".")))
+                if version_tuple < (20, 4):
+                    ubuntu_info.config(
+                        style="Error.TLabel",
+                        text=f"❌ Ubuntu 20.04+ required. Detected: {version}",
+                    )
+            except ValueError:
+                pass
         else:
             ubuntu_info.config(
                 style="Error.TLabel", text="⚠ Not Ubuntu — proceeding anyway"

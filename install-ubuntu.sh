@@ -119,8 +119,9 @@ if [ -f /etc/os-release ]; then
     UBUNTU_VERSION="${VERSION_ID:-unknown}"
     info "Detected Ubuntu $UBUNTU_VERSION ($PRETTY_NAME)"
 
-    # Check minimum version
-    if [[ "$UBUNTU_VERSION" < "20.04" ]]; then
+    # Check minimum version using numeric comparison
+    IFS='.' read -r UBUNTU_MAJOR UBUNTU_MINOR <<< "$UBUNTU_VERSION"
+    if [[ "$UBUNTU_MAJOR" -lt 20 ]] || { [[ "$UBUNTU_MAJOR" -eq 20 ]] && [[ "$UBUNTU_MINOR" -lt 4 ]]; }; then
         error "Ubuntu 20.04 or later is required. Detected: $UBUNTU_VERSION"
         exit 1
     fi
@@ -352,8 +353,6 @@ if [ ! -f ".env" ]; then
         sed -i "s/^EVERSHADE_SHREWD_API_KEY=.*/EVERSHADE_SHREWD_API_KEY=$(generate_key)/" .env
         sed -i "s/^EVERSHADE_ENCRYPTION_KEY=.*/EVERSHADE_ENCRYPTION_KEY=$(generate_key)/" .env
 
-        # Fix Ollama URL for Linux Docker (host.docker.internal doesn't work by default)
-        sed -i 's|EVERSHADE_OLLAMA_URL=http://host.docker.internal:11434|EVERSHADE_OLLAMA_URL=http://host.docker.internal:11434|' .env
         warn "For Ollama on Linux, you may need to add --add-host=host.docker.internal:host-gateway to Docker."
         warn "Or set EVERSHADE_OLLAMA_URL to your Ollama host IP in .env"
 

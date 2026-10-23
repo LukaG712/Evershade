@@ -44,7 +44,7 @@
 	}
 
 	# Sneaker metrics routes
-	reverse_proxy /sneaker/* Sneaker:8003 {
+	reverse_proxy /sneaker/* Sneaker:8086 {
 		header_up X-Forwarded-Proto {scheme}
 		header_up X-Forwarded-Host {host}
 		header_up X-Forwarded-For {remote_host}

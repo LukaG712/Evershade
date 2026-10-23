@@ -109,9 +109,10 @@ if (-not (Test-Path "version-manifest.json")) {
 }
 Write-Host "[OK] version-manifest.json found" -ForegroundColor Green
 
+$manifest = Get-Content "version-manifest.json" | ConvertFrom-Json
+
 # Extract service list based on profile (if not custom)
 if ($Profile -ne "custom") {
-    $manifest = Get-Content "version-manifest.json" | ConvertFrom-Json
     $profileServices = $manifest.profiles.$Profile
     $services = @($profileServices | Where-Object { $_ -notin @("redis", "ollama", "caddy") })
 }

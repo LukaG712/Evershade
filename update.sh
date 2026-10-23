@@ -244,9 +244,13 @@ echo -e "${GREEN}║  Update complete!                                          
 echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 echo "Updated services:"
-for svc in "${UPDATED[@]}"; do
-    echo "  - $svc"
-done
+if [ ${#UPDATED[@]} -gt 0 ]; then
+    for svc in "${UPDATED[@]}"; do
+        echo "  - $svc"
+    done
+else
+    echo "  (none)"
+fi
 echo ""
 echo "To apply changes, restart your services:"
 echo "  ./stop.sh && ./start.sh --profile $PROFILE"
