@@ -1,11 +1,13 @@
 # Evershade Deployment Guide
 
 **Version:** 1.0.0
-**Last Updated:** 2026-10-22
+**Last Updated:** 2026-10-23
 
 ---
 
 ## 1. Quick Start (Desktop)
+
+The fastest way to get Evershade running on your local machine:
 
 ```bash
 # Clone and configure
@@ -18,6 +20,16 @@ docker compose --profile minimal up -d
 
 # Dashboard: http://localhost:8080
 ```
+
+### Before Deploying
+
+| Check | Command |
+|-------|---------|
+| Docker is running | `docker info` |
+| Docker Compose available | `docker compose version` |
+| Ports are free | `netstat -ano \| findstr :8080` (Windows) |
+| Enough disk space | `df -h` (Linux/macOS) or `Get-PSDrive C \| Select Used,Free` (Windows) |
+| Enough RAM | At least 4 GB available |
 
 ---
 
@@ -208,3 +220,47 @@ docker compose up -d --build
 ```
 
 See `docs/RELEASES.md` for version compatibility and migration notes.
+
+---
+
+## 9. Production Hardening Checklist
+
+Before deploying to production:
+
+- [ ] **API keys:** All default keys replaced with strong random values
+- [ ] **TLS:** Caddy proxy profile enabled or external reverse proxy configured
+- [ ] **Firewall:** Only ports 80/443 exposed; internal services not accessible from host
+- [ ] **Backups:** Automated backup schedule configured
+- [ ] **Monitoring:** Sneaker alerts configured with Poltergeist delivery
+- [ ] **Resource limits:** CPU and memory limits appropriate for workload
+- [ ] **Log rotation:** Logs configured to prevent disk exhaustion
+- [ ] **Health checks:** All service health endpoints responding
+- [ ] **Rate limiting:** Configured for expected traffic patterns
+- [ ] **Secrets:** `.env` file permissions restricted (e.g., `chmod 600 .env`)
+
+---
+
+## 10. High Availability Considerations
+
+Evershade is designed for single-instance deployment. For higher availability:
+
+### What Survives Restart
+
+- **Docker volumes:** All SQLite databases persist across restarts
+- **Redis AOF:** Job queue data survives restarts
+- **Workspace:** Git worktrees and files persist
+
+### What Doesn't Survive Restart
+
+- **In-memory state:** Active sessions, in-memory caches
+- **Running tasks:** In-progress agent tasks are cancelled
+- **Ollama models:** Models persist in `ollama_data` volume
+
+### Recommended Backup Strategy
+
+| Frequency | What | Method |
+|-----------|------|--------|
+| Every hour | SQLite databases | `evershade backup --incremental` |
+| Daily | Full system | `evershade backup --full` |
+| Weekly | Off-site copy | SCP backup to remote server |
+| Before upgrade | Full system | Manual backup before `git pull` |

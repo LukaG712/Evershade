@@ -1,13 +1,31 @@
 # Evershade Configuration Reference
 
 **Version:** 1.0.0
-**Last Updated:** 2026-10-22
+**Last Updated:** 2026-10-23
 
 ---
 
 ## 1. Configuration Overview
 
 Evershade uses environment variables for all configuration. Copy `.env.example` to `.env` and edit the values. The `docker-compose.yml` file references these variables with sensible defaults.
+
+### Quick Start for Beginners
+
+1. **Copy the template:** `cp .env.example .env`
+2. **Generate API keys:** Replace every `change-me` value with a random hex string
+3. **Optional:** Add your LLM provider key (OpenAI, Anthropic, etc.)
+4. **Save and start:** `./start.sh --profile minimal`
+
+That's it for a basic setup. The sections below cover every available option.
+
+### Configuration File Locations
+
+| File | Purpose | Edit? |
+|------|---------|-------|
+| `.env.example` | Template with all variables and documentation | No (reference only) |
+| `.env` | Your actual configuration | Yes |
+| `Greenie/hub.yaml` | Greenie-specific agent and bot configuration | Yes (optional) |
+| `version-manifest.json` | Compatible service versions | No (managed by releases) |
 
 ### Variable Naming Convention
 
@@ -148,11 +166,55 @@ This checks for:
 
 ---
 
-## 10. Configuration Files
+## 11. Advanced Configuration Tips
 
-| File | Purpose |
-|------|---------|
-| `.env.example` | Template with all variables and documentation |
-| `.env` | Your actual configuration (gitignored) |
-| `Greenie/hub.yaml` | Greenie-specific agent and bot configuration |
-| `version-manifest.json` | Compatible service versions |
+### Using Docker Secrets
+
+For production deployments, consider Docker secrets instead of `.env` files:
+
+```yaml
+# docker-compose.yml
+services:
+  Greenie:
+    secrets:
+      - greenie_api_key
+    environment:
+      - EVERSHADE_GREENIE_API_KEY_FILE=/run/secrets/greenie_api_key
+
+secrets:
+  greenie_api_key:
+    file: ./secrets/greenie_api_key.txt
+```
+
+### Environment-Specific Configuration
+
+Use separate `.env` files for different environments:
+
+```
+.env.local      # Local development (gitignored)
+.env.staging    # Staging server
+.env.production # Production server
+```
+
+Load with: `set -a; source .env.production; set +a; docker compose up -d`
+
+### Validating Configuration Changes
+
+After editing `.env`, validate before restarting:
+
+```bash
+# Check for issues
+evershade config validate
+
+# Apply changes
+docker compose up -d
+```
+
+### Hot-Reloading Configuration
+
+Some settings can be changed without restarting:
+- Log level (`EVERSHADE_LOG_LEVEL`)
+- Rate limit thresholds
+- Feature flags (via Gobber API)
+
+Most settings require a service restart: `docker compose restart <service>`

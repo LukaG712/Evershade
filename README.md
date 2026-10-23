@@ -16,9 +16,15 @@
 
 ## Table of Contents
 
+### Getting Started
+- [What Is Evershade](#what-is-evershade) — Plain-language overview
 - [Why Evershade](#why-evershade) — Key features and capabilities
+- [Glossary](#glossary) — Key terms explained
 - [Quick Start](#quick-start) — Get up and running in 3 minutes
 - [Your First Agent](#your-first-agent) — Step-by-step tutorial
+- [FAQ](#faq) — Frequently asked questions
+
+### Core Documentation
 - [Architecture](#architecture) — How everything fits together
 - [Services](#services) — The 10 microservices at a glance
 - [Mission Control](#mission-control) — Orchestrated AI missions with milestones
@@ -26,16 +32,64 @@
 - [Workstations](#workstations) — Isolated agent environments
 - [Web Interfaces](#web-interfaces) — Dashboards and UIs
 - [API Documentation](#api-documentation) — Developer endpoints
+
+### Configuration & Deployment
 - [Configuration](#configuration) — Environment variables and settings
 - [Deployment](#deployment) — Production and remote access
 - [Security](#security) — Security model and best practices
+
+### Operations
 - [Testing](#testing) — Test suite and quality gates
 - [Backup & Restore](#backup--restore) — Data protection
 - [Troubleshooting](#troubleshooting) — Common issues and fixes
+
+### Contributing & More
 - [Contributing](#contributing) — How to help
 - [Roadmap](#roadmap) — Development timeline and future plans
 - [Naming Theme](#naming-theme) — The Luigi's Mansion connection
 - [License](#license)
+
+### Advanced Topics
+- [Advanced Guide](docs/ADVANCED.md) — Expert deep dives, internals, and power-user patterns
+- [Full Documentation Index](#full-documentation-index) — All docs at a glance
+
+---
+
+## What Is Evershade
+
+If you're new here, start here. Evershade is a **self-hosted AI agent platform** that lets you create, manage, and run AI-powered agents on your own hardware. Think of it as your personal AI workforce that lives on your computer or server.
+
+### In Plain English
+
+- **You own everything.** Your data, your agents, your conversations — nothing leaves your machine unless you explicitly connect an external AI provider.
+- **It runs in Docker.** No complex setup. If you can run Docker, you can run Evershade.
+- **Agents do real work.** Agents can write code, scrape websites, search knowledge bases, send notifications, and chain tasks together in automated pipelines.
+- **Mission Control orchestrates complex projects.** Break large tasks into milestones, let AI plan and execute, then validate the results automatically.
+- **It's modular.** Use just the core services or add observability, notifications, local LLMs, and more — you choose what you need.
+
+### Who Is This For?
+
+| Audience | What You Get |
+|----------|-------------|
+| **Developers** | AI agents that write, test, and refactor code in isolated environments |
+| **Researchers** | Web scraping, knowledge graph search, and automated literature reviews |
+| **DevOps / Sysadmins** | Self-hosted platform with full observability, backups, and security |
+| **AI Enthusiasts** | Multi-provider LLM support (OpenAI, Anthropic, Google, Ollama) with cost tracking |
+| **Teams** | Multi-user access, role-based permissions, and shared agent workflows |
+
+### How It Works at a High Level
+
+```
+You → Dashboard or CLI → Greenie (orchestrator)
+                              ├──► Slinker (code execution)
+                              ├──► Trapper (web scraping)
+                              ├──► Shrewd (AI model routing)
+                              ├──► Gobber (storage & search)
+                              ├──► Poltergeist (notifications)
+                              └──► Sneaker (monitoring)
+```
+
+You interact with Evershade through a web dashboard or CLI. Greenie, the central orchestrator, routes your requests to the right service. Each service does one thing well, and they work together to power your AI agents.
 
 ---
 
@@ -117,6 +171,104 @@ The API will be available at **http://localhost:8080**.
 **Profiles:** `minimal` (core only), `standard` (all services), `full` (+ dashboard).
 
 **Modes:** Add `--mode server` for production deployment (requires secure API keys).
+
+---
+
+## Glossary
+
+New to Evershade? Here are the key terms you'll encounter:
+
+| Term | Definition |
+|------|-------------|
+| **Agent** | An AI-powered worker that can perform tasks like writing code, answering questions, or scraping the web. Agents are configured with a name, runner (e.g., Junie), and guidelines. |
+| **Agent Harness** | A framework for advanced agent development, including Spec Mode, custom droids, skills, and event-driven hooks. |
+| **Droid** | A specialized subagent with its own prompt, model, and tool policy. Built-in droids include `worker`, `explorer`, `reviewer`, and `validator`. |
+| **Feature** | A unit of work within a mission milestone. Features are executed by workers and validated independently. |
+| **Greenie** | The central orchestrator service. All requests flow through Greenie, which routes them to the appropriate microservice. |
+| **Gobber** | The persistent storage service. Handles databases, knowledge graphs, Obsidian vault integration, and semantic search. |
+| **Hider** | The secrets management service. Encrypts API keys and sensitive data at rest using AES-256-GCM. |
+| **Mission** | A high-level project broken into milestones, features, and validation steps. Think of it as an AI-powered software engineering sprint. |
+| **Milestone** | A phase within a mission. Each milestone contains one or more features that can be executed in parallel. |
+| **Mission Control** | The factory-inspired orchestration system for complex AI-driven development workflows. |
+| **Observability** | The ability to monitor system health via metrics, traces, and logs. Handled by the Sneaker service. |
+| **OTLP** | OpenTelemetry Protocol — a standard for sending traces, metrics, and logs to external monitoring systems. |
+| **Pipeline** | A chain of cross-service steps executed in sequence. For example: scrape a page → summarize with AI → save to storage. |
+| **Poltergeist** | The notification service. Sends alerts to Slack, Discord, email, and Telegram. |
+| **Slinker** | The code execution engine. Runs AI agents against codebases in isolated Git worktrees. |
+| **Slammer** | The React-based web dashboard. The primary visual interface for managing Evershade. |
+| **Sneaker** | The observability service. Collects metrics, traces, and logs from all services. |
+| **Shrewd** | The LLM abstraction layer. Routes AI requests to OpenAI, Anthropic, Google, or Ollama. |
+| **Speedy** | The command-line interface (`evershade` command). Manage everything from the terminal. |
+| **Spec Mode** | A research-first workflow: analyze a repository, propose a plan, get human approval, then execute. |
+| **Skill** | A reusable `SKILL.md` workflow that can be auto-discovered and invoked by agents. |
+| **Trapper** | The web scraping service. Uses Playwright to scrape, crawl, and extract data from websites. |
+| **Workflow** | An automated sequence of steps with triggers, conditions, and optional approval gates. |
+| **Workstation** | An isolated container-based environment for agent execution. Each workstation has its own filesystem, shell, and network policy. |
+
+---
+
+## FAQ
+
+### General
+
+**Q: Is Evershade free?**
+A: Yes, Evershade is open-source under the MIT License. You self-host it on your own hardware at no cost. You may incur costs from external LLM providers (OpenAI, Anthropic, etc.) if you use them.
+
+**Q: Do I need an AI API key to use Evershade?**
+A: No. You can run Evershade with local models via Ollama, or without any LLM at all for basic agent management and web scraping. Cloud LLM providers are optional.
+
+**Q: Can I run this on my laptop?**
+A: Yes. The minimal profile needs ~4 GB RAM and 2 CPU cores. See [Resource Requirements](docs/RESOURCES.md) for details.
+
+**Q: What's the difference between Evershade and ChatGPT / Claude?**
+A: ChatGPT and Claude are cloud-based chat interfaces. Evershade is a self-hosted platform where AI agents do real work — write code, scrape websites, run tests, send notifications — all on your infrastructure with full data privacy.
+
+**Q: Is my data private?**
+A: All data stays on your machine. When you connect external LLM providers, prompts and responses go through their APIs (subject to their privacy policies). Using Ollama for local models keeps everything on-premise.
+
+### Installation & Setup
+
+**Q: Why do I need to run `install.sh` after cloning?**
+A: Evershade's services live in separate Git repositories for independent development. The install script clones them into the correct directories. Without it, you only have the orchestration files.
+
+**Q: Which profile should I choose?**
+A: Start with `minimal` for core functionality. Use `standard` when you need observability, notifications, and LLM routing. Use `full` to add the Slammer dashboard.
+
+**Q: I'm on Windows. Will this work?**
+A: Yes. Use the PowerShell scripts (`install.ps1`, `start.ps1`, `stop.ps1`) and ensure Docker Desktop is running with WSL2 backend.
+
+**Q: Docker won't start. What do I do?**
+A: Run `evershade doctor` for automated diagnostics. Common fixes: increase Docker memory allocation, check port conflicts, verify Docker Compose version.
+
+### Agents & Missions
+
+**Q: What's the difference between an agent and a mission?**
+A: An agent is a single AI worker with a name and guidelines. A mission is a structured project that uses one or more agents to complete milestones with automated planning, execution, and validation.
+
+**Q: Can agents work together?**
+A: Yes. Missions support parallel workers, and pipelines chain multiple services together. Agents collaborate through Greenie, not directly.
+
+**Q: What is Spec Mode?**
+A: Spec Mode is a research-first workflow. Before any code changes, the agent analyzes the repository, proposes a concrete plan, and waits for your approval. It's the safe way to use AI for code changes.
+
+### Security
+
+**Q: How secure is Evershade?**
+A: Very. Services run in hardened containers with dropped capabilities, read-only filesystems, and network isolation. Secrets are encrypted at rest (AES-256-GCM). See [Security Model](docs/SECURITY.md) for details.
+
+**Q: Can I expose Evershade to the internet?**
+A: Yes, but you should use the Caddy reverse proxy profile for TLS. Never expose services without authentication. Server mode refuses to start with default API keys.
+
+### Troubleshooting
+
+**Q: Services won't start.**
+A: Run `evershade doctor` to diagnose. Check Docker logs with `docker compose logs -f Greenie`. Verify your `.env` file has valid API keys.
+
+**Q: I can't reach the dashboard.**
+A: Ensure services are running (`docker compose ps`), check the bind address in `.env`, and verify no firewall is blocking port 8080.
+
+**Q: How do I reset everything?**
+A: `docker compose down -v` removes all containers and volumes. Then `docker compose --profile standard up -d` to start fresh.
 
 ---
 
@@ -918,6 +1070,53 @@ This project is licensed under the [MIT License](LICENSE).
 | Slinker | MIT |
 | Trapper | MIT (see [Trapper/LICENSE](Trapper/LICENSE)) |
 | Other services | MIT |
+
+---
+
+## Full Documentation Index
+
+For deeper dives, the `docs/` directory contains detailed guides:
+
+### Beginner-Friendly
+
+| Document | Description |
+|----------|-------------|
+| [Getting Started Guide](docs/GETTING_STARTED.md) | Detailed walkthrough for first-time users, from zero to running agents |
+| [FAQ](docs/FAQ.md) | Expanded FAQ with answers to common questions |
+| [Glossary](docs/GLOSSARY.md) | Complete glossary of Evershade terms |
+
+### Core Reference
+
+| Document | Description |
+|----------|-------------|
+| [Architecture](docs/ARCHITECTURE.md) | Full system architecture, service boundaries, and data flow |
+| [Service Catalog](docs/SERVICE_CATALOG.md) | Every API endpoint for every service |
+| [Configuration](docs/CONFIGURATION.md) | Complete environment variable reference |
+| [Workstations](docs/WORKSTATIONS.md) | Isolated agent environments — templates, drivers, and security |
+
+### Operations
+
+| Document | Description |
+|----------|-------------|
+| [Deployment](docs/DEPLOYMENT.md) | Server mode, Proxmox, auto-start, and firewall setup |
+| [Security](docs/SECURITY.md) | Security model, authentication, and threat mitigation |
+| [Backup & Restore](docs/BACKUP_RESTORE.md) | Data protection strategies and disaster recovery |
+| [Testing](docs/TESTING.md) | Test structure, running tests, and writing tests |
+| [Releases](docs/RELEASES.md) | Version compatibility, upgrade paths, and migration notes |
+| [Resource Requirements](docs/RESOURCES.md) | CPU, RAM, disk, and network requirements |
+
+### Development
+
+| Document | Description |
+|----------|-------------|
+| [Development Guide](docs/DEVELOPMENT.md) | Local development setup, debugging, and code style |
+| [Contributing](CONTRIBUTING.md) | How to report bugs, suggest features, and submit PRs |
+
+### Advanced
+
+| Document | Description |
+|----------|-------------|
+| [Advanced Guide](docs/ADVANCED.md) | Expert deep dives: internals, performance tuning, custom integrations, and power-user patterns |
 
 ---
 

@@ -1,17 +1,31 @@
 # Evershade Security Model
 
 **Version:** 1.1.0
-**Last Updated:** 2026-10-22
+**Last Updated:** 2026-10-23
 
 ---
 
 ## 1. Security Principles
+
+Evershade's security model is built on five core principles:
 
 1. **Least privilege** — Every service runs with minimal permissions.
 2. **Defense in depth** — Multiple layers of protection; no single point of failure.
 3. **Network isolation** — Services communicate on an internal network; only the gateway is exposed.
 4. **Secrets protection** — Credentials are encrypted at rest and never logged.
 5. **Untrusted content** — All external content (web pages, repositories, notes) is treated as untrusted data.
+
+### Security at a Glance
+
+For beginners, here's what this means in practice:
+
+| Concern | How Evershade Protects You |
+|---------|---------------------------|
+| **Data privacy** | All data stays on your machine. Nothing leaves unless you connect an external LLM. |
+| **Secret safety** | API keys are encrypted (AES-256-GCM) when stored. Never logged or exposed. |
+| **Network security** | Only port 8080 is exposed. All other services are on an internal network. |
+| **Container security** | Services run in hardened containers with dropped privileges and read-only filesystems. |
+| **Web security** | CSRF protection, rate limiting, and input validation on all endpoints. |
 
 ---
 
@@ -227,3 +241,33 @@ Sensitive data is automatically redacted from log output:
 Report security vulnerabilities to the repository maintainers. Do not open public issues for security concerns.
 
 **Responsible disclosure:** Allow reasonable time for patches before public disclosure.
+
+---
+
+## 14. Security Best Practices
+
+### For Beginners
+
+1. **Generate strong API keys** — Use `openssl rand -hex 32` for each service
+2. **Never commit `.env`** — It's in `.gitignore`, but double-check before pushing
+3. **Use minimal profile first** — Start small, add services as needed
+4. **Keep Docker updated** — Run the latest stable Docker version
+5. **Backup regularly** — Use `evershade backup` before major changes
+
+### For Production
+
+1. **Enable TLS** — Use the Caddy proxy profile or external reverse proxy
+2. **Restrict firewall** — Only expose ports 80/443 to the internet
+3. **Rotate keys periodically** — Use the credential rotation API
+4. **Monitor logs** — Configure Sneaker alerts for suspicious activity
+5. **Use server mode** — Set `EVERSHADE_MODE=server` for production deployments
+6. **Enable rate limiting** — Configure appropriate limits for your traffic
+7. **Audit access** — Review the audit trail regularly via `/api/audit/events`
+
+### For Maximum Security
+
+1. **Use container isolation** — Set `EVERSHADE_ISOLATION_MODE=container` for Slinker
+2. **Network policies** — Configure workstation network policies with default-deny
+3. **Secrets management** — Use Docker secrets instead of `.env` for production
+4. **Seccomp profiles** — Apply custom Seccomp profiles for additional hardening
+5. **Regular audits** — Run security tests: `./tests/run-all-tests.sh security`

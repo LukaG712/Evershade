@@ -1,11 +1,22 @@
 # Evershade Testing Guide
 
 **Version:** 1.0.0
-**Last Updated:** 2026-10-22
+**Last Updated:** 2026-10-23
 
 ---
 
 ## 1. Test Structure
+
+Evershade has a comprehensive test strategy covering multiple levels:
+
+```
+Test Pyramid
+─────────────────────────────────
+         /    E2E     \          ← Full system tests
+        /   Integration \        ← Cross-service tests
+       /      Unit Tests \       ← Individual component tests
+      ─────────────────────
+```
 
 Each service maintains its own test suite in its separate repository:
 
@@ -99,3 +110,86 @@ test('health endpoint returns ok', async () => {
 - Fake LLM providers for routine CI (no API costs)
 - Real services for integration tests
 - Clean up test data after each test
+
+---
+
+## 6. Test Categories Explained
+
+### Unit Tests
+
+Test individual functions and classes in isolation. Fast, no services required.
+
+```python
+# Example: Test a utility function
+def test_generate_api_key():
+    key = generate_api_key()
+    assert len(key) == 64
+    assert all(c in '0123456789abcdef' for c in key)
+```
+
+### Integration Tests
+
+Test cross-service communication. Requires running services.
+
+```python
+# Example: Test Greenie → Slinker communication
+async def test_create_task():
+    response = await client.post("/api/tasks", json={"prompt": "test"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "queued"
+```
+
+### Security Tests
+
+Test for common vulnerabilities:
+- **Prompt injection:** Verify untrusted content is treated as data
+- **SSRF:** Verify private IP blocking in Trapper
+- **Auth bypass:** Verify all endpoints require authentication
+- **Secret leakage:** Verify secrets are redacted from logs
+
+### Performance Benchmarks
+
+Measure latency, throughput, and resource usage:
+- **API latency:** p50, p95, p99 response times
+- **Throughput:** Requests per second under load
+- **Concurrency:** Behavior under concurrent access
+- **Memory:** Peak memory usage per service
+
+### Chaos Tests
+
+Test resilience under failure conditions:
+- **Service crash:** Verify graceful degradation when a service goes down
+- **Network partition:** Verify behavior when services lose connectivity
+- **Database corruption:** Verify recovery from corrupted SQLite files
+- **Resource exhaustion:** Verify behavior under memory/CPU pressure
+
+---
+
+## 7. CI/CD Pipeline
+
+Each service has its own GitHub Actions workflow:
+
+| Step | Description |
+|------|-------------|
+| **Lint** | Run ruff/ESLint to check code style |
+| **Type Check** | Run mypy (Python) or tsc (TypeScript) |
+| **Unit Tests** | Run pytest/Jest |
+| **Build** | Build Docker image |
+| **Integration Tests** | Run against real services (on merge) |
+
+Root CI pipeline orchestrates cross-service tests and manifest validation.
+
+---
+
+## 8. Test Coverage Goals
+
+| Component | Target Coverage |
+|-----------|-----------------|
+| API endpoints | 90%+ |
+| Business logic | 95%+ |
+| Utilities | 100% |
+| Integration | Key paths covered |
+| Security | All attack vectors tested |
+
+Check coverage: `pytest --cov=hub --cov-report=term-missing`
