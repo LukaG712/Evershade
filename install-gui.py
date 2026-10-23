@@ -394,8 +394,21 @@ StartupNotify=true
         # Always run as root; ownership is set by install.sh.
         rc, out, err = run_command(cmd)
         if rc != 0:
-            message = err if err else out
-            return False, f"Failed to start services: {message[:500]}"
+            # Combine stdout and stderr for the error message.
+            # start.sh prints to stdout, so show both when available.
+            combined = out
+            if err and err not in combined:
+                combined = f"{combined}\n{err}" if combined else err
+            if not combined:
+                combined = (
+                    "No output captured. Possible causes:\n"
+                    "- Docker is not installed or not running\n"
+                    "- .env file is missing or malformed\n"
+                    "- Required service directories are not installed\n"
+                    "- docker-compose.yml is missing\n"
+                    "Try running manually: cd /root/Evershade && bash start.sh --profile full"
+                )
+            return False, f"Failed to start services:\n{combined[:800]}"
         return True, "Services started"
 
 

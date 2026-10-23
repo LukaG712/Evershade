@@ -319,8 +319,20 @@ class Installer:
         cmd = f'powershell -ExecutionPolicy Bypass -File "{start_ps1}" -Profile {self.profile}'
         rc, out, err = run_command(cmd, timeout=300)
         if rc != 0:
-            message = err if err else out
-            return False, f"Failed to start services: {message[:500]}"
+            # Combine stdout and stderr for the error message.
+            combined = out
+            if err and err not in combined:
+                combined = f"{combined}\n{err}" if combined else err
+            if not combined:
+                combined = (
+                    "No output captured. Possible causes:\n"
+                    "- Docker Desktop is not installed or not running\n"
+                    "- .env file is missing or malformed\n"
+                    "- Required service directories are not installed\n"
+                    "- docker-compose.yml is missing\n"
+                    "Try running manually: start.ps1 -Profile full"
+                )
+            return False, f"Failed to start services:\n{combined[:800]}"
         return True, "Services started"
 
 
