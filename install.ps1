@@ -130,6 +130,11 @@ $skipped = @()
 $cloned = @()
 $outdated = @()
 
+# Create services directory if it doesn't exist
+if (-not (Test-Path "services")) {
+    New-Item -ItemType Directory -Path "services" | Out-Null
+}
+
 foreach ($service in $services) {
     $serviceInfo = $manifest.services.$service
     $repoUrl = $serviceInfo.repository
@@ -138,13 +143,15 @@ foreach ($service in $services) {
         $repoUrl = "https://github.com/LukaG712/$service"
     }
 
+    $serviceDir = "services/$service"
+
     # Check if directory already exists
-    if (Test-Path $service) {
+    if (Test-Path $serviceDir) {
         if ($Force) {
             Write-Host "[WARN] Removing existing $service directory (forced)..." -ForegroundColor Yellow
-            Remove-Item -Recurse -Force $service
-        } elseif (Test-Path "$service/.git") {
-            $currentCommit = & git -C $service rev-parse --short=7 HEAD 2>$null
+            Remove-Item -Recurse -Force $serviceDir
+        } elseif (Test-Path "$serviceDir/.git") {
+            $currentCommit = & git -C $serviceDir rev-parse --short=7 HEAD 2>$null
             if ($commit -and $currentCommit -eq $commit) {
                 Write-Host "[OK] $service already at correct commit ($commit) — skipping" -ForegroundColor Green
                 $skipped += $service
@@ -172,8 +179,8 @@ foreach ($service in $services) {
     if ($commit) {
         # Clone with deeper history and checkout the specific commit
         try {
-            git clone --depth 100 $repoUrl $service 2>&1 | Out-Null
-            $checkoutResult = & git -C $service checkout $commit 2>&1
+            git clone --depth 100 $repoUrl $serviceDir 2>&1 | Out-Null
+            $checkoutResult = & git -C $serviceDir checkout $commit 2>&1
             if ($LASTEXITCODE -eq 0) {
                 Write-Host "[OK] $service cloned and checked out at commit $commit" -ForegroundColor Green
                 $cloneSuccess = $true
@@ -189,7 +196,7 @@ foreach ($service in $services) {
     } else {
         # No pinned commit, clone latest
         try {
-            git clone --depth 1 $repoUrl $service 2>&1 | Out-Null
+            git clone --depth 1 $repoUrl $serviceDir 2>&1 | Out-Null
             Write-Host "[OK] $service cloned successfully (no pinned commit)" -ForegroundColor Green
             $cloneSuccess = $true
         } catch {

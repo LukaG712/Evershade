@@ -198,16 +198,20 @@ SKIPPED=()
 CLONED=()
 OUTDATED=()
 
+# Create services directory if it doesn't exist
+mkdir -p services
+
 while IFS='|' read -r SERVICE REPO_URL COMMIT; do
+    SERVICE_DIR="services/$SERVICE"
     # Check if directory already exists
-    if [ -d "$SERVICE" ]; then
+    if [ -d "$SERVICE_DIR" ]; then
         if [ "$FORCE" = true ]; then
             echo -e "${YELLOW}⚠${NC} Removing existing $SERVICE directory (forced)..."
-            rm -rf "$SERVICE"
+            rm -rf "$SERVICE_DIR"
         else
             # Check if it's a valid git repo and at the correct commit
-            if [ -d "$SERVICE/.git" ]; then
-                CURRENT_COMMIT=$(cd "$SERVICE" && git rev-parse --short=7 HEAD 2>/dev/null || echo "unknown")
+            if [ -d "$SERVICE_DIR/.git" ]; then
+                CURRENT_COMMIT=$(cd "$SERVICE_DIR" && git rev-parse --short=7 HEAD 2>/dev/null || echo "unknown")
                 if [ -n "$COMMIT" ] && [ "$CURRENT_COMMIT" = "$COMMIT" ]; then
                     echo -e "${GREEN}✓${NC} $SERVICE already at correct commit ($COMMIT) — skipping"
                     SKIPPED+=("$SERVICE")
@@ -235,8 +239,8 @@ while IFS='|' read -r SERVICE REPO_URL COMMIT; do
     CLONE_SUCCESS=false
     if [ -n "$COMMIT" ]; then
         # Clone and checkout the specific commit
-        if git clone --depth 100 "$REPO_URL" "$SERVICE" 2>&1; then
-            if (cd "$SERVICE" && git checkout "$COMMIT" 2>&1); then
+        if git clone --depth 100 "$REPO_URL" "$SERVICE_DIR" 2>&1; then
+            if (cd "$SERVICE_DIR" && git checkout "$COMMIT" 2>&1); then
                 echo -e "${GREEN}✓${NC} $SERVICE cloned and checked out at commit $COMMIT"
                 CLONE_SUCCESS=true
             else
@@ -250,7 +254,7 @@ while IFS='|' read -r SERVICE REPO_URL COMMIT; do
         fi
     else
         # No pinned commit, clone latest
-        if git clone --depth 1 "$REPO_URL" "$SERVICE" 2>&1; then
+        if git clone --depth 1 "$REPO_URL" "$SERVICE_DIR" 2>&1; then
             echo -e "${GREEN}✓${NC} $SERVICE cloned successfully (no pinned commit)"
             CLONE_SUCCESS=true
         else

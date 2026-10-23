@@ -140,22 +140,23 @@ FAILED=()
 MISSING=()
 
 while IFS='|' read -r SERVICE REPO_URL COMMIT; do
+    SERVICE_DIR="services/$SERVICE"
     # Check if directory exists
-    if [ ! -d "$SERVICE" ]; then
+    if [ ! -d "$SERVICE_DIR" ]; then
         echo -e "${YELLOW}⚠${NC} $SERVICE directory not found — skipping. Run install.sh to clone it first."
         MISSING+=("$SERVICE")
         continue
     fi
 
     # Check if it's a valid git repo
-    if [ ! -d "$SERVICE/.git" ]; then
+    if [ ! -d "$SERVICE_DIR/.git" ]; then
         echo -e "${YELLOW}⚠${NC} $SERVICE exists but is not a git repo — skipping."
         SKIPPED+=("$SERVICE")
         continue
     fi
 
     # Get current commit
-    CURRENT_COMMIT=$(cd "$SERVICE" && git rev-parse --short=7 HEAD 2>/dev/null || echo "unknown")
+    CURRENT_COMMIT=$(cd "$SERVICE_DIR" && git rev-parse --short=7 HEAD 2>/dev/null || echo "unknown")
 
     # Check if already at correct commit
     if [ -n "$COMMIT" ] && [ "$CURRENT_COMMIT" = "$COMMIT" ] && [ "$FORCE" = false ]; then
@@ -168,11 +169,11 @@ while IFS='|' read -r SERVICE REPO_URL COMMIT; do
     echo -e "${BLUE}→${NC} Updating $SERVICE (current: $CURRENT_COMMIT, target: $COMMIT)..."
 
     UPDATE_SUCCESS=false
-    if (cd "$SERVICE" && git fetch --depth 100 2>&1); then
+    if (cd "$SERVICE_DIR" && git fetch --depth 100 2>&1); then
         if [ -n "$COMMIT" ]; then
             # Checkout the pinned commit
-            if (cd "$SERVICE" && git checkout "$COMMIT" 2>&1); then
-                NEW_COMMIT=$(cd "$SERVICE" && git rev-parse --short=7 HEAD)
+            if (cd "$SERVICE_DIR" && git checkout "$COMMIT" 2>&1); then
+                NEW_COMMIT=$(cd "$SERVICE_DIR" && git rev-parse --short=7 HEAD)
                 echo -e "${GREEN}✓${NC} $SERVICE updated: $CURRENT_COMMIT → $NEW_COMMIT"
                 UPDATE_SUCCESS=true
             else
@@ -181,8 +182,8 @@ while IFS='|' read -r SERVICE REPO_URL COMMIT; do
             fi
         else
             # No pinned commit, just pull latest
-            if (cd "$SERVICE" && git pull --ff-only 2>&1); then
-                NEW_COMMIT=$(cd "$SERVICE" && git rev-parse --short=7 HEAD)
+            if (cd "$SERVICE_DIR" && git pull --ff-only 2>&1); then
+                NEW_COMMIT=$(cd "$SERVICE_DIR" && git rev-parse --short=7 HEAD)
                 if [ "$NEW_COMMIT" != "$CURRENT_COMMIT" ]; then
                     echo -e "${GREEN}✓${NC} $SERVICE pulled latest: $CURRENT_COMMIT → $NEW_COMMIT"
                 else

@@ -70,7 +70,7 @@ services:
 # ═══════════════════════════════════════════════════════════════════
 
   Greenie:
-    build: ./Greenie
+    build: ./services/Greenie
     profiles: ["minimal", "standard", "full", "dev"]
     networks:
       - internal
@@ -120,9 +120,9 @@ services:
       # Logging
       - LOG_LEVEL=${EVERSHADE_LOG_LEVEL:-INFO}
     volumes:
-      - ./Greenie/hub.yaml:/app/hub.yaml:ro
+      - ./services/Greenie/hub.yaml:/app/hub.yaml:ro
       - greenie_data:/app/data
-      - ./Greenie/skills:/app/skills:ro
+      - ./services/Greenie/skills:/app/skills:ro
       - ${EVERSHADE_WORKSPACE_PATH:-./workspace}:/workspace
     depends_on:
       redis:
@@ -159,7 +159,7 @@ services:
       - /tmp
 
   Slinker:
-    build: ./Slinker
+    build: ./services/Slinker
     profiles: ["minimal", "standard", "full", "dev"]
     networks:
       - internal
@@ -212,7 +212,7 @@ services:
       - /app/logs
 
   Trapper-api:
-    build: ./Trapper
+    build: ./services/Trapper
     profiles: ["minimal", "standard", "full", "dev"]
     networks:
       - internal
@@ -260,7 +260,7 @@ services:
       - /tmp
 
   Trapper-worker:
-    build: ./Trapper
+    build: ./services/Trapper
     profiles: ["minimal", "standard", "full", "dev"]
     networks:
       - internal
@@ -301,7 +301,7 @@ services:
       - /tmp
 
   Gobber:
-    build: ./Gobber
+    build: ./services/Gobber
     profiles: ["minimal", "standard", "full", "dev"]
     networks:
       - internal
@@ -345,7 +345,7 @@ services:
 # ═══════════════════════════════════════════════════════════════════
 
   Sneaker:
-    build: ./Sneaker
+    build: ./services/Sneaker
     profiles: ["standard", "full", "dev"]
     networks:
       - internal
@@ -379,7 +379,7 @@ services:
       - /tmp
 
   Hider:
-    build: ./Hider
+    build: ./services/Hider
     profiles: ["standard", "full", "dev"]
     networks:
       - internal
@@ -414,7 +414,7 @@ services:
       - /tmp
 
   Poltergeist:
-    build: ./Poltergeist
+    build: ./services/Poltergeist
     profiles: ["standard", "full", "dev"]
     networks:
       - internal
@@ -448,7 +448,7 @@ services:
       - /tmp
 
   Shrewd:
-    build: ./Shrewd
+    build: ./services/Shrewd
     profiles: ["standard", "full", "dev"]
     networks:
       - internal
@@ -490,7 +490,7 @@ services:
 # ═══════════════════════════════════════════════════════════════════
 
   Slammer:
-    build: ./Slammer
+    build: ./services/Slammer
     profiles: ["full", "dev"]
     networks:
       - frontend

@@ -91,22 +91,24 @@ foreach ($service in $services) {
         $repoUrl = "https://github.com/LukaG712/$service"
     }
 
+    $serviceDir = "services/$service"
+
     # Check if directory exists
-    if (-not (Test-Path $service)) {
+    if (-not (Test-Path $serviceDir)) {
         Write-Host "[WARN] $service directory not found — skipping. Run install.ps1 to clone it first." -ForegroundColor Yellow
         $missing += $service
         continue
     }
 
     # Check if it's a valid git repo
-    if (-not (Test-Path "$service/.git")) {
+    if (-not (Test-Path "$serviceDir/.git")) {
         Write-Host "[WARN] $service exists but is not a git repo — skipping." -ForegroundColor Yellow
         $skipped += $service
         continue
     }
 
     # Get current commit
-    $currentCommit = & git -C $service rev-parse --short=7 HEAD 2>$null
+    $currentCommit = & git -C $serviceDir rev-parse --short=7 HEAD 2>$null
 
     # Check if already at correct commit
     if ($commit -and $currentCommit -eq $commit -and -not $Force) {
@@ -120,16 +122,16 @@ foreach ($service in $services) {
 
     $updateSuccess = $false
     try {
-        & git -C $service fetch --depth 100 2>&1 | Out-Null
+        & git -C $serviceDir fetch --depth 100 2>&1 | Out-Null
         if ($LASTEXITCODE -ne 0) {
             throw "Fetch failed"
         }
 
         if ($commit) {
             # Checkout the pinned commit
-            $checkoutResult = & git -C $service checkout $commit 2>&1
+            $checkoutResult = & git -C $serviceDir checkout $commit 2>&1
             if ($LASTEXITCODE -eq 0) {
-                $newCommit = & git -C $service rev-parse --short=7 HEAD
+                $newCommit = & git -C $serviceDir rev-parse --short=7 HEAD
                 Write-Host "[OK] $service updated: $currentCommit → $newCommit" -ForegroundColor Green
                 $updateSuccess = $true
             } else {
@@ -138,9 +140,9 @@ foreach ($service in $services) {
             }
         } else {
             # No pinned commit, just pull latest
-            $pullResult = & git -C $service pull --ff-only 2>&1
+            $pullResult = & git -C $serviceDir pull --ff-only 2>&1
             if ($LASTEXITCODE -eq 0) {
-                $newCommit = & git -C $service rev-parse --short=7 HEAD
+                $newCommit = & git -C $serviceDir rev-parse --short=7 HEAD
                 if ($newCommit -ne $currentCommit) {
                     Write-Host "[OK] $service pulled latest: $currentCommit → $newCommit" -ForegroundColor Green
                 } else {
