@@ -53,6 +53,33 @@ The API will be available at **http://localhost:8080**.
 
 ---
 
+## GUI Installer (Linux)
+
+For a visual, step-by-step installation experience on Ubuntu Desktop, use the GUI installer:
+
+```bash
+# Run the launcher script (checks prerequisites and installs missing ones)
+bash run-install-gui.sh
+
+# Or run directly with sudo
+sudo python3 install-gui.py
+```
+
+The GUI wizard guides you through 9 steps:
+1. **Welcome** — Overview of Evershade and requirements
+2. **System Check** — Verifies OS version, architecture, and installed tools
+3. **Installation Options** — Choose profile (minimal/standard/full) and install directory
+4. **Install Docker** — Installs Docker Engine and Compose if missing
+5. **Clone & Install** — Clones the repository and installs service submodules
+6. **Configure** — Creates `.env` with auto-generated secure API keys
+7. **System Integration** — Optional systemd service and desktop launcher
+8. **Start Services** — Launches all services with your chosen profile
+9. **Complete** — Summary with quick commands and next steps
+
+**Requirements:** Python 3.6+, Tkinter (usually pre-installed), and a graphical display (X11/Wayland). For SSH sessions, use `ssh -X`.
+
+---
+
 ## Updating
 
 Keep your Evershade installation up to date with the update scripts. These pull the latest version manifest and update each service to its pinned commit.
