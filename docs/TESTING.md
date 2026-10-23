@@ -7,6 +7,8 @@
 
 ## 1. Test Structure
 
+Each service maintains its own test suite in its separate repository:
+
 | Service | Framework | Test Location | Run Command |
 |---------|-----------|---------------|-------------|
 | Greenie | pytest | `Greenie/tests/` | `cd Greenie && pytest` |
@@ -18,6 +20,8 @@
 | Poltergeist | pytest | `Poltergeist/tests/` | `cd Poltergeist && pytest` |
 | Shrewd | pytest | `Shrewd/tests/` | `cd Shrewd && pytest` |
 
+> **Note:** Service directories are cloned by the install script. Run `./install.sh` (or `.\install.ps1`) first to obtain the service code.
+
 ---
 
 ## 2. Running Tests
@@ -25,6 +29,9 @@
 ### Individual Service
 
 ```bash
+# Install services first
+./install.sh --profile standard
+
 # Python services
 cd Greenie
 pip install -e ".[test]"
@@ -34,13 +41,6 @@ pytest -v
 cd Trapper
 npm install
 npm test
-```
-
-### All Services
-
-```bash
-# Run tests for all services with local code
-./tests/run-all-tests.sh
 ```
 
 ### In Docker
@@ -60,97 +60,17 @@ docker compose run --rm Trapper-api npm test
 
 ---
 
-## 3. Integration Tests
+## 3. Per-Service CI
 
-Integration tests start the actual services and verify cross-service communication.
-
-```bash
-# Start test environment
-docker compose --profile standard up -d
-
-# Run all ecosystem tests
-cd tests
-./run-all-tests.sh all
-
-# Run a specific category
-./run-all-tests.sh integration
-./run-all-tests.sh security
-./run-all-tests.sh benchmarks
-./run-all-tests.sh evaluation
-./run-all-tests.sh chaos
-
-# Or use pytest directly
-pytest integration/ -v
-pytest security/ -v
-```
-
-### Test Categories
-
-| Category | Location | Tests | Description |
-|----------|----------|-------|-------------|
-| **Integration** | `tests/integration/` | 15+ | Cross-service communication, health checks, Bearer auth, secrets, chat, notifications, cache, metrics, agents, workflows |
-| **Security** | `tests/security/` | 15+ | Prompt injection, SSRF, auth bypass, XSS, rate limiting, encryption at rest |
-| **Benchmarks** | `tests/benchmarks/` | 10+ | API latency, throughput, concurrency, response sizes, error handling |
-| **Evaluation** | `tests/evaluation/` | 8+ | Agent quality: QA, code gen, summarization, math, safety, JSON, translation |
-| **Chaos** | `tests/chaos/` | 12+ | Service crash, network failure, data integrity, malformed input, resource exhaustion |
-| **MCP/Plugins** | `Greenie/tests/` | 5+ | MCP server connectivity, plugin lifecycle, tool calling |
-
----
-
-## 4. Release Signing
-
-```bash
-# Sign all artifacts for a release
-python scripts/release_sign.py --version 1.5.0 --sign-all --secret "your-key"
-
-# Verify a release
-python scripts/verify_release.py --release release/ --secret "your-key"
-```
-
-Outputs: `checksums.txt`, `signatures.json`, `provenance.json` (SLSA-style)
-
----
-
-## 5. CI/CD
-
-Each service has its own GitHub Actions workflow. The root repository runs ecosystem-wide validation and integration tests.
-
-**Lint & Validate job:**
-- Docker Compose syntax validation
-- Shell script syntax (Bash and PowerShell)
-- Required files existence check
-- Service directories in .gitignore
-- Version manifest schema validation (`scripts/validate_manifest.py`)
-
-**Unit Tests job:**
-- Python unit tests with pytest
-- Integration tests excluded via markers
-
-**Integration Tests job:**
-- Clone required services from GitHub
-- Build Docker images via Compose
-- Start minimal profile services
-- Wait for health checks (polling, not fixed sleep)
-- Run integration tests against real services
-- Collect logs on failure
-- Clean up environment in `finally` block
-
-**Per-service CI:**
+Each service has its own GitHub Actions workflow in its repository:
 - Lint and format check
 - Type checking (where applicable)
 - Unit tests
 - Build verification
 
-**Ecosystem CI:**
-- Service startup and health checks
-- Cross-service API compatibility
-- Workflow execution
-- Backup and restore
-- Manifest validation
-
 ---
 
-## 6. Writing Tests
+## 4. Writing Tests
 
 ### Python (pytest)
 
@@ -173,7 +93,7 @@ test('health endpoint returns ok', async () => {
 
 ---
 
-## 7. Test Data
+## 5. Test Data
 
 - Use deterministic test fixtures, not random data
 - Fake LLM providers for routine CI (no API costs)

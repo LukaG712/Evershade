@@ -1,4 +1,4 @@
-# Sub-projects (separate git repos)
+# Sub-projects (cloned by install script into separate git repos)
 Greenie/
 Slinker/
 Trapper/
@@ -34,3 +34,6 @@ Thumbs.db
 
 # Docker volumes
 workspace/
+
+# Test artifacts
+.pytest_cache/
