@@ -431,13 +431,25 @@ class EvershadeInstallerGUI:
         self.canvas.bind("<Configure>", self._on_canvas_configure)
 
     def _on_canvas_enter(self, event):
+        # Windows mouse wheel
         self.canvas.bind_all("<MouseWheel>", self._on_mouse_wheel)
+        # Linux mouse wheel (scroll up/down)
+        self.canvas.bind_all("<Button-4>", self._on_mouse_wheel_linux)
+        self.canvas.bind_all("<Button-5>", self._on_mouse_wheel_linux)
 
     def _on_canvas_leave(self, event):
         self.canvas.unbind_all("<MouseWheel>")
+        self.canvas.unbind_all("<Button-4>")
+        self.canvas.unbind_all("<Button-5>")
 
     def _on_mouse_wheel(self, event):
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+    def _on_mouse_wheel_linux(self, event):
+        if event.num == 4:
+            self.canvas.yview_scroll(-1, "units")
+        elif event.num == 5:
+            self.canvas.yview_scroll(1, "units")
 
     def _on_content_configure(self, event):
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
@@ -492,12 +504,13 @@ class EvershadeInstallerGUI:
         for widget in self.content_frame.winfo_children():
             widget.destroy()
 
-        # Reset scroll region
-        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
-
         # Call step builder
         builder = self.steps[index][1]
         builder(self.content_frame)
+
+        # Update scroll region after content is built
+        self.content_frame.update_idletasks()
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
         # Update nav buttons
         self.back_btn.pack_forget()
