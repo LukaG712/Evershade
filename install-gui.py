@@ -824,9 +824,7 @@ class EvershadeInstallerGUI:
         # Optional services
         opt_frame = ttk.Frame(self.custom_frame)
         opt_frame.pack(fill="x", pady=(0, 5))
-        ttk.Label(
-            opt_frame, text="Optional:", style="Gray.TLabel"
-        ).pack(anchor="w")
+        ttk.Label(opt_frame, text="Optional:", style="Gray.TLabel").pack(anchor="w")
 
         opt_check_frame = ttk.Frame(self.custom_frame)
         opt_check_frame.pack(fill="x", pady=(0, 5))
