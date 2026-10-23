@@ -63,9 +63,6 @@
 
 ## Quick Start
 
-> *"Step into the dark! Five new spooky mansions!"*
-> ~ **The Dark Moon Song**, on the adventure ahead
-
 ### Prerequisites
 
 - **Docker** and **Docker Compose** installed
@@ -826,9 +823,6 @@ Each sub-project is an independent Git repository with its own CI pipeline. The 
 ---
 
 ## Roadmap
-
-> *"Everything was swell, until someone split the Dark Moon..."*
-> ~ **The Dark Moon Song**, on how it all began
 
 ### Development Timeline
 
