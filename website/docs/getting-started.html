@@ -1,78 +1,200 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Getting Started – Evershade</title><link rel="stylesheet" href="../css/style.css"></head><body>
-<header><div class="header-inner"><a href="../index.html" class="logo">👻 Evershade</a>
-<nav><a href="../index.html">Home</a>
-<div class="nav-dropdown"><a href="../company/about.html">Company ▾</a><div class="nav-dropdown-menu">
-<a href="../company/about.html">About</a><a href="../company/architecture.html">Architecture</a></div></div>
-<div class="nav-dropdown"><a href="../services/services.html">Services ▾</a><div class="nav-dropdown-menu">
-<a href="../services/services.html">All Services</a><a href="../services/greenie.html">Greenie</a><a href="../services/slinker.html">Slinker</a><a href="../services/trapper.html">Trapper</a><a href="../services/gobber.html">Gobber</a>
-<a href="../services/sneaker.html">Sneaker</a><a href="../services/hider.html">Hider</a><a href="../services/poltergeist.html">Poltergeist</a><a href="../services/shrewd.html">Shrewd</a>
-<a href="../services/slammer.html">Slammer</a><a href="../services/speedy.html">Speedy</a></div></div>
-<div class="nav-dropdown"><a href="getting-started.html" class="active">Docs ▾</a><div class="nav-dropdown-menu">
-<a href="getting-started.html">Getting Started</a><a href="deployment.html">Deployment</a>
-<a href="configuration.html">Configuration</a><a href="security.html">Security</a>
-<a href="backup-restore.html">Backup & Restore</a><a href="resources.html">Resource Requirements</a>
-<a href="workstations.html">Workstations</a><a href="advanced.html">Advanced Guide</a></div></div>
-<div class="nav-dropdown"><a href="../api/api-reference.html">API ▾</a><div class="nav-dropdown-menu">
-<a href="../api/api-reference.html">API Reference</a><a href="../api/mission-control.html">Mission Control</a><a href="../api/agent-harness.html">Agent Harness</a></div></div>
-<div class="nav-dropdown"><a href="../reference/glossary.html">Reference ▾</a><div class="nav-dropdown-menu">
-<a href="../reference/glossary.html">Glossary</a><a href="../reference/faq.html">FAQ</a></div></div>
-<a href="../news/changelog.html">News</a></nav></div></header>
-<main>
-<div class="breadcrumb"><a href="../index.html">Home</a> <span>›</span> <span>Getting Started</span></div>
-<div class="section-header"><h2>📖 Getting Started</h2><p>Detailed walkthrough for first-time users, from installation to your first agent.</p></div>
-<div class="content-with-sidebar"><div class="sidebar"><nav class="sidebar-nav"><h4>On this page</h4>
-<a href="#prerequisites">Prerequisites</a><a href="#install">Install</a><a href="#configure">Configure</a><a href="#start">Start</a>
-<a href="#first-agent">First Agent</a><a href="#troubleshooting">Troubleshooting</a></nav></div>
-<div>
-<h3 id="prerequisites">Prerequisites</h3>
-<div class="table-wrapper"><table><thead><tr><th>Requirement</th><th>Minimum</th><th>Recommended</th></tr></thead><tbody>
-<tr><td>OS</td><td>Windows 10/11, macOS 12+, Ubuntu 22.04+</td><td>Any supported OS</td></tr>
-<tr><td>Docker</td><td>Docker Engine 24+</td><td>Docker Desktop (latest)</td></tr>
-<tr><td>RAM</td><td>4 GB</td><td>8+ GB</td></tr>
-<tr><td>CPU</td><td>2 cores</td><td>4+ cores</td></tr>
-<tr><td>Disk</td><td>10 GB free</td><td>20+ GB free</td></tr>
-</tbody></table></div>
-<h3 id="install" style="margin-top:2rem">Step 1: Install</h3>
-<pre><code>git clone https://github.com/LukaG712/Evershade.git && cd Evershade
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Getting Started – Evershade</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="../index.html" class="logo">👻 Evershade</a>
+      <nav>
+        <a href="../index.html">Home</a>
+        <div class="nav-dropdown">
+          <a href="../company/about.html">Company ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="../company/about.html">About</a>
+            <a href="../company/architecture.html">Architecture</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="../services/services.html">Services ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="../services/services.html">All Services</a>
+            <a href="../services/greenie.html">Greenie – Central Hub</a>
+            <a href="../services/slinker.html">Slinker – Code Execution</a>
+            <a href="../services/trapper.html">Trapper – Web Scraping</a>
+            <a href="../services/gobber.html">Gobber – Storage & KG</a>
+            <a href="../services/sneaker.html">Sneaker – Observability</a>
+            <a href="../services/hider.html">Hider – Secrets</a>
+            <a href="../services/poltergeist.html">Poltergeist – Notifications</a>
+            <a href="../services/shrewd.html">Shrewd – LLM Abstraction</a>
+            <a href="../services/slammer.html">Slammer – Dashboard</a>
+            <a href="../services/speedy.html">Speedy – CLI</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="getting-started.html" class="active">Docs ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="getting-started.html">Getting Started</a>
+            <a href="deployment.html">Deployment</a>
+            <a href="configuration.html">Configuration</a>
+            <a href="security.html">Security</a>
+            <a href="backup-restore.html">Backup & Restore</a>
+            <a href="resources.html">Resource Requirements</a>
+            <a href="workstations.html">Workstations</a>
+            <a href="advanced.html">Advanced Guide</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="../api/api-reference.html">API ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="../api/api-reference.html">API Reference</a>
+            <a href="../api/mission-control.html">Mission Control</a>
+            <a href="../api/agent-harness.html">Agent Harness</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="../reference/glossary.html">Reference ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="../reference/glossary.html">Glossary</a>
+            <a href="../reference/faq.html">FAQ</a>
+          </div>
+        </div>
+        <a href="../news/changelog.html">News</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a> <span>›</span> <span>Getting Started</span>
+    </div>
+
+    <div class="section-header">
+      <h2>📖 Getting Started</h2>
+      <p>Detailed walkthrough for first-time users, from installation to your first agent.</p>
+    </div>
+
+    <div class="content-with-sidebar">
+      <div class="sidebar">
+        <nav class="sidebar-nav">
+          <h4>On this page</h4>
+          <a href="#prerequisites">Prerequisites</a>
+          <a href="#install">Install</a>
+          <a href="#configure">Configure</a>
+          <a href="#start">Start</a>
+          <a href="#first-agent">First Agent</a>
+          <a href="#troubleshooting">Troubleshooting</a>
+        </nav>
+      </div>
+
+      <div>
+        <h3 id="prerequisites">Prerequisites</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Requirement</th><th>Minimum</th><th>Recommended</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>OS</td><td>Windows 10/11, macOS 12+, Ubuntu 22.04+</td><td>Any supported OS</td></tr>
+              <tr><td>Docker</td><td>Docker Engine 24+</td><td>Docker Desktop (latest)</td></tr>
+              <tr><td>RAM</td><td>4 GB</td><td>8+ GB</td></tr>
+              <tr><td>CPU</td><td>2 cores</td><td>4+ cores</td></tr>
+              <tr><td>Disk</td><td>10 GB free</td><td>20+ GB free</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="install" style="margin-top: 2rem;">Step 1: Install</h3>
+        <pre><code>git clone https://github.com/LukaG712/Evershade.git && cd Evershade
 
 # Install service repositories
 ./install.sh --profile minimal    # Linux/macOS
 # .\install.ps1 -Profile minimal  # Windows</code></pre>
-<h3 id="configure" style="margin-top:2rem">Step 2: Configure</h3>
-<pre><code>cp .env.example .env
+
+        <h3 id="configure" style="margin-top: 2rem;">Step 2: Configure</h3>
+        <pre><code>cp .env.example .env
 
 # Generate API keys
 openssl rand -hex 32
 
 # Edit .env and replace each "change-me" value</code></pre>
-<h3 id="start" style="margin-top:2rem">Step 3: Start</h3>
-<pre><code>./start.sh --profile minimal      # Linux/macOS
+
+        <h3 id="start" style="margin-top: 2rem;">Step 3: Start</h3>
+        <pre><code>./start.sh --profile minimal      # Linux/macOS
 # .\start.ps1 -Profile minimal    # Windows
 
 # Check status
 curl http://localhost:8080/health
 # {"status": "ok", "service": "Greenie", "version": "1.8.0"}</code></pre>
-<h3 id="first-agent" style="margin-top:2rem">Step 4: Create Your First Agent</h3>
-<pre><code>curl -X POST http://localhost:8080/api/agents \
+
+        <h3 id="first-agent" style="margin-top: 2rem;">Step 4: Create Your First Agent</h3>
+        <pre><code>curl -X POST http://localhost:8080/api/agents \
   -H "Authorization: Bearer $EVERSHADE_GREENIE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"name": "researcher", "runner": "junie", "guidelines": "Always cite your sources."}'</code></pre>
-<h3 id="troubleshooting" style="margin-top:2rem">Troubleshooting</h3>
-<div class="table-wrapper"><table><thead><tr><th>Problem</th><th>Solution</th></tr></thead><tbody>
-<tr><td>Services won't start</td><td>Run <code>evershade doctor</code> and check <code>docker compose logs</code></td></tr>
-<tr><td>Port already in use</td><td>Find conflicting process or change port in docker-compose.yml</td></tr>
-<tr><td>API key failed</td><td>Verify <code>grep EVERSHADE_GREENIE_API_KEY .env</code></td></tr>
-<tr><td>Docker out of memory</td><td>Set Docker Desktop memory to 8 GB+</td></tr>
-<tr><td>Reset everything</td><td><code>docker compose down -v</code> then restart</td></tr>
-</tbody></table></div>
-<div class="alert info" style="margin-top:1.5rem"><strong>Next Steps:</strong> Explore the <a href="../services/services.html">Services</a> page, read the <a href="deployment.html">Deployment Guide</a>, or check the <a href="../reference/faq.html">FAQ</a>.</div>
-</div></div></main>
-<footer><div class="footer-inner">
-<div class="footer-col"><h4>Platform</h4><a href="../services/services.html">All Services</a><a href="getting-started.html">Getting Started</a><a href="../api/api-reference.html">API Reference</a><a href="../reference/glossary.html">Glossary</a></div>
-<div class="footer-col"><h4>Docs</h4><a href="deployment.html">Deployment</a><a href="configuration.html">Configuration</a><a href="security.html">Security</a><a href="backup-restore.html">Backup & Restore</a></div>
-<div class="footer-col"><h4>Company</h4><a href="../company/about.html">About</a><a href="../company/architecture.html">Architecture</a><a href="../news/changelog.html">Changelog</a></div>
-<div class="footer-col"><h4>Resources</h4><a href="../reference/faq.html">FAQ</a><a href="resources.html">Resource Requirements</a><a href="https://github.com/LukaG712/Evershade" target="_blank">GitHub</a></div>
-</div><div class="footer-bottom"><p>Evershade is licensed under the <a href="https://github.com/LukaG712/Evershade/blob/main/LICENSE" target="_blank">MIT License</a>. All service names are inspired by Luigi's Mansion.</p></div></footer>
-<script src="../js/main.js"></script></body></html>
+
+        <h3 id="troubleshooting" style="margin-top: 2rem;">Troubleshooting</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Problem</th><th>Solution</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Services won't start</td><td>Run <code>evershade doctor</code> and check <code>docker compose logs</code></td></tr>
+              <tr><td>Port already in use</td><td>Find conflicting process or change port in docker-compose.yml</td></tr>
+              <tr><td>API key failed</td><td>Verify <code>grep EVERSHADE_GREENIE_API_KEY .env</code></td></tr>
+              <tr><td>Docker out of memory</td><td>Set Docker Desktop memory to 8 GB+</td></tr>
+              <tr><td>Reset everything</td><td><code>docker compose down -v</code> then restart</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="alert info" style="margin-top: 1.5rem;">
+          <strong>Next Steps:</strong> Explore the <a href="../services/services.html">Services</a> page, read the <a href="deployment.html">Deployment Guide</a>, or check the <a href="../reference/faq.html">FAQ</a>.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <a href="../services/services.html">All Services</a>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="../api/api-reference.html">API Reference</a>
+        <a href="../reference/glossary.html">Glossary</a>
+      </div>
+      <div class="footer-col">
+        <h4>Docs</h4>
+        <a href="deployment.html">Deployment</a>
+        <a href="configuration.html">Configuration</a>
+        <a href="security.html">Security</a>
+        <a href="backup-restore.html">Backup & Restore</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="../company/about.html">About</a>
+        <a href="../company/architecture.html">Architecture</a>
+        <a href="../news/changelog.html">Changelog</a>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="../reference/faq.html">FAQ</a>
+        <a href="resources.html">Resource Requirements</a>
+        <a href="https://github.com/LukaG712/Evershade" target="_blank">GitHub</a>
+        <a href="https://github.com/LukaG712/Evershade/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>Evershade is licensed under the <a href="https://github.com/LukaG712/Evershade/blob/main/LICENSE" target="_blank">MIT License</a>. All service names are inspired by Luigi's Mansion.</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,54 +1,174 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hider – Secrets | Evershade</title><link rel="stylesheet" href="../css/style.css"></head><body>
-<header><div class="header-inner"><a href="../index.html" class="logo">👻 Evershade</a>
-<nav><a href="../index.html">Home</a>
-<div class="nav-dropdown"><a href="services.html">Services ▾</a><div class="nav-dropdown-menu">
-<a href="greenie.html">Greenie</a><a href="slinker.html">Slinker</a><a href="trapper.html">Trapper</a><a href="gobber.html">Gobber</a>
-<a href="sneaker.html">Sneaker</a><a href="hider.html">Hider</a><a href="poltergeist.html">Poltergeist</a><a href="shrewd.html">Shrewd</a>
-<a href="slammer.html">Slammer</a><a href="speedy.html">Speedy</a></div></div>
-<div class="nav-dropdown"><a href="../docs/getting-started.html">Docs ▾</a><div class="nav-dropdown-menu">
-<a href="../docs/getting-started.html">Getting Started</a><a href="../docs/deployment.html">Deployment</a>
-<a href="../docs/configuration.html">Configuration</a><a href="../docs/security.html">Security</a></div></div>
-<div class="nav-dropdown"><a href="../api/api-reference.html">API ▾</a><div class="nav-dropdown-menu">
-<a href="../api/api-reference.html">API Reference</a><a href="../api/mission-control.html">Mission Control</a><a href="../api/agent-harness.html">Agent Harness</a></div></div>
-<div class="nav-dropdown"><a href="../docs/advanced.html">Reference ▾</a><div class="nav-dropdown-menu">
-<a href="../docs/advanced.html">Advanced Guide</a><a href="../docs/workstations.html">Workstations</a><a href="../company/architecture.html">Architecture</a></div></div>
-<a href="../reference/glossary.html">Glossary</a><a href="../reference/faq.html">FAQ</a></nav></div></header>
-<main>
-<div class="breadcrumb"><a href="../index.html">Home</a> <span>›</span> <a href="services.html">Services</a> <span>›</span> <span>Hider</span></div>
-<div class="section-header"><h2>🙈 Hider</h2><p>Encrypted secrets management with AES-256-GCM encryption and versioned configuration.</p>
-<div style="margin-top:0.75rem"><span class="badge green">Port 8087</span><span class="badge blue">Python/FastAPI</span><span class="badge">SQLite</span><span class="badge yellow">Optional</span></div></div>
-<div class="content-with-sidebar"><div class="sidebar"><nav class="sidebar-nav"><h4>On this page</h4>
-<a href="#overview">Overview</a><a href="#api-endpoints">API Endpoints</a><a href="#encryption">Encryption</a></nav></div>
-<div>
-<h3 id="overview">Overview</h3><p>Hider provides encrypted storage and retrieval of secrets and centralized configuration. All secrets are encrypted at rest using AES-256-GCM with a 96-bit random nonce per operation.</p>
-<h3 id="api-endpoints" style="margin-top:2rem">API Endpoints</h3>
-<div class="table-wrapper"><table><thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead><tbody>
-<tr><td><span class="method get">GET</span></td><td><code>/health</code></td><td>Health check</td></tr>
-<tr><td><span class="method post">POST</span></td><td><code>/api/secrets</code></td><td>Create secret</td></tr>
-<tr><td><span class="method get">GET</span></td><td><code>/api/secrets</code></td><td>List secrets</td></tr>
-<tr><td><span class="method get">GET</span></td><td><code>/api/secrets/{key}</code></td><td>Get secret</td></tr>
-<tr><td><span class="method put">PUT</span></td><td><code>/api/secrets/{key}</code></td><td>Update secret</td></tr>
-<tr><td><span class="method delete">DELETE</span></td><td><code>/api/secrets/{key}</code></td><td>Delete secret</td></tr>
-<tr><td><span class="method post">POST</span></td><td><code>/api/configs</code></td><td>Create config</td></tr>
-<tr><td><span class="method get">GET</span></td><td><code>/api/configs</code></td><td>List configs</td></tr>
-<tr><td><span class="method get">GET</span></td><td><code>/api/configs/{key}</code></td><td>Get config</td></tr>
-</tbody></table></div>
-<h3 id="encryption" style="margin-top:2rem">Encryption</h3>
-<ul class="feature-list">
-<li><span class="check">✓</span> AES-256-GCM authenticated encryption</li>
-<li><span class="check">✓</span> 96-bit random nonce per operation (no reuse)</li>
-<li><span class="check">✓</span> Key derived from <code>EVERSHADE_ENCRYPTION_KEY</code> via SHA-256</li>
-<li><span class="check">✓</span> Secrets never logged or exposed in list responses</li>
-<li><span class="check">✓</span> SQLite persistence – survives container restarts</li>
-</ul>
-<div class="alert warning" style="margin-top:1.5rem"><strong>Important:</strong> Set a strong <code>EVERSHADE_ENCRYPTION_KEY</code> in production. Default key will be blocked in server mode.</div>
-</div></div></main>
-<footer><div class="footer-inner">
-<div class="footer-col"><h4>Platform</h4><a href="../index.html">Home</a><a href="services.html">All Services</a><a href="../api/api-reference.html">API Reference</a></div>
-<div class="footer-col"><h4>Docs</h4><a href="../docs/getting-started.html">Getting Started</a><a href="../docs/security.html">Security</a></div>
-<div class="footer-col"><h4>Company</h4><a href="../docs/advanced.html">Advanced Guide</a><a href="../api/mission-control.html">Mission Control</a></div>
-<div class="footer-col"><h4>Resources</h4><a href="../reference/faq.html">FAQ</a><a href="https://github.com/LukaG712/Evershade" target="_blank">GitHub</a></div>
-</div><div class="footer-bottom"><p>Evershade is licensed under the <a href="https://github.com/LukaG712/Evershade/blob/main/LICENSE" target="_blank">MIT License</a>.</p></div></footer>
-<script src="../js/main.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hider – Secrets | Evershade Documentation</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="../index.html" class="logo">👻 Evershade</a>
+      <nav>
+        <a href="../index.html">Home</a>
+        <div class="nav-dropdown">
+          <a href="../company/about.html">Company ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="../company/about.html">About</a>
+            <a href="../company/architecture.html">Architecture</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="services.html">Services ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="services.html">All Services</a>
+            <a href="greenie.html">Greenie – Central Hub</a>
+            <a href="slinker.html">Slinker – Code Execution</a>
+            <a href="trapper.html">Trapper – Web Scraping</a>
+            <a href="gobber.html">Gobber – Storage & KG</a>
+            <a href="sneaker.html">Sneaker – Observability</a>
+            <a href="hider.html">Hider – Secrets</a>
+            <a href="poltergeist.html">Poltergeist – Notifications</a>
+            <a href="shrewd.html">Shrewd – LLM Abstraction</a>
+            <a href="slammer.html">Slammer – Dashboard</a>
+            <a href="speedy.html">Speedy – CLI</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="../docs/getting-started.html">Docs ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="../docs/getting-started.html">Getting Started</a>
+            <a href="../docs/deployment.html">Deployment</a>
+            <a href="../docs/configuration.html">Configuration</a>
+            <a href="../docs/security.html">Security</a>
+            <a href="../docs/backup-restore.html">Backup & Restore</a>
+            <a href="../docs/resources.html">Resource Requirements</a>
+            <a href="../docs/workstations.html">Workstations</a>
+            <a href="../docs/advanced.html">Advanced Guide</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="../api/api-reference.html">API ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="../api/api-reference.html">API Reference</a>
+            <a href="../api/mission-control.html">Mission Control</a>
+            <a href="../api/agent-harness.html">Agent Harness</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="../reference/glossary.html">Reference ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="../reference/glossary.html">Glossary</a>
+            <a href="../reference/faq.html">FAQ</a>
+          </div>
+        </div>
+        <a href="../news/changelog.html">News</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a> <span>›</span> <a href="services.html">Services</a> <span>›</span> <span>Hider</span>
+    </div>
+
+    <div class="section-header">
+      <h2>🙈 Hider</h2>
+      <p>Encrypted secrets management with AES-256-GCM encryption and versioned configuration.</p>
+      <div style="margin-top: 0.75rem;">
+        <span class="badge green">Port 8087</span>
+        <span class="badge blue">Python/FastAPI</span>
+        <span class="badge">SQLite</span>
+        <span class="badge yellow">Optional</span>
+      </div>
+    </div>
+
+    <div class="content-with-sidebar">
+      <div class="sidebar">
+        <nav class="sidebar-nav">
+          <h4>On this page</h4>
+          <a href="#overview">Overview</a>
+          <a href="#api-endpoints">API Endpoints</a>
+          <a href="#encryption">Encryption</a>
+        </nav>
+      </div>
+
+      <div>
+        <h3 id="overview">Overview</h3>
+        <p>Hider provides encrypted storage and retrieval of secrets and centralized configuration. All secrets are encrypted at rest using AES-256-GCM with a 96-bit random nonce per operation.</p>
+
+        <h3 id="api-endpoints" style="margin-top: 2rem;">API Endpoints</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><span class="method get">GET</span></td><td><code>/health</code></td><td>Health check</td></tr>
+              <tr><td><span class="method post">POST</span></td><td><code>/api/secrets</code></td><td>Create secret</td></tr>
+              <tr><td><span class="method get">GET</span></td><td><code>/api/secrets</code></td><td>List secrets</td></tr>
+              <tr><td><span class="method get">GET</span></td><td><code>/api/secrets/{key}</code></td><td>Get secret</td></tr>
+              <tr><td><span class="method put">PUT</span></td><td><code>/api/secrets/{key}</code></td><td>Update secret</td></tr>
+              <tr><td><span class="method delete">DELETE</span></td><td><code>/api/secrets/{key}</code></td><td>Delete secret</td></tr>
+              <tr><td><span class="method post">POST</span></td><td><code>/api/configs</code></td><td>Create config</td></tr>
+              <tr><td><span class="method get">GET</span></td><td><code>/api/configs</code></td><td>List configs</td></tr>
+              <tr><td><span class="method get">GET</span></td><td><code>/api/configs/{key}</code></td><td>Get config</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="encryption" style="margin-top: 2rem;">Encryption</h3>
+        <ul class="feature-list">
+          <li><span class="check">✓</span> AES-256-GCM authenticated encryption</li>
+          <li><span class="check">✓</span> 96-bit random nonce per operation (no reuse)</li>
+          <li><span class="check">✓</span> Key derived from <code>EVERSHADE_ENCRYPTION_KEY</code> via SHA-256</li>
+          <li><span class="check">✓</span> Secrets never logged or exposed in list responses</li>
+          <li><span class="check">✓</span> SQLite persistence – survives container restarts</li>
+        </ul>
+
+        <div class="alert warning" style="margin-top: 1.5rem;">
+          <strong>Important:</strong> Set a strong <code>EVERSHADE_ENCRYPTION_KEY</code> in production. Default key will be blocked in server mode.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <a href="services.html">All Services</a>
+        <a href="../docs/getting-started.html">Getting Started</a>
+        <a href="../api/api-reference.html">API Reference</a>
+        <a href="../reference/glossary.html">Glossary</a>
+      </div>
+      <div class="footer-col">
+        <h4>Docs</h4>
+        <a href="../docs/deployment.html">Deployment</a>
+        <a href="../docs/configuration.html">Configuration</a>
+        <a href="../docs/security.html">Security</a>
+        <a href="../docs/backup-restore.html">Backup & Restore</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="../company/about.html">About</a>
+        <a href="../company/architecture.html">Architecture</a>
+        <a href="../news/changelog.html">Changelog</a>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="../reference/faq.html">FAQ</a>
+        <a href="../docs/resources.html">Resource Requirements</a>
+        <a href="https://github.com/LukaG712/Evershade" target="_blank">GitHub</a>
+        <a href="https://github.com/LukaG712/Evershade/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>Evershade is licensed under the <a href="https://github.com/LukaG712/Evershade/blob/main/LICENSE" target="_blank">MIT License</a>. All service names are inspired by Luigi's Mansion.</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

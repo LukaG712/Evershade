@@ -1,41 +1,115 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Deployment – Evershade</title><link rel="stylesheet" href="../css/style.css"></head><body>
-<header><div class="header-inner"><a href="../index.html" class="logo">👻 Evershade</a>
-<nav><a href="../index.html">Home</a>
-<div class="nav-dropdown"><a href="../company/about.html">Company ▾</a><div class="nav-dropdown-menu">
-<a href="../company/about.html">About</a><a href="../company/architecture.html">Architecture</a></div></div>
-<div class="nav-dropdown"><a href="../services/services.html">Services ▾</a><div class="nav-dropdown-menu">
-<a href="../services/services.html">All Services</a><a href="../services/greenie.html">Greenie</a><a href="../services/slinker.html">Slinker</a><a href="../services/trapper.html">Trapper</a><a href="../services/gobber.html">Gobber</a>
-<a href="../services/sneaker.html">Sneaker</a><a href="../services/hider.html">Hider</a><a href="../services/poltergeist.html">Poltergeist</a><a href="../services/shrewd.html">Shrewd</a>
-<a href="../services/slammer.html">Slammer</a><a href="../services/speedy.html">Speedy</a></div></div>
-<div class="nav-dropdown"><a href="getting-started.html">Docs ▾</a><div class="nav-dropdown-menu">
-<a href="getting-started.html">Getting Started</a><a href="deployment.html">Deployment</a>
-<a href="configuration.html">Configuration</a><a href="security.html">Security</a>
-<a href="backup-restore.html">Backup & Restore</a><a href="resources.html">Resource Requirements</a>
-<a href="workstations.html">Workstations</a><a href="advanced.html">Advanced Guide</a></div></div>
-<div class="nav-dropdown"><a href="../api/api-reference.html">API ▾</a><div class="nav-dropdown-menu">
-<a href="../api/api-reference.html">API Reference</a><a href="../api/mission-control.html">Mission Control</a><a href="../api/agent-harness.html">Agent Harness</a></div></div>
-<div class="nav-dropdown"><a href="../reference/glossary.html">Reference ▾</a><div class="nav-dropdown-menu">
-<a href="../reference/glossary.html">Glossary</a><a href="../reference/faq.html">FAQ</a></div></div>
-<a href="../news/changelog.html">News</a></nav></div></header>
-<main>
-<div class="breadcrumb"><a href="../index.html">Home</a> <span>›</span> <a href="getting-started.html">Guides</a> <span>›</span> <span>Deployment</span></div>
-<div class="section-header"><h2>🚀 Deployment Guide</h2><p>Server mode, Proxmox, auto-start, firewall, and production hardening.</p></div>
-<div class="content-with-sidebar"><div class="sidebar"><nav class="sidebar-nav"><h4>On this page</h4>
-<a href="#profiles">Profiles</a><a href="#server">Server Mode</a><a href="#proxmox">Proxmox</a>
-<a href="#autostart">Auto-Start</a><a href="#firewall">Firewall</a><a href="#production">Production Checklist</a></nav></div>
-<div>
-<h3 id="profiles">Installation Profiles</h3>
-<div class="table-wrapper"><table><thead><tr><th>Profile</th><th>Services</th><th>Use Case</th></tr></thead><tbody>
-<tr><td><code>minimal</code></td><td>Core only (4 services)</td><td>First time, core functionality</td></tr>
-<tr><td><code>standard</code></td><td>+ Sneaker, Hider, Poltergeist, Shrewd</td><td>Full feature set</td></tr>
-<tr><td><code>full</code></td><td>+ Slammer dashboard</td><td>Everything</td></tr>
-<tr><td><code>ollama</code></td><td>Ollama service</td><td>Local LLM support</td></tr>
-<tr><td><code>proxy</code></td><td>Caddy reverse proxy</td><td>TLS termination</td></tr>
-</tbody></table></div>
-<h3 id="server" style="margin-top:2rem">Server Mode</h3>
-<pre><code># SSH into server
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deployment – Evershade</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="../index.html" class="logo">👻 Evershade</a>
+      <nav>
+        <a href="../index.html">Home</a>
+        <div class="nav-dropdown">
+          <a href="../company/about.html">Company ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="../company/about.html">About</a>
+            <a href="../company/architecture.html">Architecture</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="../services/services.html">Services ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="../services/services.html">All Services</a>
+            <a href="../services/greenie.html">Greenie – Central Hub</a>
+            <a href="../services/slinker.html">Slinker – Code Execution</a>
+            <a href="../services/trapper.html">Trapper – Web Scraping</a>
+            <a href="../services/gobber.html">Gobber – Storage & KG</a>
+            <a href="../services/sneaker.html">Sneaker – Observability</a>
+            <a href="../services/hider.html">Hider – Secrets</a>
+            <a href="../services/poltergeist.html">Poltergeist – Notifications</a>
+            <a href="../services/shrewd.html">Shrewd – LLM Abstraction</a>
+            <a href="../services/slammer.html">Slammer – Dashboard</a>
+            <a href="../services/speedy.html">Speedy – CLI</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="getting-started.html">Docs ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="getting-started.html">Getting Started</a>
+            <a href="deployment.html">Deployment</a>
+            <a href="configuration.html">Configuration</a>
+            <a href="security.html">Security</a>
+            <a href="backup-restore.html">Backup & Restore</a>
+            <a href="resources.html">Resource Requirements</a>
+            <a href="workstations.html">Workstations</a>
+            <a href="advanced.html">Advanced Guide</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="../api/api-reference.html">API ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="../api/api-reference.html">API Reference</a>
+            <a href="../api/mission-control.html">Mission Control</a>
+            <a href="../api/agent-harness.html">Agent Harness</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="../reference/glossary.html">Reference ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="../reference/glossary.html">Glossary</a>
+            <a href="../reference/faq.html">FAQ</a>
+          </div>
+        </div>
+        <a href="../news/changelog.html">News</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="breadcrumb">
+      <a href="../index.html">Home</a> <span>›</span> <span>Docs</span> <span>›</span> <span>Deployment</span>
+    </div>
+
+    <div class="section-header">
+      <h2>🚀 Deployment Guide</h2>
+      <p>Server mode, Proxmox, auto-start, firewall, and production hardening.</p>
+    </div>
+
+    <div class="content-with-sidebar">
+      <div class="sidebar">
+        <nav class="sidebar-nav">
+          <h4>On this page</h4>
+          <a href="#profiles">Profiles</a>
+          <a href="#server">Server Mode</a>
+          <a href="#proxmox">Proxmox</a>
+          <a href="#autostart">Auto-Start</a>
+          <a href="#firewall">Firewall</a>
+          <a href="#production">Production Checklist</a>
+        </nav>
+      </div>
+
+      <div>
+        <h3 id="profiles">Installation Profiles</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Profile</th><th>Services</th><th>Use Case</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>minimal</code></td><td>Core only (4 services)</td><td>First time, core functionality</td></tr>
+              <tr><td><code>standard</code></td><td>+ Sneaker, Hider, Poltergeist, Shrewd</td><td>Full feature set</td></tr>
+              <tr><td><code>full</code></td><td>+ Slammer dashboard</td><td>Everything</td></tr>
+              <tr><td><code>ollama</code></td><td>Ollama service</td><td>Local LLM support</td></tr>
+              <tr><td><code>proxy</code></td><td>Caddy reverse proxy</td><td>TLS termination</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="server" style="margin-top: 2rem;">Server Mode</h3>
+        <pre><code># SSH into server
 ssh user@server
 
 # Clone and configure
@@ -51,24 +125,34 @@ openssl rand -hex 32
 
 # Start
 docker compose --profile standard up -d</code></pre>
-<h4>Access Options</h4>
-<div class="table-wrapper"><table><thead><tr><th>Method</th><th>Description</th></tr></thead><tbody>
-<tr><td>SSH Tunnel</td><td><code>ssh -L 8080:localhost:8080 user@server</code> (recommended)</td></tr>
-<tr><td>VPN</td><td>Tailscale/WireGuard on both server and client</td></tr>
-<tr><td>Reverse Proxy</td><td><code>docker compose --profile standard --profile proxy up -d</code></td></tr>
-<tr><td>LAN HTTP</td><td><code>http://SERVER_IP:8080</code> (plain text, explicit opt-in)</td></tr>
-</tbody></table></div>
-<h3 id="proxmox" style="margin-top:2rem">Proxmox VM Setup</h3>
-<ul class="feature-list">
-<li><span class="check">✓</span> Create KVM VM (not LXC)</li>
-<li><span class="check">✓</span> Bridged networking on <code>vmbr0</code></li>
-<li><span class="check">✓</span> DHCP reservation or static IP</li>
-<li><span class="check">✓</span> QEMU guest agent enabled</li>
-<li><span class="check">✓</span> CPU type: <code>host</code></li>
-<li><span class="check">✓</span> Disk: 20+ GB, RAM: 8+ GB</li>
-</ul>
-<h3 id="autostart" style="margin-top:2rem">Auto-Start</h3>
-<pre><code>sudo systemctl enable docker
+
+        <h4>Access Options</h4>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Method</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>SSH Tunnel</td><td><code>ssh -L 8080:localhost:8080 user@server</code> (recommended)</td></tr>
+              <tr><td>VPN</td><td>Tailscale/WireGuard on both server and client</td></tr>
+              <tr><td>Reverse Proxy</td><td><code>docker compose --profile standard --profile proxy up -d</code></td></tr>
+              <tr><td>LAN HTTP</td><td><code>http://SERVER_IP:8080</code> (plain text, explicit opt-in)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="proxmox" style="margin-top: 2rem;">Proxmox VM Setup</h3>
+        <ul class="feature-list">
+          <li><span class="check">✓</span> Create KVM VM (not LXC)</li>
+          <li><span class="check">✓</span> Bridged networking on <code>vmbr0</code></li>
+          <li><span class="check">✓</span> DHCP reservation or static IP</li>
+          <li><span class="check">✓</span> QEMU guest agent enabled</li>
+          <li><span class="check">✓</span> CPU type: <code>host</code></li>
+          <li><span class="check">✓</span> Disk: 20+ GB, RAM: 8+ GB</li>
+        </ul>
+
+        <h3 id="autostart" style="margin-top: 2rem;">Auto-Start</h3>
+        <pre><code>sudo systemctl enable docker
 
 # Optional: systemd service
 sudo tee /etc/systemd/system/evershade.service > /dev/null << 'EOF'
@@ -89,25 +173,62 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl enable evershade</code></pre>
-<h3 id="firewall" style="margin-top:2rem">Firewall</h3>
-<pre><code># Allow gateway port from LAN only
+
+        <h3 id="firewall" style="margin-top: 2rem;">Firewall</h3>
+        <pre><code># Allow gateway port from LAN only
 sudo iptables -I DOCKER-USER -i eth0 -p tcp --dport 8080 -s 192.168.1.0/24 -j ACCEPT
 sudo iptables -I DOCKER-USER -i eth0 -p tcp --dport 8080 -j DROP</code></pre>
-<h3 id="production" style="margin-top:2rem">Production Checklist</h3>
-<ul class="feature-list">
-<li><span class="check">✓</span> All default API keys replaced with strong random values</li>
-<li><span class="check">✓</span> TLS enabled (Caddy proxy or external reverse proxy)</li>
-<li><span class="check">✓</span> Firewall configured – only ports 80/443 exposed</li>
-<li><span class="check">✓</span> Automated backup schedule configured</li>
-<li><span class="check">✓</span> Sneaker alerts configured with Poltergeist delivery</li>
-<li><span class="check">✓</span> Resource limits appropriate for workload</li>
-<li><span class="check">✓</span> Rate limiting configured for expected traffic</li>
-<li><span class="check">✓</span> <code>.env</code> file permissions restricted (<code>chmod 600 .env</code>)</li>
-</ul></div></div></main>
-<footer><div class="footer-inner">
-<div class="footer-col"><h4>Platform</h4><a href="../index.html">Home</a><a href="../services/services.html">All Services</a><a href="../api/api-reference.html">API Reference</a></div>
-<div class="footer-col"><h4>Docs</h4><a href="getting-started.html">Getting Started</a><a href="deployment.html">Deployment</a><a href="configuration.html">Configuration</a><a href="security.html">Security</a></div>
-<div class="footer-col"><h4>Company</h4><a href="../company/about.html">About</a><a href="../company/architecture.html">Architecture</a><a href="../news/changelog.html">Changelog</a></div>
-<div class="footer-col"><h4>Resources</h4><a href="../reference/faq.html">FAQ</a><a href="resources.html">Resource Requirements</a><a href="https://github.com/LukaG712/Evershade" target="_blank">GitHub</a></div>
-</div><div class="footer-bottom"><p>Evershade is licensed under the <a href="https://github.com/LukaG712/Evershade/blob/main/LICENSE" target="_blank">MIT License</a>.</p></div></footer>
-<script src="../js/main.js"></script></body></html>
+
+        <h3 id="production" style="margin-top: 2rem;">Production Checklist</h3>
+        <ul class="feature-list">
+          <li><span class="check">✓</span> All default API keys replaced with strong random values</li>
+          <li><span class="check">✓</span> TLS enabled (Caddy proxy or external reverse proxy)</li>
+          <li><span class="check">✓</span> Firewall configured – only ports 80/443 exposed</li>
+          <li><span class="check">✓</span> Automated backup schedule configured</li>
+          <li><span class="check">✓</span> Sneaker alerts configured with Poltergeist delivery</li>
+          <li><span class="check">✓</span> Resource limits appropriate for workload</li>
+          <li><span class="check">✓</span> Rate limiting configured for expected traffic</li>
+          <li><span class="check">✓</span> <code>.env</code> file permissions restricted (<code>chmod 600 .env</code>)</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <a href="../services/services.html">All Services</a>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="../api/api-reference.html">API Reference</a>
+        <a href="../reference/glossary.html">Glossary</a>
+      </div>
+      <div class="footer-col">
+        <h4>Docs</h4>
+        <a href="deployment.html">Deployment</a>
+        <a href="configuration.html">Configuration</a>
+        <a href="security.html">Security</a>
+        <a href="backup-restore.html">Backup & Restore</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="../company/about.html">About</a>
+        <a href="../company/architecture.html">Architecture</a>
+        <a href="../news/changelog.html">Changelog</a>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="../reference/faq.html">FAQ</a>
+        <a href="resources.html">Resource Requirements</a>
+        <a href="https://github.com/LukaG712/Evershade" target="_blank">GitHub</a>
+        <a href="https://github.com/LukaG712/Evershade/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>Evershade is licensed under the <a href="https://github.com/LukaG712/Evershade/blob/main/LICENSE" target="_blank">MIT License</a>. All service names are inspired by Luigi's Mansion.</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

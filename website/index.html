@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Evershade – Self-Hosted AI Agent Platform</title>
+  <title>Evershade — Autonomous AI Operations Platform</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
     <div class="header-inner">
       <a href="index.html" class="logo">👻 Evershade</a>
       <nav>
-        <a href="index.html" class="active">Home</a>
+        <a href="index.html">Home</a>
         <div class="nav-dropdown">
           <a href="company/about.html">Company ▾</a>
           <div class="nav-dropdown-menu">
@@ -69,291 +69,156 @@
   </header>
 
   <main>
-    <div class="hero">
-      <h1>Evershade</h1>
-      <p>A self-hosted AI agent platform built as a collection of specialized microservices. Create, manage, and run AI-powered agents on your own hardware.</p>
-      <div class="hero-badges">
-        <span class="badge green">v1.14.0</span>
-        <span class="badge blue">MIT License</span>
-        <span class="badge blue">Docker</span>
-        <span class="badge blue">Python</span>
-        <span class="badge blue">TypeScript</span>
-        <span class="badge green">Production Ready</span>
+    <section class="hero">
+      <h1>👻 Evershade</h1>
+      <p>Autonomous AI Operations Platform</p>
+      <p class="hero-sub">A self-improving software platform that uses AI agents to automate development, deployment, monitoring, and optimization.</p>
+      <div class="hero-actions">
+        <a href="docs/getting-started.html" class="btn">Get Started</a>
+        <a href="services/services.html" class="btn btn-secondary">Explore Services</a>
+        <a href="landing.html" class="btn btn-secondary" style="margin-left: 0.5rem;">View Landing Page</a>
       </div>
-      <div style="margin-top: 2rem;">
-        <a href="docs/getting-started.html" style="display: inline-block; padding: 0.75rem 2rem; background: var(--accent); color: #000; font-weight: 600; border-radius: 8px; font-size: 1rem;">Get Started</a>
-        <a href="services/services.html" style="display: inline-block; padding: 0.75rem 2rem; background: var(--bg-card); color: var(--text-primary); font-weight: 600; border-radius: 8px; font-size: 1rem; margin-left: 1rem; border: 1px solid var(--border);">Explore Services</a>
-      </div>
-    </div>
+    </section>
 
-    <div class="section-header">
-      <h2>What Is Evershade</h2>
-      <p>Your personal AI workforce that lives on your computer or server.</p>
-    </div>
-
-    <div class="card-grid">
-      <div class="card">
-        <div class="card-icon">🔒</div>
-        <h3>You Own Everything</h3>
-        <p>Your data, your agents, your conversations – nothing leaves your machine unless you explicitly connect an external AI provider.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🐳</div>
-        <h3>Runs in Docker</h3>
-        <p>No complex setup. If you can run Docker, you can run Evershade. Minimal profile needs just 4 GB RAM and 2 CPU cores.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">⚡</div>
-        <h3>Agents Do Real Work</h3>
-        <p>Write code, scrape websites, search knowledge bases, send notifications, and chain tasks together.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🎯</div>
-        <h3>Mission Control</h3>
-        <p>Break large tasks into milestones, let AI plan and execute, then validate automatically with fix-revalidate cycles.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🧩</div>
-        <h3>Modular Architecture</h3>
-        <p>Use just the core services or add observability, notifications, local LLMs – you choose what you need.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🔌</div>
-        <h3>Extensible</h3>
-        <p>MCP servers, custom plugins, skills system, and event-driven hooks for unlimited extensibility.</p>
-      </div>
-    </div>
-
-    <div class="section-header" style="margin-top: 3rem;">
+    <section class="features">
       <h2>Platform Overview</h2>
-      <p>10 specialized microservices, each with a single responsibility.</p>
-    </div>
-
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Service</th>
-            <th>Port</th>
-            <th>Role</th>
-            <th>Required</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><a href="services/greenie.html"><strong>Greenie</strong></a></td>
-            <td>8080</td>
-            <td>Central orchestrator & API backend</td>
-            <td><span class="status-dot green"></span>Yes</td>
-          </tr>
-          <tr>
-            <td><a href="services/slinker.html"><strong>Slinker</strong></a></td>
-            <td>8000</td>
-            <td>Code execution engine</td>
-            <td><span class="status-dot green"></span>Yes</td>
-          </tr>
-          <tr>
-            <td><a href="services/trapper.html"><strong>Trapper</strong></a></td>
-            <td>3000</td>
-            <td>Web scraping & crawling</td>
-            <td><span class="status-dot green"></span>Yes</td>
-          </tr>
-          <tr>
-            <td><a href="services/gobber.html"><strong>Gobber</strong></a></td>
-            <td>8085</td>
-            <td>Persistent storage & knowledge graph</td>
-            <td><span class="status-dot green"></span>Yes</td>
-          </tr>
-          <tr>
-            <td><a href="services/sneaker.html"><strong>Sneaker</strong></a></td>
-            <td>8086</td>
-            <td>Observability (metrics, traces, logs)</td>
-            <td><span class="status-dot yellow"></span>Optional</td>
-          </tr>
-          <tr>
-            <td><a href="services/hider.html"><strong>Hider</strong></a></td>
-            <td>8087</td>
-            <td>Encrypted secrets management</td>
-            <td><span class="status-dot yellow"></span>Optional</td>
-          </tr>
-          <tr>
-            <td><a href="services/poltergeist.html"><strong>Poltergeist</strong></a></td>
-            <td>8088</td>
-            <td>Notifications (Slack, Discord, Email, Telegram)</td>
-            <td><span class="status-dot yellow"></span>Optional</td>
-          </tr>
-          <tr>
-            <td><a href="services/shrewd.html"><strong>Shrewd</strong></a></td>
-            <td>8089</td>
-            <td>LLM provider abstraction</td>
-            <td><span class="status-dot yellow"></span>Optional</td>
-          </tr>
-          <tr>
-            <td><a href="services/slammer.html"><strong>Slammer</strong></a></td>
-            <td>5173</td>
-            <td>React web dashboard</td>
-            <td><span class="status-dot yellow"></span>Optional</td>
-          </tr>
-          <tr>
-            <td><a href="services/speedy.html"><strong>Speedy</strong></a></td>
-            <td>–</td>
-            <td>CLI tool (<code>evershade</code> command)</td>
-            <td><span class="status-dot yellow"></span>Optional</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="section-header" style="margin-top: 3rem;">
-      <h2>Quick Start</h2>
-      <p>Get up and running in minutes.</p>
-    </div>
-
-    <pre><code>git clone https://github.com/LukaG712/Evershade.git && cd Evershade
-
-# Install service repositories (required)
-./install.sh --profile minimal    # Linux/macOS
-# .\install.ps1 -Profile minimal  # Windows PowerShell
-
-cp .env.example .env
-# Edit .env with your API keys
-
-# Start services
-./start.sh --profile minimal      # Linux/macOS
-# .\start.ps1 -Profile minimal    # Windows PowerShell</code></pre>
-
-    <p style="color: var(--text-secondary); margin-top: 1rem;">The API will be available at <strong>http://localhost:8080</strong>.</p>
-
-    <div class="alert info" style="margin-top: 1.5rem;">
-      <strong>Note:</strong> Service repositories are maintained separately and must be cloned by the install script. See the <a href="docs/getting-started.html">Getting Started Guide</a> for a detailed walkthrough.
-    </div>
-
-    <div class="section-header" style="margin-top: 3rem;">
-      <h2>Installation Profiles</h2>
-      <p>Choose the right profile for your needs.</p>
-    </div>
-
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Profile</th>
-            <th>Services</th>
-            <th>Command</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Minimal</strong></td>
-            <td>Core only (4 services)</td>
-            <td><code>docker compose --profile minimal up -d</code></td>
-          </tr>
-          <tr>
-            <td><strong>Standard</strong></td>
-            <td>All services (8 services)</td>
-            <td><code>docker compose --profile standard up -d</code></td>
-          </tr>
-          <tr>
-            <td><strong>Full</strong></td>
-            <td>+ Slammer Dashboard</td>
-            <td><code>docker compose --profile full up -d</code></td>
-          </tr>
-          <tr>
-            <td><strong>+ Ollama</strong></td>
-            <td>Local LLM support</td>
-            <td><code>docker compose --profile standard --profile ollama up -d</code></td>
-          </tr>
-          <tr>
-            <td><strong>+ Proxy</strong></td>
-            <td>Caddy reverse proxy with TLS</td>
-            <td><code>docker compose --profile standard --profile proxy up -d</code></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="section-header" style="margin-top: 3rem;">
-      <h2>Key Features</h2>
-    </div>
-
-    <ul class="feature-list">
-      <li><span class="check">✓</span> <strong>Agent Management</strong> – Create, configure, and run AI-powered agents with custom guidelines</li>
-      <li><span class="check">✓</span> <strong>Mission Control</strong> – Break large tasks into milestones with automated planning, execution, and validation</li>
-      <li><span class="check">✓</span> <strong>Code Execution</strong> – Agents write and modify code in isolated Git worktrees using Junie CLI</li>
-      <li><span class="check">✓</span> <strong>Web Scraping</strong> – Playwright-based scraping, crawling, and browser automation</li>
-      <li><span class="check">✓</span> <strong>Knowledge Graph</strong> – Persistent storage with semantic search and Obsidian vault integration</li>
-      <li><span class="check">✓</span> <strong>Multi-LLM Support</strong> – OpenAI, Anthropic, Google AI, and local Ollama models</li>
-      <li><span class="check">✓</span> <strong>Observability</strong> – Metrics, distributed traces, logs, and alerting with OTLP export</li>
-      <li><span class="check">✓</span> <strong>Secrets Management</strong> – AES-256-GCM encrypted secrets with versioned configuration</li>
-      <li><span class="check">✓</span> <strong>Notifications</strong> – Slack, Discord, Email, and Telegram with templating</li>
-      <li><span class="check">✓</span> <strong>Workstations</strong> – Isolated container environments for agent execution</li>
-      <li><span class="check">✓</span> <strong>Agent Harness</strong> – Spec Mode, custom droids, skills, and event-driven hooks</li>
-      <li><span class="check">✓</span> <strong>Security</strong> – CSRF protection, rate limiting, RBAC, container hardening</li>
-      <li><span class="check">✓</span> <strong>Web Dashboard</strong> – React-based dashboard for full platform management</li>
-      <li><span class="check">✓</span> <strong>CLI Tool</strong> – Terminal-based management with <code>evershade</code> command</li>
-      <li><span class="check">✓</span> <strong>Backup & Restore</strong> – Automated backups with integrity verification</li>
-    </ul>
-
-    <div class="section-header" style="margin-top: 3rem;">
-      <h2>Documentation</h2>
-    </div>
-
-    <div class="card-grid">
-      <div class="card">
-        <h3>📖 Getting Started</h3>
-        <p>Detailed walkthrough for first-time users, from installation to your first agent.</p>
-        <a href="docs/getting-started.html">Read Guide →</a>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>🎯 Mission Control</h3>
+          <p>Orchestrate and monitor AI agents across your entire infrastructure with real-time dashboards and audit trails.</p>
+          <a href="api/mission-control.html">Learn more →</a>
+        </div>
+        <div class="feature-card">
+          <h3>🔗 10 Microservices</h3>
+          <p>From code execution to web scraping, secrets management to LLM abstraction — everything you need for autonomous operations.</p>
+          <a href="services/services.html">Explore services →</a>
+        </div>
+        <div class="feature-card">
+          <h3>🔒 Security First</h3>
+          <p>End-to-end encryption, API key authentication, rate limiting, and comprehensive audit logging across all services.</p>
+          <a href="docs/security.html">Security docs →</a>
+        </div>
+        <div class="feature-card">
+          <h3>📊 Full Observability</h3>
+          <p>Structured logging, metrics collection, health checks, and real-time monitoring for every component in the stack.</p>
+          <a href="services/sneaker.html">Observability →</a>
+        </div>
       </div>
-      <div class="card">
-        <h3>🏗️ Architecture</h3>
-        <p>System architecture, service boundaries, data flow, and communication standards.</p>
-        <a href="company/architecture.html">Read Guide →</a>
-      </div>
-      <div class="card">
-        <h3>🔧 Configuration</h3>
-        <p>Complete environment variable reference and configuration validation.</p>
-        <a href="docs/configuration.html">Read Guide →</a>
-      </div>
-      <div class="card">
-        <h3>🚀 Deployment</h3>
-        <p>Server mode, Proxmox, auto-start, firewall, and production hardening.</p>
-        <a href="docs/deployment.html">Read Guide →</a>
-      </div>
-      <div class="card">
-        <h3>🔐 Security</h3>
-        <p>Security model, authentication, container hardening, and best practices.</p>
-        <a href="docs/security.html">Read Guide →</a>
-      </div>
-      <div class="card">
-        <h3>📡 API Reference</h3>
-        <p>Every API endpoint for every service, with request/response examples.</p>
-        <a href="api/api-reference.html">Read Reference →</a>
-      </div>
-      <div class="card">
-        <h3>🎯 Mission Control</h3>
-        <p>Orchestrated AI missions with milestones, validation, and fix-revalidate cycles.</p>
-        <a href="api/mission-control.html">Read Guide →</a>
-      </div>
-      <div class="card">
-        <h3>🤖 Agent Harness</h3>
-        <p>Spec Mode, droids, skills, hooks, and environments for advanced agent development.</p>
-        <a href="api/agent-harness.html">Read Guide →</a>
-      </div>
-      <div class="card">
-        <h3>💻 Advanced Guide</h3>
-        <p>Internals, performance tuning, custom integrations, and power-user patterns.</p>
-        <a href="docs/advanced.html">Read Guide →</a>
-      </div>
-    </div>
+    </section>
 
-    <div class="section-header" style="margin-top: 3rem;">
-      <h2>Naming Theme</h2>
-      <p>All services are named after ghosts from the <strong>Luigi's Mansion</strong> series. The repository is named <strong>Evershade</strong> after <em>Evershade Valley</em> from Luigi's Mansion: Dark Moon.</p>
-    </div>
+    <section class="services-table">
+      <h2>Service Catalog</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Port</th>
+              <th>Stack</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="services/greenie.html">Greenie</a></td>
+              <td><code>8080</code></td>
+              <td>Python/FastAPI</td>
+              <td><span class="badge green">Required</span></td>
+            </tr>
+            <tr>
+              <td><a href="services/slinker.html">Slinker</a></td>
+              <td><code>8000</code></td>
+              <td>Python/FastAPI</td>
+              <td><span class="badge green">Required</span></td>
+            </tr>
+            <tr>
+              <td><a href="services/trapper.html">Trapper</a></td>
+              <td><code>3000</code></td>
+              <td>TypeScript/Fastify</td>
+              <td><span class="badge green">Required</span></td>
+            </tr>
+            <tr>
+              <td><a href="services/gobber.html">Gobber</a></td>
+              <td><code>8001</code></td>
+              <td>Python/FastAPI</td>
+              <td><span class="badge green">Required</span></td>
+            </tr>
+            <tr>
+              <td><a href="services/sneaker.html">Sneaker</a></td>
+              <td><code>8002</code></td>
+              <td>Python/FastAPI</td>
+              <td><span class="badge green">Required</span></td>
+            </tr>
+            <tr>
+              <td><a href="services/hider.html">Hider</a></td>
+              <td><code>8003</code></td>
+              <td>Python/FastAPI</td>
+              <td><span class="badge green">Required</span></td>
+            </tr>
+            <tr>
+              <td><a href="services/poltergeist.html">Poltergeist</a></td>
+              <td><code>8004</code></td>
+              <td>Python/FastAPI</td>
+              <td><span class="badge green">Required</span></td>
+            </tr>
+            <tr>
+              <td><a href="services/shrewd.html">Shrewd</a></td>
+              <td><code>8005</code></td>
+              <td>Python/FastAPI</td>
+              <td><span class="badge yellow">Optional</span></td>
+            </tr>
+            <tr>
+              <td><a href="services/slammer.html">Slammer</a></td>
+              <td><code>8006</code></td>
+              <td>Python/FastAPI</td>
+              <td><span class="badge yellow">Optional</span></td>
+            </tr>
+            <tr>
+              <td><a href="services/speedy.html">Speedy</a></td>
+              <td><code>—</code></td>
+              <td>Python CLI</td>
+              <td><span class="badge yellow">Optional</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-    <div class="alert info" style="margin-top: 1.5rem;">
-      <strong>Disclaimer:</strong> This project is a fan-made, independent software project. It is not affiliated with, endorsed by, or in any way connected to Nintendo, Next Level Games, or any of their subsidiaries. All Luigi's Mansion trademarks and character names are property of their respective owners.
-    </div>
+    <section class="installation">
+      <h2>Quick Installation</h2>
+      <div class="install-options">
+        <div class="install-card">
+          <h3>Linux / macOS</h3>
+          <div class="code-block">
+            <code>curl -fsSL https://raw.githubusercontent.com/LukaG712/Evershade/main/install.sh | bash</code>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+        </div>
+        <div class="install-card">
+          <h3>Windows (PowerShell)</h3>
+          <div class="code-block">
+            <code>iwr https://raw.githubusercontent.com/LukaG712/Evershade/main/install.ps1 -UseBasicParsing | iex</code>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+        </div>
+        <div class="install-card">
+          <h3>Docker Compose</h3>
+          <div class="code-block">
+            <code>docker compose up -d</code>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <h2>Ready to Get Started?</h2>
+      <p>Dive into our comprehensive documentation to learn how to deploy, configure, and operate Evershade.</p>
+      <div class="cta-actions">
+        <a href="docs/getting-started.html" class="btn">Getting Started Guide</a>
+        <a href="https://github.com/LukaG712/Evershade" target="_blank" class="btn btn-secondary">View on GitHub</a>
+      </div>
+    </section>
   </main>
 
   <footer>
@@ -390,7 +255,6 @@ cp .env.example .env
       <p>Evershade is licensed under the <a href="https://github.com/LukaG712/Evershade/blob/main/LICENSE" target="_blank">MIT License</a>. All service names are inspired by Luigi's Mansion.</p>
     </div>
   </footer>
-
   <script src="js/main.js"></script>
 </body>
 </html>
