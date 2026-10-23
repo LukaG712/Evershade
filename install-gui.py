@@ -688,7 +688,6 @@ class EvershadeInstallerGUI:
         for tool in ["git", "curl", "wget", "python3"]:
             exists = command_exists(tool)
             status = "✓" if exists else "✗"
-            color = "green" if exists else "red"
             style_name = "Green.TLabel" if exists else "Red.TLabel"
             ttk.Label(
                 tools_frame,
