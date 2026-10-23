@@ -5,13 +5,87 @@
 [CmdletBinding()]
 param(
     [switch]$Force,
-    [ValidateSet("minimal", "standard", "full")]
-    [string]$Profile = "standard"
+    [ValidateSet("minimal", "standard", "full", "custom")]
+    [string]$Profile = "standard",
+    [string]$CustomServices = ""
 )
 
 $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Set-Location $ScriptDir
+
+# Interactive custom service selection
+$services = @()
+if ($Profile -eq "custom") {
+    if ($CustomServices) {
+        # Services provided via -CustomServices parameter
+        $services = $CustomServices -split ',' | ForEach-Object { $_.Trim() }
+    } else {
+        # Interactive menu
+        Write-Host ""
+        Write-Host "╔══════════════════════════════════════════════════════════════╗" -ForegroundColor Blue
+        Write-Host "║  Custom Service Selection                                    ║" -ForegroundColor Blue
+        Write-Host "╚══════════════════════════════════════════════════════════════╝" -ForegroundColor Blue
+        Write-Host ""
+        Write-Host "Required services (cannot be removed):" -ForegroundColor Yellow
+        Write-Host "  [x] Greenie    - Central API backend"
+        Write-Host "  [x] Slinker    - Code execution"
+        Write-Host "  [x] Trapper    - Web scraping"
+        Write-Host "  [x] Gobber     - Storage & search"
+        Write-Host ""
+        Write-Host "Optional services (press number to toggle):" -ForegroundColor Yellow
+        Write-Host "  [1] Sneaker      - Observability & alerting"
+        Write-Host "  [2] Hider        - Encrypted secrets management"
+        Write-Host "  [3] Poltergeist  - Notifications (Slack, Discord, Email, Telegram)"
+        Write-Host "  [4] Shrewd       - LLM providers (OpenAI, Anthropic, Google, Ollama)"
+        Write-Host "  [5] Slammer      - Web dashboard"
+        Write-Host "  [6] Speedy       - CLI tool"
+        Write-Host ""
+        Write-Host "Enter numbers to toggle, or 'done' to continue:" -ForegroundColor Blue
+
+        $services = @("Greenie", "Slinker", "Trapper", "Gobber")
+        $optionalMap = @{
+            1 = "Sneaker"
+            2 = "Hider"
+            3 = "Poltergeist"
+            4 = "Shrewd"
+            5 = "Slammer"
+            6 = "Speedy"
+        }
+
+        while ($true) {
+            $choice = Read-Host "  >"
+            if ($choice -eq "done" -or $choice -eq "") {
+                break
+            }
+            $num = $null
+            if ([int32]::TryParse($choice, [ref]$num) -and $optionalMap.ContainsKey($num)) {
+                $svc = $optionalMap[$num]
+                if ($services -contains $svc) {
+                    $services = $services | Where-Object { $_ -ne $svc }
+                    Write-Host "  [XX] Removed $svc" -ForegroundColor Red
+                } else {
+                    $services += $svc
+                    Write-Host "  [OK] Added $svc" -ForegroundColor Green
+                }
+            } else {
+                Write-Host "  [XX] Invalid choice. Enter 1-6, or 'done'." -ForegroundColor Red
+            }
+        }
+    }
+
+    # Validate required services
+    foreach ($req in @("Greenie", "Slinker", "Trapper", "Gobber")) {
+        if ($services -notcontains $req) {
+            Write-Host "[XX] ERROR: Required service '$req' is missing. Cannot proceed." -ForegroundColor Red
+            exit 1
+        }
+    }
+
+    Write-Host ""
+    Write-Host "[OK] Selected services: $($services -join ', ')" -ForegroundColor Green
+    Write-Host ""
+}
 
 Write-Host ""
 Write-Host "╔══════════════════════════════════════════════════════════════╗" -ForegroundColor Blue
@@ -35,15 +109,15 @@ if (-not (Test-Path "version-manifest.json")) {
 }
 Write-Host "[OK] version-manifest.json found" -ForegroundColor Green
 
-# Extract service list based on profile
-$manifest = Get-Content "version-manifest.json" | ConvertFrom-Json
-$profileServices = $manifest.profiles.$Profile
-
-# Filter out infrastructure services
-$services = @($profileServices | Where-Object { $_ -notin @("redis", "ollama", "caddy") })
+# Extract service list based on profile (if not custom)
+if ($Profile -ne "custom") {
+    $manifest = Get-Content "version-manifest.json" | ConvertFrom-Json
+    $profileServices = $manifest.profiles.$Profile
+    $services = @($profileServices | Where-Object { $_ -notin @("redis", "ollama", "caddy") })
+}
 
 if ($services.Count -eq 0) {
-    Write-Host "[XX] ERROR: No services found for profile '$Profile'." -ForegroundColor Red
+    Write-Host "[XX] ERROR: No services found for profile '$Profile'. Available: minimal, standard, full, custom" -ForegroundColor Red
     exit 1
 }
 

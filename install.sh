@@ -17,6 +17,7 @@ NC='\033[0m' # No Color
 
 FORCE=false
 PROFILE="standard"
+CUSTOM_SERVICES=""
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -29,18 +30,29 @@ while [[ $# -gt 0 ]]; do
             PROFILE="$2"
             shift 2
             ;;
+        --custom)
+            PROFILE="custom"
+            CUSTOM_SERVICES="$2"
+            shift 2
+            ;;
         --help|-h)
             echo "Usage: ./install.sh [OPTIONS]"
             echo ""
             echo "Options:"
             echo "  --force          Remove existing service directories before cloning"
-            echo "  --profile NAME   Installation profile: minimal, standard, full (default: standard)"
+            echo "  --profile NAME   Installation profile: minimal, standard, full, custom (default: standard)"
+            echo "  --custom LIST    Comma-separated list of services to install (requires --profile custom)"
             echo "  --help, -h       Show this help message"
             echo ""
             echo "Profiles:"
             echo "  minimal   Core services only (Greenie, Slinker, Trapper, Gobber)"
             echo "  standard  All services except dashboard (default)"
             echo "  full      Everything including Slammer dashboard"
+            echo "  custom    Choose individual services interactively or via --custom"
+            echo ""
+            echo "Services:"
+            echo "  Required:  Greenie, Slinker, Trapper, Gobber"
+            echo "  Optional:  Sneaker, Hider, Poltergeist, Shrewd, Slammer, Speedy"
             exit 0
             ;;
         *)
@@ -49,6 +61,78 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+# Interactive custom service selection
+if [ "$PROFILE" = "custom" ]; then
+    if [ -n "$CUSTOM_SERVICES" ]; then
+        # Services provided via --custom flag
+        SELECTED_SERVICES=($(echo "$CUSTOM_SERVICES" | tr ',' ' '))
+    else
+        # Interactive menu
+        echo -e "${BLUE}╔══════════════════════════════════════════════════════════════╗${NC}"
+        echo -e "${BLUE}║  Custom Service Selection                                    ║${NC}"
+        echo -e "${BLUE}╚══════════════════════════════════════════════════════════════╝${NC}"
+        echo ""
+        echo -e "${YELLOW}Required services (cannot be removed):${NC}"
+        echo "  [x] Greenie    - Central API backend"
+        echo "  [x] Slinker    - Code execution"
+        echo "  [x] Trapper    - Web scraping"
+        echo "  [x] Gobber     - Storage & search"
+        echo ""
+        echo -e "${YELLOW}Optional services (press number to toggle):${NC}"
+        echo "  [1] Sneaker      - Observability & alerting"
+        echo "  [2] Hider        - Encrypted secrets management"
+        echo "  [3] Poltergeist  - Notifications (Slack, Discord, Email, Telegram)"
+        echo "  [4] Shrewd       - LLM providers (OpenAI, Anthropic, Google, Ollama)"
+        echo "  [5] Slammer      - Web dashboard"
+        echo "  [6] Speedy       - CLI tool"
+        echo ""
+        echo -e "${BLUE}Enter numbers to toggle, or 'done' to continue:${NC}"
+
+        # Default: required services only
+        SELECTED_SERVICES=("Greenie" "Slinker" "Trapper" "Gobber")
+        declare -A OPTIONAL_MAP
+        OPTIONAL_MAP[1]="Sneaker"
+        OPTIONAL_MAP[2]="Hider"
+        OPTIONAL_MAP[3]="Poltergeist"
+        OPTIONAL_MAP[4]="Shrewd"
+        OPTIONAL_MAP[5]="Slammer"
+        OPTIONAL_MAP[6]="Speedy"
+
+        while true; do
+            read -rp "  > " choice
+            if [ "$choice" = "done" ] || [ -z "$choice" ]; then
+                break
+            fi
+            if [[ "$choice" =~ ^[1-6]$ ]]; then
+                svc="${OPTIONAL_MAP[$choice]}"
+                if printf '%s\n' "${SELECTED_SERVICES[@]}" | grep -qw "$svc"; then
+                    # Remove service
+                    SELECTED_SERVICES=($(printf '%s\n' "${SELECTED_SERVICES[@]}" | grep -vw "$svc"))
+                    echo -e "  ${RED}✗${NC} Removed $svc"
+                else
+                    # Add service
+                    SELECTED_SERVICES+=("$svc")
+                    echo -e "  ${GREEN}✓${NC} Added $svc"
+                fi
+            else
+                echo -e "  ${RED}Invalid choice. Enter 1-6, or 'done'.${NC}"
+            fi
+        done
+    fi
+
+    # Validate that required services are included
+    for req in Greenie Slinker Trapper Gobber; do
+        if ! printf '%s\n' "${SELECTED_SERVICES[@]}" | grep -qw "$req"; then
+            echo -e "${RED}ERROR: Required service '$req' is missing. Cannot proceed.${NC}"
+            exit 1
+        fi
+    done
+
+    echo ""
+    echo -e "${GREEN}✓${NC} Selected services: ${SELECTED_SERVICES[*]}"
+    echo ""
+fi
 
 echo -e "${BLUE}╔══════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${BLUE}║  Evershade Bootstrap Installer                               ║${NC}"
@@ -69,14 +153,19 @@ if [ ! -f version-manifest.json ]; then
 fi
 echo -e "${GREEN}✓${NC} version-manifest.json found"
 
-# Extract service info based on profile
+# Extract service info based on profile or custom selection
 get_service_info() {
     local profile="$1"
+    local custom_list="$2"
     python3 -c "
 import json
 with open('version-manifest.json') as f:
     manifest = json.load(f)
-profile_services = manifest.get('profiles', {}).get('$profile', [])
+custom = '$custom_list'.strip()
+if custom:
+    profile_services = [s.strip() for s in custom.split(',') if s.strip()]
+else:
+    profile_services = manifest.get('profiles', {}).get('$profile', [])
 for svc in profile_services:
     if svc not in ('redis', 'ollama', 'caddy'):  # Skip infrastructure
         info = manifest.get('services', {}).get(svc, {})
@@ -86,9 +175,15 @@ for svc in profile_services:
 "
 }
 
-SERVICES_INFO=$(get_service_info "$PROFILE")
+if [ "$PROFILE" = "custom" ]; then
+    custom_csv=$(IFS=,; echo "${SELECTED_SERVICES[*]}")
+    SERVICES_INFO=$(get_service_info "$PROFILE" "$custom_csv")
+else
+    SERVICES_INFO=$(get_service_info "$PROFILE" "")
+fi
+
 if [ -z "$SERVICES_INFO" ]; then
-    echo -e "${RED}ERROR: Unknown profile '$PROFILE'. Available: minimal, standard, full${NC}"
+    echo -e "${RED}ERROR: Unknown profile '$PROFILE'. Available: minimal, standard, full, custom${NC}"
     exit 1
 fi
 

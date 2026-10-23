@@ -42,6 +42,7 @@ banner() {
 FORCE=false
 AUTO=false
 SKIP_START=false
+CUSTOM_SERVICES=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -58,6 +59,11 @@ while [[ $# -gt 0 ]]; do
             PROFILE="$2"
             shift 2
             ;;
+        --custom)
+            PROFILE="custom"
+            CUSTOM_SERVICES="$2"
+            shift 2
+            ;;
         --dir)
             INSTALL_DIR="$2"
             shift 2
@@ -72,10 +78,21 @@ while [[ $# -gt 0 ]]; do
             echo "Options:"
             echo "  --force          Remove existing installation directory"
             echo "  --auto           Non-interactive: accept defaults, skip prompts"
-            echo "  --profile NAME   Install profile: minimal, standard, full (default: standard)"
+            echo "  --profile NAME   Install profile: minimal, standard, full, custom (default: standard)"
+            echo "  --custom LIST    Comma-separated services (requires --profile custom)"
             echo "  --dir PATH       Install directory (default: ~/Evershade)"
             echo "  --skip-start     Don't start services after install"
             echo "  --help, -h       Show this help message"
+            echo ""
+            echo "Profiles:"
+            echo "  minimal   Core services only (Greenie, Slinker, Trapper, Gobber)"
+            echo "  standard  All services except dashboard (default)"
+            echo "  full      Everything including Slammer dashboard"
+            echo "  custom    Choose individual services interactively or via --custom"
+            echo ""
+            echo "Services:"
+            echo "  Required:  Greenie, Slinker, Trapper, Gobber"
+            echo "  Optional:  Sneaker, Hider, Poltergeist, Shrewd, Slammer, Speedy"
             echo ""
             echo "Note: Run with sudo for Docker installation, or as root."
             exit 0
@@ -286,11 +303,17 @@ if [ -f "install.sh" ]; then
     info "Running service installer with profile: $PROFILE"
     chmod +x install.sh
 
+    # Build install.sh command
+    INSTALL_CMD="./install.sh --profile $PROFILE"
+    if [ "$PROFILE" = "custom" ] && [ -n "$CUSTOM_SERVICES" ]; then
+        INSTALL_CMD="$INSTALL_CMD --custom $CUSTOM_SERVICES"
+    fi
+
     # Run as invoking user to avoid permission issues
     if id "$INVOKING_USER" &>/dev/null; then
-        sudo -u "$INVOKING_USER" bash -c "cd '$INSTALL_DIR' && ./install.sh --profile $PROFILE"
+        sudo -u "$INVOKING_USER" bash -c "cd '$INSTALL_DIR' && $INSTALL_CMD"
     else
-        ./install.sh --profile "$PROFILE"
+        bash -c "$INSTALL_CMD"
     fi
     success "Service repositories installed"
 else

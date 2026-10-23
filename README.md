@@ -68,7 +68,7 @@ sudo python3 install-gui.py
 The GUI wizard guides you through 9 steps:
 1. **Welcome** — Overview of Evershade and requirements
 2. **System Check** — Verifies OS version, architecture, and installed tools
-3. **Installation Options** — Choose profile (minimal/standard/full) and install directory
+3. **Installation Options** — Choose profile (minimal/standard/full/custom) and install directory. Custom mode lets you pick individual services via checkboxes.
 4. **Install Docker** — Installs Docker Engine and Compose if missing
 5. **Clone & Install** — Clones the repository and installs service submodules
 6. **Configure** — Creates `.env` with auto-generated secure API keys
@@ -133,8 +133,42 @@ The Ubuntu update script will:
 | **Minimal** | Core only (4 services) | `docker compose --profile minimal up -d` |
 | **Standard** | All services (8 services) | `docker compose --profile standard up -d` |
 | **Full** | + Slammer Dashboard | `docker compose --profile full up -d` |
+| **Custom** | Choose individual services | See below |
 | **+ Ollama** | Local LLM support | `docker compose --profile standard --profile ollama up -d` |
 | **+ Proxy** | Caddy reverse proxy with TLS | `docker compose --profile standard --profile proxy up -d` |
+
+### Custom Service Selection
+
+Instead of using predefined profiles, you can choose exactly which services to install. The 4 required services (Greenie, Slinker, Trapper, Gobber) are always included, and you can toggle the optional ones:
+
+| Service | Description |
+|---------|-------------|
+| **Sneaker** | Observability & alerting |
+| **Hider** | Encrypted secrets management |
+| **Poltergeist** | Notifications (Slack, Discord, Email, Telegram) |
+| **Shrewd** | LLM providers (OpenAI, Anthropic, Google, Ollama) |
+| **Slammer** | Web dashboard |
+| **Speedy** | CLI tool |
+
+**Shell (interactive menu):**
+```bash
+./install.sh --profile custom
+.\install.ps1 -Profile custom
+```
+
+**Shell (command-line):**
+```bash
+./install.sh --profile custom --custom "Greenie,Slinker,Trapper,Gobber,Sneaker,Shrewd"
+.\install.ps1 -Profile custom -CustomServices "Greenie,Slinker,Trapper,Gobber,Sneaker,Shrewd"
+```
+
+**Ubuntu Desktop:**
+```bash
+sudo bash install-ubuntu.sh --profile custom
+sudo bash install-ubuntu.sh --profile custom --custom "Greenie,Slinker,Trapper,Gobber,Sneaker,Shrewd"
+```
+
+**GUI Installer:** Select "Custom" in the Installation Options step, then check/uncheck the services you want.
 
 ---
 
