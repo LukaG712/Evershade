@@ -392,9 +392,10 @@ StartupNotify=true
         os.chmod(start_sh, 0o755)
         cmd = f"cd '{self.install_dir}' && bash start.sh --profile {self.profile}"
         # Always run as root; ownership is set by install.sh.
-        rc, _out, err = run_command(cmd)
+        rc, out, err = run_command(cmd)
         if rc != 0:
-            return False, f"Failed to start services: {err[:200]}"
+            message = err if err else out
+            return False, f"Failed to start services: {message[:500]}"
         return True, "Services started"
 
 

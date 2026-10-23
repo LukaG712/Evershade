@@ -317,9 +317,10 @@ class Installer:
             return False, "start.ps1 not found"
 
         cmd = f'powershell -ExecutionPolicy Bypass -File "{start_ps1}" -Profile {self.profile}'
-        rc, _out, err = run_command(cmd, timeout=300)
+        rc, out, err = run_command(cmd, timeout=300)
         if rc != 0:
-            return False, f"Failed to start services: {err[:200]}"
+            message = err if err else out
+            return False, f"Failed to start services: {message[:500]}"
         return True, "Services started"
 
 
