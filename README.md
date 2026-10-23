@@ -1,7 +1,4 @@
-﻿# Evershade
-
-> *"E. Gadd to Luigi! Am I comin' in clear, do you read me?"*
-> ~ **Prof. E. Gadd**, Luigi's Mansion: Dark Moon
+# Evershade
 
 **A self-hosted AI agent platform built as a collection of specialized microservices.**
 
@@ -94,9 +91,6 @@ You interact with Evershade through a web dashboard or CLI. Greenie, the central
 ---
 
 ## Why Evershade
-
-> *"The Dark Moon has shattered, Luigi! We need to find it and restore peace to Evershade Valley, posthaste!"*
-> ~ **Prof. E. Gadd**, on why we built this
 
 | Feature | Description |
 |---------|-------------|
@@ -442,9 +436,6 @@ POST /api/workflows
 
 ## Services
 
-> *"The Dark Moon has shattered, Luigi! We need to find it and restore peace to Evershade Valley, posthaste!"*
-> ~ **Prof. E. Gadd**, on the state of the valley
-
 All service names are inspired by [Luigi's Mansion ghosts](https://luigi-mansion.fandom.com/wiki/List_of_ghosts). See the [Naming Theme](#naming-theme) section for details.
 
 ### Service Overview
@@ -586,9 +577,6 @@ The terminal companion. Speedy provides an `evershade` command for managing ever
 
 ## Mission Control
 
-> *"Now that all the ghosts of Evershade Valley are under my control..."*
-> ~ **King Boo**, Luigi's Mansion: Dark Moon
-
 Evershade's Mission Control system provides factory-inspired orchestration for complex AI-driven development workflows. Missions break down large tasks into milestones, features, and automated validation cycles.
 
 ### Key Capabilities
@@ -678,9 +666,6 @@ Reusable sandbox definitions with repository, dependencies, setup commands, and 
 ---
 
 ## Workstations
-
-> *"This place is crawling with ghosts, Luigi!"*
-> ~ **Prof. E. Gadd**, on the mansion's defenses
 
 Workstations provide isolated container-based environments for agent execution with full lifecycle management.
 
@@ -854,9 +839,6 @@ python scripts/verify_release.py --release release/ --secret "your-signing-key"
 
 ## Backup & Restore
 
-> *"Luigi, we gotta save all our progress before the ghosts strike again!"*
-> ~ **Prof. E. Gadd**, on data safety
-
 Evershade provides built-in backup and restore functionality via the Speedy CLI.
 
 ```bash
@@ -1024,9 +1006,6 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [ROADMAP.md](ROADMAP.md) fo
 
 ## Naming Theme
 
-> *"Oh boy..."*
-> ~ **Luigi**, probably reacting to all these ghost names
-
 All services are named after ghosts from the **Luigi's Mansion** series. The root repository is named **Evershade** after *Evershade Valley*, the setting of Luigi's Mansion: Dark Moon.
 
 | Service | Ghost Origin | Game |
@@ -1117,14 +1096,6 @@ For deeper dives, the `docs/` directory contains detailed guides:
 | Document | Description |
 |----------|-------------|
 | [Advanced Guide](docs/ADVANCED.md) | Expert deep dives: internals, performance tuning, custom integrations, and power-user patterns |
-
----
-
-> *"Now that all the ghosts of Evershade Valley are under my control..."*
-> ~ **King Boo**, Luigi's Mansion: Dark Moon
-
-> *"Oh boy..."*
-> ~ **Luigi**, probably
 
 ---
 
