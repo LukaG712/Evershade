@@ -2,7 +2,7 @@
 
 **A self-hosted AI agent platform built as a collection of specialized microservices.**
 
-[![Version](https://img.shields.io/badge/Version-1.12.0-brightgreen.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.14.0-brightgreen.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-Required-blue.svg)](https://docker.com)
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
@@ -50,6 +50,54 @@ cp .env.example .env
 The API will be available at **http://localhost:8080**.
 
 > **Note:** Service repositories are maintained separately and must be cloned by the install script.
+
+---
+
+## Updating
+
+Keep your Evershade installation up to date with the update scripts. These pull the latest version manifest and update each service to its pinned commit.
+
+```bash
+# Update all services (Linux/macOS)
+./update.sh
+
+# Update all services (Windows PowerShell)
+.\update.ps1
+
+# Update with a specific profile
+./update.sh --profile full
+.\update.ps1 -Profile full
+
+# Force update even if already at correct commit
+./update.sh --force
+.\update.ps1 -Force
+
+# Also pull latest changes from main Evershade repo
+./update.sh --pull-main
+.\update.ps1 -PullMain
+```
+
+### Ubuntu Desktop Update
+
+For Ubuntu Desktop installations, use the dedicated update script that handles everything in one step:
+
+```bash
+# Interactive update with prompts
+sudo bash update-ubuntu.sh
+
+# Non-interactive update (accepts defaults)
+sudo bash update-ubuntu.sh --auto
+
+# Update without restarting services
+sudo bash update-ubuntu.sh --skip-restart
+```
+
+The Ubuntu update script will:
+1. Pull latest changes from the Evershade repository
+2. Install any new services added to your profile
+3. Update all existing services to their pinned commits
+4. Optionally restart running services to apply changes
+5. Update the systemd service file if present
 
 ### Installation Profiles
 
