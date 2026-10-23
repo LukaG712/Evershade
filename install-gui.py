@@ -234,14 +234,12 @@ class Installer:
         """Clone or update the Evershade repository."""
         if os.path.isdir(self.install_dir):
             if os.path.isdir(os.path.join(self.install_dir, ".git")):
-                # Stash local changes to avoid merge conflicts during pull
-                run_command(f"cd '{self.install_dir}' && git stash --include-untracked")
-                # Update existing
-                rc, _out, err = run_command(f"cd '{self.install_dir}' && git pull")
+                # Force-update to latest, discarding local changes to avoid merge conflicts
+                rc, _out, err = run_command(
+                    f"cd '{self.install_dir}' && git fetch origin && git reset --hard origin/master"
+                )
                 if rc != 0:
                     return False, f"Failed to update repo: {err}"
-                # Restore stashed changes
-                run_command(f"cd '{self.install_dir}' && git stash pop")
                 return True, "Repository updated"
             else:
                 return False, "Directory exists but is not a git repo"
