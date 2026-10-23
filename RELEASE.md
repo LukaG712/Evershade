@@ -1,8 +1,8 @@
-# Evershade v1.14.0 — First Official Release
+# Evershade v1.14.1 — GUI Installer Fix
 
 **Release Date:** October 23, 2026
 
-Welcome to the first official release of **Evershade**, a self-hosted AI agent platform built as a collection of specialized microservices.
+This patch release fixes a critical crash in the GUI installers for both Linux and Windows.
 
 ---
 

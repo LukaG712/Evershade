@@ -2,6 +2,12 @@
 
 All notable changes to the Evershade ecosystem will be documented in this file.
 
+## [1.14.1] - 2026-10-23
+
+### Fixed
+
+- **GUI Installer Progressbar Crash**: Fixed `_tkinter.TclError: Layout Horizontal.Progressbar.Horizontal not found` on Linux (and potentially Windows) by replacing the invalid ttk style name `Progressbar.Horizontal` with the correct `Horizontal.TProgressbar` in both `install-gui.py` and `install-gui-win.py`.
+
 ## [1.14.0] - 2026-10-23
 
 ### Added
