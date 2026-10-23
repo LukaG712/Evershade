@@ -124,7 +124,7 @@ Test individual functions and classes in isolation. Fast, no services required.
 def test_generate_api_key():
     key = generate_api_key()
     assert len(key) == 64
-    assert all(c in '0123456789abcdef' for c in key)
+    assert all(c in "0123456789abcdef" for c in key)
 ```
 
 ### Integration Tests

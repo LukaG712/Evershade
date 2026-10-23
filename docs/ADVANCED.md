@@ -603,11 +603,12 @@ class CustomWebhookChannel:
 
     async def send(self, message, config):
         import aiohttp
+
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 config["url"],
                 json={"text": message, "timestamp": int(time.time())},
-                headers={"Authorization": f"Bearer {config.get('token', '')}"}
+                headers={"Authorization": f"Bearer {config.get('token', '')}"},
             ) as response:
                 if response.status != 200:
                     raise Exception(f"Webhook failed: {response.status}")
