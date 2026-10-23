@@ -403,8 +403,47 @@ class EvershadeInstallerGUI:
         self.step_label.pack(anchor="w")
 
     def _build_content_area(self):
-        self.content_frame = ttk.Frame(self.root, padding=(20, 10, 20, 10))
-        self.content_frame.pack(fill="both", expand=True)
+        # Container with canvas + scrollbar for scrollable content
+        canvas_container = ttk.Frame(self.root)
+        canvas_container.pack(fill="both", expand=True)
+
+        self.canvas = tk.Canvas(canvas_container, highlightthickness=0)
+        self.scrollbar = ttk.Scrollbar(
+            canvas_container, orient="vertical", command=self.canvas.yview
+        )
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+
+        self.scrollbar.pack(side="right", fill="y")
+        self.canvas.pack(side="left", fill="both", expand=True)
+
+        # Bind mouse wheel scrolling
+        self.canvas.bind("<Enter>", self._on_canvas_enter)
+        self.canvas.bind("<Leave>", self._on_canvas_leave)
+
+        # Inner frame inside the canvas
+        self.content_frame = ttk.Frame(self.canvas, padding=(20, 10, 20, 10))
+        self.canvas_window = self.canvas.create_window(
+            (0, 0), window=self.content_frame, anchor="nw"
+        )
+
+        # Update scroll region when content changes
+        self.content_frame.bind("<Configure>", self._on_content_configure)
+        self.canvas.bind("<Configure>", self._on_canvas_configure)
+
+    def _on_canvas_enter(self, event):
+        self.canvas.bind_all("<MouseWheel>", self._on_mouse_wheel)
+
+    def _on_canvas_leave(self, event):
+        self.canvas.unbind_all("<MouseWheel>")
+
+    def _on_mouse_wheel(self, event):
+        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+    def _on_content_configure(self, event):
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+
+    def _on_canvas_configure(self, event):
+        self.canvas.itemconfig(self.canvas_window, width=event.width)
 
     def _build_navigation(self):
         nav = ttk.Frame(self.root, padding=(20, 10, 20, 20))
@@ -452,6 +491,9 @@ class EvershadeInstallerGUI:
         # Clear content
         for widget in self.content_frame.winfo_children():
             widget.destroy()
+
+        # Reset scroll region
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
         # Call step builder
         builder = self.steps[index][1]
