@@ -25,11 +25,11 @@ jobs:
 
       - name: Python linting (ruff)
         run: |
-          ruff check . --output-format github
+          ruff check . --exclude .junie --output-format github
 
       - name: Python formatting check (ruff)
         run: |
-          ruff format . --check --diff
+          ruff format . --exclude .junie --check --diff
 
   docker-compose:
     name: Validate Docker Compose
