@@ -22,7 +22,6 @@ except ImportError:
 
 # ─── Constants ────────────────────────────────────────────────────────
 REPO_URL = "https://github.com/LukaG712/Evershade.git"
-DEFAULT_DIR = os.path.expanduser("~/Evershade")
 PROFILES = {
     "minimal": {
         "name": "Minimal",
@@ -117,6 +116,17 @@ def get_invoking_user():
     return os.environ.get("SUDO_USER", os.environ.get("USER", "root"))
 
 
+def get_default_dir():
+    """Get the default install directory, using the invoking user's home."""
+    user = get_invoking_user()
+    if user and user != "root":
+        # Use the invoking user's home directory
+        user_home = os.path.expanduser(f"~{user}")
+    else:
+        user_home = os.path.expanduser("~")
+    return os.path.join(user_home, "Evershade")
+
+
 def is_root():
     return os.geteuid() == 0
 
@@ -126,7 +136,7 @@ class Installer:
     def __init__(self):
         self.profile = "standard"
         self.custom_services = []  # Populated when profile is "custom"
-        self.install_dir = DEFAULT_DIR
+        self.install_dir = get_default_dir()
         self.use_systemd = True
         self.use_desktop = True
         self.start_services_flag = True
@@ -408,7 +418,7 @@ StartupNotify=true
                     "- .env file is missing or malformed\n"
                     "- Required service directories are not installed\n"
                     "- docker-compose.yml is missing\n"
-                    "Try running manually: cd /root/Evershade && bash start.sh --profile full"
+                    f"Try running manually: cd {self.install_dir} && bash start.sh --profile {self.profile}"
                 )
             return False, f"Failed to start services:\n{combined[:800]}"
         return True, "Services started"
@@ -1006,7 +1016,7 @@ class EvershadeInstallerGUI:
         browse_btn.pack(side="left")
 
         default_btn = ttk.Button(
-            dir_row, text="DEFAULT", command=lambda: self.dir_var.set(DEFAULT_DIR)
+            dir_row, text="DEFAULT", command=lambda: self.dir_var.set(get_default_dir())
         )
         default_btn.pack(side="left", padx=(10, 0))
 

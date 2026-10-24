@@ -23,7 +23,6 @@ except ImportError:
 
 # ─── Constants ────────────────────────────────────────────────────────
 REPO_URL = "https://github.com/LukaG712/Evershade.git"
-DEFAULT_DIR = os.path.join(os.path.expanduser("~"), "Evershade")
 PROFILES = {
     "minimal": {
         "name": "Minimal",
@@ -134,12 +133,17 @@ def get_windows_username():
     return os.environ.get("USERNAME", "user")
 
 
+def get_default_dir():
+    """Get the default install directory."""
+    return os.path.join(os.path.expanduser("~"), "Evershade")
+
+
 # ─── Installer Logic ──────────────────────────────────────────────────
 class Installer:
     def __init__(self):
         self.profile = "standard"
         self.custom_services = []
-        self.install_dir = DEFAULT_DIR
+        self.install_dir = get_default_dir()
         self.start_services_flag = True
         self.regenerate_keys = True
         self.create_shortcut = True
@@ -891,7 +895,7 @@ class EvershadeInstallerGUI:
         browse_btn.pack(side="left")
 
         default_btn = ttk.Button(
-            dir_row, text="DEFAULT", command=lambda: self.dir_var.set(DEFAULT_DIR)
+            dir_row, text="DEFAULT", command=lambda: self.dir_var.set(get_default_dir())
         )
         default_btn.pack(side="left", padx=(10, 0))
 
